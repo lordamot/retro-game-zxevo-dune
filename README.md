@@ -1,3 +1,114 @@
+[Русский](#dune-ii-для-zx-evolution) | [English](#dune-ii-for-the-zx-evolution)
+
+# Dune II для ZX Evolution
+
+Порт игры **Dune II - The Battle for Arrakis** с Mega Drive на **ZX
+Evolution BaseConf**.
+
+Максимально близко к оригиналу:
+- полностью играбельна, с музыкой и звуками
+- может работать без карты General Sound (тогда без звука вообще - не рекомендуется)
+- собрана с нуля на основе оригинального образа ROM (не прилагается)
+- собственный код порта распространяется по лицензии MIT (см. `LICENSE`)
+
+Как собрать самому:
+- сборка проверялась только на Ubuntu Linux
+- `make toolchain`, `make build`, `make run`
+
+Как запустить:
+- положите ./build/dune.trd и ./build/DUNE.DAT в корень SD-карты
+- включите Evo
+- "file browser" - "mount A:"
+- "Run TRDOS"
+
+Полная история сборки и мучений - в каталоге `./prompts`.
+
+## Известные проблемы и планы
+
+- не определяется NeoGS
+
+Буду благодарен за любые отзывы об игровых проблемах.
+
+## Управление
+
+Клавиатура изображает джойпад Mega Drive:
+
+| Клавиши | Пад | |
+|---|---|---|
+| Q A O P, стрелки, 7 6 5 8, джойстик Kempston | крестовина | движение курсора |
+| SPACE, M, огонь | A | выбор; если что-то выбрано - приказ, подходящий к тому, что под курсором: идти, атаковать, собирать спайс, охранять, развернуть; на здании - его панель |
+| Z, N | B | назад |
+| X, SYMBOL SHIFT (удерживать) | C | крестовина двигает обзор |
+| ENTER | Start | настройки |
+
+REDEFINE KEYS в главном меню позволяет назначить каждой кнопке свою клавишу.
+
+## Скриншоты
+
+![Scr01](readme/01.png)
+![Scr02](readme/02.png)
+![Scr03](readme/03.png)
+![Scr04](readme/04.png)
+
+## Как это сделано
+
+Сначала был разобран картридж Mega Drive, и
+поведение игры было записано в виде десяти спецификаций (здесь не
+приводятся) - игровой такт битвы, записи объектов, движение, бой,
+экономика, производство, ИИ, карта, миссии и экраны; у каждого утверждения
+указан адрес 68000, из которого оно взято, и всё проверено на работающем
+картридже.  Порт написан на ассемблере Z80 по этим спецификациям, процедура
+за процедурой, в банках кода по 16 КБ, которые вызывают друг друга через
+трамплин дальнего вызова; записи сохраняют смещения полей картриджа, так
+что его ОЗУ и ОЗУ порта можно сравнивать поле за полем.
+
+- **Данные** - из картриджа, в виде текста в `src/res/data/`: типы юнитов
+  и зданий, дома, 27 миссий, 27 карт, четыре файла скриптов EMC и все
+  строки.
+- **Графика** - из картриджа, вырезана из него и из его видеопамяти в PNG
+  в его собственных цветах (`src/res/art/`) и конвертируется при сборке:
+  для поля боя выбраны шестнадцать цветов, остальные рисуются двухцветной
+  шахматкой; спрайты с маской, в четырёх раскрасках домов.
+- **Звук** - мелодии и сэмплы картриджа, проигранные через модель его
+  звукового драйвера на Z80 и записанные как модули ProTracker
+  (`src/res/prebuilt/`); при старте они загружаются в звуковую карту.
+
+Рендерер перерисовывает только те ячейки 8x8, которые изменились с тех пор,
+как рисуемый экран показывал их в последний раз, со спрайтами поверх, с
+двойной буферизацией; игровой такт битвы занимает около 1,8 кадра, а
+игровое время считается в кадрах, как и в картридже.
+
+Что работает и чего не хватает - в `.claude/docs/progress.md`.
+
+## Структура
+
+```
+src/            игра на Z80; src/res/ - её данные, графика и звук
+tools/          утилиты на Python, эмулятор ZX Evolution и фронтенд
+                libretro (оба на C); tools/tests/ - тесты подсистем
+bin/            собранное: sjasmplus, evo-run/evo-play, ядра NES и
+                Mega Drive, прошивка BaseConf и ПЗУ General Sound
+.claude/docs/   порт, машина, графика, игра, сборка, эмулятор, звук,
+                утилиты, оригиналы, прогресс
+.claude/skills/ как работать с каждой частью
+```
+
+Начните с `.claude/docs/port.md` (устройство порта) и
+`.claude/docs/platform.md` (что это за машина).
+
+## Благодарности
+
+*Dune II - The Battle for Arrakis* - игра Westwood Studios, изданная
+Virgin Interactive в 1992-1994 годах; *Sand Emperor* demo 5 - работа
+TI (2021).  ZX Evolution - разработка NedoPC.  Эмулятор построен на
+**libxpeccy** из samstyle/Xpeccy; эталонные машины работают на **FCEUmm**
+и **Genesis Plus GX** через libretro; ассемблер - **sjasmplus**.  Прошивка
+BaseConf и ПЗУ General Sound взяты из дистрибутива ZEsarUX.
+
+Этот репозиторий - порт и проект по сохранению наследия.
+
+---
+
 # Dune II for the ZX Evolution
 
 A port of the Mega Drive **Dune II - The Battle for Arrakis** to the **ZX
@@ -7,7 +118,7 @@ As closed as it was possible:
 - fully playable with music and sounds
 - optional run without GeneralSound card (no sounds at all then - not recommended)
 - built from scratch based on original rom file (not included)
-- generated code is MIT License
+- the port's own code is under the MIT License (see `LICENSE`)
 
 How to build yourself:
 - pipeline tested on Ubuntu Linux only
@@ -50,7 +161,7 @@ REDEFINE KEYS on the title menu gives each button a key of your own.
 
 ## How it is made
 
-The Mega Drive cartridge was taken apart first (`orig/sega/`, below), and
+The Mega Drive cartridge was taken apart first, and
 what the game does was written down as ten specifications,
 not included here - the battle pass, the records, movement, combat,
 the economy, production, the AI, the map, missions and the screens - each
@@ -97,12 +208,10 @@ Start with `.claude/docs/port.md` (the port's shape) and
 ## Credits
 
 *Dune II - The Battle for Arrakis* is Westwood Studios', published by
-Virgin Interactive, 1992-1994; the Mega Drive version in `orig/` is the game
-this port reproduces.  *Sand Emperor* demo 5 is by TI (2021).  The ZX
+Virgin Interactive, 1992-1994; *Sand Emperor* demo 5 is by TI (2021).  The ZX
 Evolution is NedoPC's.  The emulator is built on **libxpeccy** from
 samstyle/Xpeccy; the reference machines run **FCEUmm** and **Genesis Plus
 GX** through libretro; the assembler is **sjasmplus**.  The BaseConf
 firmware and the General Sound ROM are taken from the ZEsarUX distribution.
 
-This repository is a port and a preservation effort.  The originals are
-included as found, in `orig/`, and are never modified.
+This repository is a port and a preservation effort.

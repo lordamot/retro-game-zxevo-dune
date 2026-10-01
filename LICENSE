@@ -1,0 +1,40 @@
+MIT License
+
+Copyright (c) 2026 Sergei Lemeshev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-------------------------------------------------------------------------------
+
+Scope
+
+This license covers the port's own source: the Z80 code under src/ (except
+src/res/), the Python and C tools under tools/, the build files and the
+documentation.
+
+It does not cover, and grants no rights to:
+
+- Dune II - The Battle for Arrakis itself, or anything taken out of it - the
+  data, pictures, text, music and effects under src/res/, and whatever the
+  build produces from them.  Those belong to their rights holders (Westwood
+  Studios, Virgin Interactive and their successors).
+- src/res/external.mod, a module supplied by its own author.
+- Third-party software the toolchain fetches or builds (libxpeccy,
+  sjasmplus, FCEUmm, Genesis Plus GX, the BaseConf firmware, the General
+  Sound ROM), each of which stays under its own license.
