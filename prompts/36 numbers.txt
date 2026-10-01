@@ -1,0 +1,19 @@
+numbers are in ./prompts/hmmm/05.jpg
+
+****
+
+Found it, and it is fixed: the profiler's marks.
+
+The photo says 1 (a jump to address 0), bank 08, SP 17F0 - the stack pointer inside the MAIN bank's code, nowhere near the game's stack at BE00-C000 - and the eight "stack" words are untouched instructions of gs_setup. So nothing had pushed there: the CPU had been running garbage and SP was garbage with it, and a stray rst 0 ended it at address 0. That is the same ending as the earlier "restart into the opening"; the ZX-mode garbage screen was another.
+
+What runs garbage only on the real machine: the PROF marks. They are OUT ($FD),A with a mark number below 40 hex, and the docs said nothing on hardware answers that because $7FFD needs A14 set. The BaseConf's zports.v says otherwise: a $7FFD write is decoded on A15 = 0 and the low byte alone, so every mark IS a $7FFD write with the mark as the value - and bit 4 of $7FFD picks which set of window registers the memory manager uses. The front end has no marks. The battle's first pass has twenty, most below 16, so at the renderer's first mark every window switched to the firmware's leftover pages and the CPU fell off into whatever was there: a hang, a restart, garbage, a jump to 0 - the four things you have seen at level start. libxpeccy asked for A14 = 1 as well, which is why the emulator never showed it.
+
+Proved both ways in the emulator. build_toolchain.py now patches libxpeccy to decode $7FFD as the FPGA does; with that and the old build, the battle's first pass leaves $7FFD at 9, every window flips to the firmware's set and the CPU sits in ROM at 0038 with the stack running away. With the fix, the same run plays the battle.
+
+The fix: the PROF macro assembles to nothing unless PROFILE is defined; python3 tools/build_dune.py --build-dir build-prof --profile makes a profiling build for evo-run --profile. A game build has no marks. Docs corrected: CLAUDE.md, emulator.md, platform.md, the build skill. The three variant builds are gone; there is nothing to bisect.
+
+make build, make verify and make test all pass, in the emulator that now decodes like the hardware. build/dune.trd + build/DUNE.DAT are the ones to try. The crash catcher stays in; it earned its place.
+
+Still open once a level starts: the card. Which General Sound it is, the ROM version and clock, since the music played slowed and late before.
+
+Nothing is committed; say so and I commit.

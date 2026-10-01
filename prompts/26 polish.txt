@@ -1,0 +1,79 @@
+wrapping up and polishing.
+1) add kinda intro for "loading" screen:
+play sound ./res/external.mod, show dune-styled russian text above loading progress bar (so move it down):
+Dune II The Battle For Arrakis SEGA
+порт для ZX Evolution BaseConf + General Sound
+
+Огромная благодарность всем участникам кто, так или иначе, сподвиг меня попробовать это сделать.
+
+Данная версия может и будет содержать ошибки и глюки - буду рад обратной связи на почту daemon.user@gmail.com
+или в телеграм lordamot.
+
+ПЕНЗА, 27 сентября 2026 года
+
+2) add our custom option into game main menu - "redefine keys" - which, in fact, should redefine keys
+
+3) check and if we are on frame budget - add rotation animation to buildings knob at the bottom left; add flashing of that "OK" sign when building is ready but returned back to construction yard
+
+oh, for text - add one more before ПЕНЗА - "Авторы порта - Сергей Лемешев aka lordamot и Claude Code"
+
+****
+
+All three are in, and make build, make verify and make test pass. Nothing is committed yet.
+
+1. The loading-screen intro
+
+The Russian text, with your authors line before ПЕНЗА, is now at the top of the loading screen. LOADING and the bar moved to the bottom. The title line and the place/date are in the planet's sand colour, the rest in white. The cartridge's font has no Cyrillic, so I drew the 21 letters Latin has no shape for in the same style: 2-pixel strokes, capitals, and the same black shadow. The rest (А В Е К М Н О Р С Т Х) reuse the Latin glyphs. I also drew a clearer @, because font8's reads as ©. The letters are in src/res/art/ui/font_cyr.txt, and they go into a separate font used only by this screen.
+
+The music does not play during the loading, only after it. The General Sound card can't play anything during its ~11 s memory test. After that, playing a tune while 1.8 MB goes to the card makes it stutter and slows the upload to minutes (sound.md measured this). So now:
+- The text shows from power-on while the bar fills.
+- At about 29 s (the same time as before) LOADING becomes PRESS ANY KEY and external.mod starts.
+- A key fades the tune out and the game goes on.
+
+The intro tune is loaded onto the card first and gives its pages back afterwards. The card then ends up holding exactly the tunes it held before, so the Tutorial's tune is still there. With no sound card, the text and PRESS ANY KEY show without music.
+
+2. REDEFINE KEYS
+
+This is a fourth line on the title menu. It asks for a key for each of the eight Mega Drive buttons in turn, and refuses a key already given ("THAT KEY IS TAKEN"). After that each button has exactly the one key you chose. The joystick keeps working as before. The keys are not saved: a reset brings back the defaults.
+
+3. The knob and the 'OK'
+
+Frame budget: 1.01 frames a pass in Atreides 1. The worst window across all 27 missions is 1.21 frames (O9), against 1.33 before and a limit of 3, so there was room.
+- The knob is the house-marker orb that every structure carries. On the Mega Drive it turns (eight frames, a new one every eighth frame), and now it does in the port too. It redraws only the orb's four cells, and the cost doesn't show in the numbers above.
+- 'OK' now blinks, 16 frames on and 16 off. The cartridge's 'OK' is steady, so this is a port addition. It also blinks on a ready Palace, since that is the same marker.
+
+Also worth knowing:
+- I briefly broke the loading myself (it hung at 97%) by running dune_sound.py by hand. The build now also rebuilds when external.mod or the font change, and I added this trap to CLAUDE.md.
+- tools/verify_build.py now presses a key at the intro and checks that the intro tune played and gave its pages back.
+- The docs are updated. The guideline now lists the Cyrillic letters and external.mod as the port's own resources, like port.txt.
+
+Do you want me to commit this on feat/sega-port?
+
+external.mod does not play in loading screen. once again:
+- psg start
+- black screen - load external.mod into gs and start playing it
+- display intro text (cool one btw - thanks!) and loading while music plays
+- loading finished - external.mod stops playing and dune intro starts as it was
+
+****
+
+Done. external.mod now plays under the loading screen while the tunes load, and it stops when the loading is done. There's no key to press any more. make build, make verify and make test pass. Nothing is committed yet.
+
+The sequence on a 2 MB card, as measured in bin/evo:
+- 0-22 s, black: the card's own memory test (~11 s, it can't play anything during it), the effects (2.4 s: the card's $38 loader stops its mixer until the last byte, so these can't go under music), external.mod, and the battle tunes and two others at full speed.
+- 22-37 s: the intro plays, the text fades in, and the bar fills while the title, crests, briefing and mentat tunes load under it. There are no stutters: the card's underrun counter reads 0 the whole time.
+- 37-39 s: the bar is full, the screen and the intro fade out, and the Dune opening starts as before. The whole start-up used to take 29 s.
+
+Why the split: while the card plays the intro, loading only gets whatever time the mixer leaves over, and that follows the song. I measured about 47 KB/s in the intro's light first 7 s, about 20 KB/s over the next 15 s, and about 6 KB/s in the busy part after that, which loops. Loading all 1.43 MB under the intro would take about 2 minutes, and pushing harder only makes the music stutter. So you picked the option that loads more before the music starts. INTRO_CHUNKS in tools/dune_sound.py sets how much loads under the intro. At 850 the music starts at 24 s and loading is done at 31 s, but that leaves only 6.5 s to read the text.
+
+To measure this I added gswatch ADDR / gshits to evo-run. They count the sound card's instruction fetches at an address, and $13B9 is where the card's ROM notices a music underrun.
+
+Also: the title tune stutters a little in the emulator during the opening. That was already the case before this change; the committed build does exactly the same.
+
+Want me to commit this on feat/sega-port?
+
+commit
+
+****
+
+Committed on feat/sega-port.

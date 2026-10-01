@@ -1,0 +1,7 @@
+all good with sound, thanks. it was my acoustic - r channel disconnected but "3d" effect pressed there was masking that I was actually listening mono channel lol
+
+****
+
+That closes it neatly: with the right channel gone, the effects the ROM put on DACs 2 and 3 - half of them, and more when a tune held the left ones - never reached you, and the "3D" mode folded what was left into something that sounded broken. The card, the ROM, the memory and the pipeline were all right, which is what every test here had been saying.
+
+Still in the tree, not committed: DUNE.DAT as the only product, the level-transition fix (the loader's bloom pointer) with its test, the emulator's clock switch and wider write trap, the channel-test tool and the intro-module option, the 1 MB switch. Say so and I commit.

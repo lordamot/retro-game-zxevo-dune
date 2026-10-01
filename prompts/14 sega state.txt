@@ -1,0 +1,154 @@
+whats the state with sega dune deconstruction?
+
+****
+
+Measured just now, not recalled.
+
+It rebuilds exactly. make orig-sega assembles orig/sega/src/ into a 1 MB cartridge whose SHA-256 matches orig/dune2.gen byte for byte, in about 14 seconds. So that has not regressed.
+
+How much of it is understood:
+- Code: 153 880 bytes, 14.7% of the ROM, almost all in the first 320 KB (rom00-rom04). All 47 jmp (pc,Xn) switch tables are read.
+- Named data: about 80%. That covers the Format80 art (every building and unit sprite plus 9858 tiles), 6558 strings, the briefings, the Z80 sound driver, 97 songs with every note, 30 samples, the file directory at $052C2C with the INI files and EMC scripts, and the binary tables the game actually plays by (buildings, units, houses, the 14 orders, the 27 missions).
+- Unaccounted: 629 runs, 59 905 bytes (about 5.7%), listed in orig/sega/gaps.txt. The biggest is $024B8A (2.8 KB, in code-heavy bank 02); the rest are mostly in banks 09 and 0C, and there is a long tail of roughly 350-byte runs at $06D000-$06FFFF.
+
+What the game turned out to be: a thin engine. The behaviour lives in Westwood's EMC bytecode. There is one shared combat routine, and 14 of the 18 buildable units just jump to it. The AI is a script plus a bigger budget every mission.
+
+Still open:
+1. Script-callable routines: 94 distinct ones are called across the tables, and 17 of them have been read without a name being settled (functions.txt, blank "what" column).
+2. Banks 09 and 0C: the largest stretches still unidentified.
+3. The picture table's extra blocks at $0416DA: their bounds are exact, but they decompress to sizes that are not whole tiles and they do not read as tilemaps, so what they are is still unknown.
+4. Bank 04's static data: a table of pointer variables, and each one still needs following.
+5. More code coverage: the trace now stops at dispatch through registers that no ROM table describes.
+
+Housekeeping: the README contradicts itself. One heading says "forty routines ... still unnamed" and the paragraph under it says twenty, while the count is actually 17. It also says 5.5% is unaccounted, and gaps.txt now totals about 5.7%. Both are worth correcting. Nothing from this cartridge feeds the port; it is reference material only.
+
+try proceed up to final state - all known all deconstructed
+
+****
+
+Every byte of the Mega Drive Dune II cartridge is now accounted for, and the cartridge still rebuilds byte for byte. The listing is 13.6% code and 86.4% named data. Nothing is unaccounted for, gaps.txt is empty, and no region is only "pointed at". make orig-sega, make build and make verify all pass. Nothing is committed.
+
+How it got there
+
+Reading had stalled at 94.5%, so I recorded the running game.
+- I patched the Genesis core to record, for every cartridge byte, whether the game runs it, reads it, sends it to VRAM or CRAM by DMA, or lets the Z80 read it, and which instruction read it first.
+- A new tool, tools/sega/sega_touch.py (make sega-trace), plays every password into its battle, the music and sound tests, a won mission and the three endings, then a random player that goes wherever finds new code.
+- The recording is orig/sega/res/trace.txt, and the extractor trusts it before any guess.
+- Seven helper agents then each read one area, and each wrote a module with a check() the extractor runs.
+
+What was wrong before
+- $070000-$087FFF is not DAC sample; the Z80 never reads it. It holds the 27 mission maps, stored whole. A mission's "Seed" is a map number, and three of the maps are never used. Sprite pixels fill the rest.
+- The "PC music file names" are the 29 passwords. They include four playtester cheats: no damage, 25000 credits, reveal the map, and show the version.
+- The picture table is the tutorial: 12 animated screens and a 26-opcode script language that plays them.
+- UNIT.EMC is 5 KB, not 20. The two EMC reference kinds were swapped: kind 1 is a unit, kind 2 a structure. The units' "tech level" column is really how far each sees.
+- $029AB0-$02DC8B is a dead copy of an older build's first 16 KB. That is why the Z80 driver appears twice.
+- Three extractor bugs. The decoder read and.l d1,(a4) as a broken EXG. Every Format80 block was one byte short. Code the game runs had been filed as a pointer table.
+
+Newly decoded
+- The sound instruments and pitch envelopes, field by field.
+- Every script routine, now named.
+- The sprite animation system, with 275 frames rendered.
+- The tutorial screens, rendered.
+- Bank 04's static data and the campaign map in bank 09.
+- Palettes, fonts, and the end-of-battle animations.
+- 137 routines nothing calls, marked as such.
+- Several bugs in the game itself, now listed in sega-internals.md.
+
+Still open
+- The routines have addresses (L_xxxxxx), not names. Naming the whole engine would be a separate project.
+- The recording never reaches the later missions' victories, because those need the enemy destroyed. So some code is known by reading only.
+- The core and retro-run binaries in bin/gen were rebuilt; the patch is in tools/build_toolchain.py. The docs, the skill and CLAUDE.md are updated.
+
+lets proceed with naming routines
+
+each routine should also has description of what it do, which params, where is the result and what is affected by calling it
+
+****
+
+Every routine in the cartridge now has a name and the documentation you asked for. The rebuild is still byte-exact, and make orig-sega, make build and make verify all pass. Nothing is committed.
+
+How it works
+- Names live in text files, orig/sega/res/names/*.txt, one block per routine with four required fields: does (what it does), in (parameters: registers, or stack arguments by offset, since most of the game is compiled C), out (where the result is), and affects (what else a call changes: registers not preserved, RAM written, VRAM/CRAM, the sound CPU).
+- A new tool, tools/sega/sega_names.py, checks the files (valid identifier, unique name, sits on an instruction start, all four fields present) and reports coverage with stats.
+- The extractor writes the four fields as a comment above each routine and uses the name at every call site. A short jsr $xxx.w, which can't carry a symbol, gets "-> name" in its comment.
+
+The result
+- 907 routines named, in seven files by address range, written by seven parallel helpers.
+- All 641 routines that anything calls are named, and so is every routine nothing calls (those say so in their description).
+- Much of the game logic is Westwood's PC C code compiled for the 68000, so where a routine matches OpenDUNE's reconstruction, its description gives the PC name. Every description is of this cartridge's code.
+
+Existing descriptions corrected along the way
+- Script routine 47 answers "blocked", not "clear".
+- BUILD routine 3 sends for a Carryall rather than putting the unit on the map.
+- The house screen's $18-$1A are the houses' music, not mentat portraits.
+- $FFC224 is the full-fog map tile, not a counter.
+- PLAYTESTER toggles bit 0 of $FFC019.
+- Also corrected: the options menu row spacing, the house alliance rule, and x/y swapped in the sprite-piece layout in three places.
+
+A dozen more bugs in the original game are now in sega-internals.md: an explosion whose damage comes from a register nothing sets, a Fremen test that is always true, the first free Refinery taken instead of the nearest, stale registers passed in two places, a zoom fraction dropped every eighth sample.
+
+Open
+- Loop heads and switch cases inside routines stay L_xxxxxx on purpose.
+- The 68000 routines that send commands to the sound driver pass more arguments than music.txt lists for commands $02 and $05. I noted this but didn't resolve it.
+
+lets proceed with sound-related instructions research
+
+document music commands also - in readable form
+
+****
+
+The sound driver's whole language is now worked out and written up readably in orig/sega/res/sound/commands.txt: the 24 commands the 68000 sends to the Z80 driver, and the 19 commands songs are made of. Each entry says what it does in plain terms and names the driver routine it was read from. The file also explains the driver itself: the sixteen voices and their fields, the flag bits, the two clocks, and how loudness works. The rebuild is still byte-exact, and make orig-sega, make build and make verify pass. Nothing is committed.
+
+The old command table in music.txt was wrong in several places
+- It counted only the bytes a handler reads directly, missing bytes read by routines it calls. Command $02 (load instrument) takes 2 bytes, not 0; $04 takes 3; $1E takes 4. So the mismatch I flagged last time was in music.txt, not in the game's sender.
+- $04 is "detune a voice", not "set tempo" ($05 is the tempo).
+- $0D is "resume all", not "stop the music". $0C pauses everything.
+- $00 and $01 are note on and note off.
+- The two "unknown" commands $1F and $20 set a voice's attenuation and the master attenuation. I first read these as volumes; a dump of the sound CPU's memory during the music test showed values that only make sense as attenuation (0 = as loud as the instrument, 127 = silent).
+- Track command $6D ("hold") puts a voice on the fixed frame clock instead of the song's tempo clock.
+- Track command $72 has six sub-commands: stop song, pause song, resume all, pause the song named in a variable, master attenuation, voice attenuation.
+- The branch command's comparisons were printed the wrong way round.
+- Voice flag 7 is set and cleared but never tested.
+
+The same dump confirmed the voice model: a playing song's voices carry flags $11 (active, running) or $51 (plus retrigger envelope).
+
+What the game actually uses
+The game sends five commands: install resources, play song, stop song, reset voices and mute track. Pause and resume are reachable only through two jump stubs nothing calls, and the rest of the 68000's sender library is unused. Those sender routines are renamed after what they really send (snd_drv_resume_all, snd_drv_load_instrument, snd_drv_note_on and so on), with corrected descriptions.
+
+Where it lives
+music.txt's summary table and commands.txt are both generated from one verified table in sega_seq.py, so they can't drift apart. Song listings now read instrument, envelope, frameclock and mute instead of patch, bend and hold. The README, sega-internals.md and the skill are updated.
+
+estimate - can you say that sega's dune fully clear and understandable to use to be used as port source?
+
+****
+
+Mostly yes as a reference for how the game works, not yet as something you could port straight from.
+
+Ready: every stat, mission, map and AI script as verified data; every sprite, picture and palette decoded; the sound driver, instruments and songs written out; and all 907 routines named with what they do, their parameters, their result and their side effects.
+
+Not clear yet: the game logic is annotated assembly, not source, so porting combat, movement, harvesting, production or pathfinding still means reading each routine and turning it into an algorithm. Record layouts are only partly done (11 unit-table columns and 5 building-table columns unidentified, some RAM fields known only by the code that touches them). About 31,000 of 43,000 instructions were seen running. And Mega Drive quirks and bugs are mixed in, so a port has to choose which to keep.
+
+Estimate (a judgement, not a measurement): about 90% ready for the rules and numbers, 60-70% for reimplementing the logic faithfully without re-reading the assembly. The fastest route is OpenDUNE plus these names, with the Mega Drive specifics layered on top.
+
+lets prepare handover finalize plan:
+- specs step
+- finalize records layout
+- prepare algo to convert sega's sound and music into General Sound's mod files - using source PSG expected output instead of resulting wav recording and for MODs using instrumental-based as much as possible (what I mean here - infantry die scream is not an instrumental sequence in terms of mod file)
+
+****
+
+The plan is in .claude/docs/sega-handover.md, linked from CLAUDE.md. It has three pieces of work, each with a goal, a method, deliverables and a "done when" test.
+
+1. Record layouts, first, because every spec is written in terms of fields. A tool indexes every field access in the listing by where the base register came from (unit getter, structure getter, house, the ROM tables). RAM dumps from the saved game states pin value ranges, and OpenDUNE's field names serve only as hints. The output is a table-driven records.txt with a check() requiring that every traced access lands on a named field. It also closes the 16 open table columns and the structure-pool count conflict (73 against 78).
+
+2. Specs, one per subsystem: the frame, objects, movement and pathfinding, combat, economy, production, the enemy AI, map and fog, the mission flow; screens for reference only. Each names its entry routines and gives state, per-tick order, every formula with its address, the Mega Drive against PC differences, and the cartridge's bugs with a keep-or-fix call. Each also carries scenario tests: load a save state, run N frames, compare RAM with what the spec predicts. A small checker runs them all.
+
+3. Sound to General Sound, working from what the chips were told, not a mixed recording.
+- Split the 97 songs into music (the 18 tunes, which become MODs), effects such as the infantry scream (rendered whole as one-shot samples, because they are not instrument sequences) and speech (the DAC samples as they are).
+- Add a chip-register log to the patched emulator core, and build a standalone renderer from the core's own YM2612/PSG code that renders each channel on its own.
+- Make MOD samples from each instrument: FM gets a loop on whole periods after its attack; PSG tone is synthesised; noise is looped; octave bands where the range is too wide.
+- Map tracks to patterns: rows from the music clock, notes to periods, gates to note cuts, pitch effects to MOD effects or baked samples, attenuation to volume, loops and branches to the pattern order.
+- Fit the channels: up to eleven Mega Drive channels into four MOD channels, keeping by driver priority and note count and pre-mixing voices that always play together, with a report per tune.
+- Decide first who plays the MODs: the card's own ROM MOD player (recommended to try first; it costs a ROM reading and a test) or a pattern sequencer added to the port's own card player.
+
+Order: records and sound can start together; the specs follow the records and can be split one subsystem per worker.

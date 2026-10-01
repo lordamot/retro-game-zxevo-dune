@@ -1,0 +1,28 @@
+- once again - concrete above yard on level DIPLOMATIC should be able to put all 4 blocks,
+    because it shown green and full concrete contacts base! it is a bug and needs to be fixed
+  - once again - factory's "last item" shown on map must correspond to its offer in menu.
+    for described case it must be a trike not quad! it is a bug and needs to be fixed
+  - rotating knob on building does not disappear after building exploded
+  - replace intro with current fresh external.mod from ./src/res/
+  - atreides level 3 SPICEDANCE starts with strange artifacts - highlight under units (./prompts/hmmm/07.jpg)
+
+  and most problem is sound still. is it so that multisound mixes output in other way?
+  I also see sounds play not always and music distorted - check what might be a reason
+
+****
+
+Done, as you say, and written into gamedesign.md as the port's own rules.
+
+The 4-Slab. Once the footprint has passed, each square is now asked only whether it can take concrete - rock, nothing standing on it - and not whether it touches the base by itself. A 4-Slab two squares above the Yard paves all four. Tested.
+
+The factory's item. What a factory shows and builds on B is now an item its panel offers: the cartridge's default is kept when the list offers it, else the first thing the list offers. A Light Factory placed on the second level shows and builds the Trike. Applied at the default, after an upgrade by mission, on capture, and for the Heavy Factory without an Outpost. Tested.
+
+The orb. When a ruin is made the port never took the house marker's orb off the marker square - the cartridge's struct_erase_house_marker does - so it kept turning over the rubble. struct_remove clears it now. Tested.
+
+The intro. The module in src/res is the one in the build already: it changed at 15:22, the sound tables were rebuilt from it, and it went into the last commit. If you have a newer one, drop it in and tell me.
+
+The highlight under units on SPICEDANCE. I cannot reproduce it: the third level in the emulator is clean with zeroed RAM and with random RAM, and the renderer treats a square with a unit on it like any other. Tell me three things: does it stay or go away when the units move, does it appear on the first two levels too, and is it there from the first frame or does it come after a while.
+
+The sound. The MultiSound's GS runs the same ROM at a higher clock; the mixing rate and the tempo come from the card's timer, not the clock, and the ROM's tunes rendered under 1.05b are identical to 1.05a, so the card does not mix differently. What fits "sounds not always, music distorted" is memory: tunes landing on the effects and on each other. My first check marked two places per page and passed on your card; if the upper pages land on the lower ones at another offset - a page bit wired to an address line below A15 - two marks miss it. Now every page is marked at eight places 4 KB apart, and after each page the ROM's own page table is compared with what it was, so a page that is the ROM's RAM under another number is caught too. Try this build and read me the GS line of the log: if it says 1Mb the pages were the problem and the music should be right; if it still says 2Mb the memory is real and I look elsewhere. And the back of the card: how many RAM chips?
+
+build, verify and test pass; three new cases in test_struct. Not committed.

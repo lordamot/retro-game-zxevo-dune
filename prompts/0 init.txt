@@ -1,0 +1,107 @@
+#source
+../orig/sand_emperor_demo5d9.nes
+Dune II the Battle for Arrakis demo for NES (ex-USSR Dandy) with SEGA-like
+graphics and controls - our base port source I believe
+
+../orig/dune2.gen - original SEGA game - use it to fetch missions scheme,
+music, units maybe
+
+#our hardware
+ZX Evolution BaseConf, double turbo 14 MHz, and GeneralSound soundcard.
+
+#refs
+../mc0511-openit MC0511 port of openit game
+../mc0511-dune-demo MC0511 port of this game (looks bad, but has NES tools)
+../zx-openit classic ZX-Spectrum tools and binaries
+../sv328-dune2 NES tools also
+
+Follow process and repo organisation, agreements also. Copy tooling/docs/skills
+from referenced if necessary NES emulator bin and tools are available at
+mc0511-dune-demo and sv328-dune2 repositories. Create skills and docs for
+all tools you create.
+
+#restrictions
+ignore prompts folder - its for history purposes
+
+#runtime
+Find emulator which is able to play game for given hardware and patch it if
+necessary.
+
+#goal
+Reproduce Dune II The Battle for Arrakis NES game for ZX Evolution.
+Target hardware is more than able to fit all. So additional - use SEGA original
+game to fetch music, sounds, missions, units maybe.
+
+As a result - we should have playable game in TRD format, which can be run
+locally also using make run.
+
+All toolset you add (NES, SEGA, ZX Evolution, General Sound) for emulating -
+with docs and skills.
+Document project internals also - what and how is built, trd structure etc
+Document game internals also - how graphics work, game logic, unit details etc
+
+****
+
+There's a playable game on a bootable TRD. Here's where things stand.
+
+What runs
+
+make build produces build/dune.trd; make run plays it; make verify passes:
+
+ok  EGA 16-colour mode        ok  the map has rock (288) and spice (254)
+ok  the CPU is at 14 MHz      ok  both sides have a base and units
+ok  the battle is running     ok  an iteration fits in 3 frames (~26 Hz)
+
+Title screen → controls → mentat → a generated 64×64 Arrakis with fog, two bases, harvesters, a build menu, combat, turrets, an enemy, and win/loss.
+
+The emulator (the part that was in doubt)
+
+ZEsarUX has a BaseConf machine but its video is an unimplemented stub — it renders black and the firmware doesn't boot. So tools/evo-emu/ is this project's own scriptable frontend over libxpeccy (the plain-C machine library inside Xpeccy, no Qt). The real 512 KB BaseConf firmware boots, TR-DOS reads the disk, ATM EGA paints, the CPU runs at 14 MHz, and there's a cycle profiler. evo-run is headless and scriptable; evo-play is an SDL2 window.
+
+Three things cost real time and are now written down in CLAUDE.md: the config ports are shadow ports (out ($BF),1 first, or the OUT silently does nothing); the memory manager's short xx7F7 form inherits the firmware's "mix with 7FFD" flag on window 3, so only xxFF7 works; and the firmware's drive A is the SD virtual drive out of the box, which is why bin/evo/evo-nvram.bin exists.
+
+Your mid-course correction
+
+I'd started with hand-authored text-art tiles; that's gone. The art now comes out of the Mega Drive game: make md drives orig/dune2.gen to its first Atreides battlefield and dumps VRAM/CRAM, src/res/md_art.txt names each picture by where it is on that captured screen (cell sand at 14,4, building yard at 18,6 size 2x2, sprite trike sat 9), and tools/md_art.py rewrites them as four-plane EGA in a 16-colour palette derived from the colours they actually use. Buildings are 2×2 squares, as in the original. The 8×8 font is the only thing still drawn here.
+
+The gap: that single capture contains 3 of the 7 buildings and 2 of the 5 units. The rest say like in md_art.txt and share a picture. Fixing it is a second capture script that builds/buys the missing things first — mechanical, and it's item 1 in .claude/docs/progress.md along with smooth horizontal sprite movement, music, and the General Sound card (the emulator already runs the GS with its real ROM; nothing drives it yet).
+
+Docs and skills
+
+10 docs (platform, graphics, gamedesign, build, emulator, md-art, nes-tools, sound, tools, progress) and 10 skills (build, asm, art, game, evo-emulate, md, nes, text, trd, sound), plus CLAUDE.md and README.md.
+
+Nothing is committed — your git.md says to ask first. Say the word and I'll branch and commit.
+
+-------------------------------------
+
+You took wrong source about game itself.
+Once again:
+- how game looks, works whatever else - NES version ./orig/sand_emperor_demo5d9.nes
+- sound from SEGA game ./orig/dune2.gen
+- screen and other hardware - ZX Evo BaseConf
+- music and sound player - GeneralSound
+Game should look not worse that NES version and even better
+
+****
+
+What changed
+
+Graphics: NES, not Mega Drive. Everything visible is Sand Emperor's own, cut out of screens the real demo painted. The tricky part: it's a VRC6 cartridge that re-banks CHR mid-frame, so a dump of its tile memory is noise. So the pixels come from the screenshot, and the dumps solve the one thing a screenshot can't — sprite transparency. The nametable says which 8×8 cells hold the same tile; most instances of a tile are nowhere near a sprite; so the background under a sprite is copied from an uncovered twin, and whatever the screen has that the background doesn't is the sprite. Exact, no colour keying. (The demo scrolls and nothing records by how much, so the alignment is recovered from the picture too.)
+
+I patched FCEUmm to expose the nametables, palette, OAM and banked CHR — make toolchain does it.
+
+src/res/nes_art.txt names each picture by where it sits on a captured screen (cell spice at 12,8 from spice, sprite infantry oam 6,7). Two scenes so far: the starting base, and map 5 for the spice field.
+
+Layout follows the NES too: no panel, just map and a credit counter — 20×12 squares of map (320×192) against the original's smaller window, in 16 colours where the NES had nine.
+
+Sound: SEGA, played by General Sound. make sega records the real Mega Drive game; src/res/sega_sound.txt names the pieces. The card doesn't run its ROM's module player — the port uploads its own four-channel sampler into it (src/gs/gsplayer.asm, ~780 bytes) and takes it over with ROM command $F3. 160 KB of the disk is the Mega Drive's menu theme, looping on channel 0, plus two of its blips on channel 1.
+
+Four things about that card cost real time, and all are now written down: the first argument goes before the command; some ROM commands ($17) can't be used at all because they don't release the command port; a block's length goes across uncomplemented; and the card's memory self-test makes the status line flicker for 4–8 seconds, so one clear reading means nothing. The mixer is a loop, not an ISR — the interrupt line is never lowered in this machine's model, so a handler could never return — which makes the loop its own clock at a measured ~9631 Hz. make verify re-measures that and fails if a change moves it, because the only other symptom is that all the music is off pitch.
+
+State
+
+make verify passes: EGA at 14 MHz, plausible map, both bases, the card running our player at the right rate, battle loop at 40 Hz (up from 26 — panel repainting was causing a real flicker and is now change-driven).
+
+Two honest gaps, both in progress.md: the captures cover 3 of 7 buildings and 1 of 5 units (the rest say like and share art) — that's another capture scene, no new code; and the demo's painted title and rendered mentat are captured but nothing reads them yet — a full 256×240 screen is 30 KB in EGA form and needs a screen kind in nes_art.py. That's the biggest remaining difference from the original.
+
+Still nothing committed — your git.md says ask first.

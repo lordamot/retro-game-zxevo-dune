@@ -1,0 +1,31 @@
+1) i tried to run it on real machine using "browse files" and then just selected psg file - and got black screen only
+2) ok. lets proceed so then: DUNE.TRD and DUNE.DAT - first one started from evo reset service and then loads all needed from DUNE.DAT file from SD Card BaseConf. Will that work?
+
+****
+
+Yes, that works, and it is built and proven in the emulator: make build now writes build/dune.trd and build/DUNE.DAT next to the SPG, the firmware boots the disk, the disk's loader reads DUNE.DAT off the card, and the game comes up. make verify and make test pass, verify now including that boot from a FAT16 and a FAT32 card image.
+
+Your black screen fits what the firmware's code does: the browser has no SPG type, so it treats the file as a disk image to stage into RAM from page #F4 downwards, and 3.2 MB of that wraps into its own pages.
+
+What to put on the card
+
+Copy build/dune.trd and build/DUNE.DAT into the card's root. In the ERS press F (File browse), select DUNE.TRD and press Enter: the firmware mounts it and boots TR-DOS, the disk's boot loads the loader, and the screen shows "READING DUNE.DAT" with a bar. The card must be FAT16 or FAT32 with 512-byte sectors, which is what any formatter gives. DUNE.DAT is the SPG under another name, so nothing changes in the build pipeline; only the file the loader looks for is fixed.
+
+If it stops, the screen says "ERROR nn" and the code says where:
+01 no card answered; 02 to 05 the card's initialisation failed (CMD8, ACMD41, CMD58, CMD16); 0A no boot signature or no partition in sector 0; 0B not 512 bytes a sector; 14 DUNE.DAT is not in the root directory; 1E a sector never came; 1F the file is shorter than its block table; 28 no "SpectrumProg" signature; 29 not SPG v1.0; 2A a packed block; 2B a block for page 5.
+
+What the loader does (src/loader/loader.asm, 3840 bytes at $6000)
+
+It opens the shadow ports and turns the clock to 14 MHz, initialises the card over the SPI port ($xx57 in shadow mode, the BaseConf manual's section 9.7: CMD0, CMD8, ACMD41, CMD58 for the addressing mode, CMD16 for old cards), reads the MBR or a superfloppy boot sector, follows the FAT16 or FAT32 root directory to DUNE.DAT, then streams the file one 512-byte sector at a time with CMD17 and INIR, following the cluster chain through the FAT with one cached FAT sector. The SPG header's block table says where each block goes: the page is mapped into window 3 through the short manager port and the sectors land straight there. At the end it maps windows 1-3 as an SPG loader would, sets SP to $BFFE and jumps to the boot stub at $8000, so boot.asm runs unchanged. The loader lives in page 5, the plain screen's page, which the game clears anyway; the build refuses a block for page 5.
+
+Other changes
+
+The Tutorial's pages moved from 249-254 to 221-223, 0, 4 and 6: the SPG format allows #00-#DF only because the loaders keep themselves above that, and tools/spg.py now refuses such a page. The sound reserve ends at page 220, so there is no spare page; if the Tutorial or the sound set grows, one has to give.
+
+tools/dune_trd.py builds the disk (boot in BASIC, the loader as a CODE file, through trd_build.py) and copies the SPG to DUNE.DAT; build_dune.py calls it. tools/sd_image.py writes a card image itself, FAT16 or FAT32, no host tool needed; evo-run and evo-play take --sd IMAGE. tools/verify_build.py boots the disk from both kinds and checks the game is in its EGA screen 30 seconds after power-on.
+
+One emulator bug had to be fixed to test this: libxpeccy's SD card never leaves multi-block mode, because its CMD12 branch does not clear the flag and CMD17 falls into CMD18's case. After the firmware's own reads, a single-block read never ended and the next command was swallowed, so the loader read zeros and failed on the MBR. tools/build_toolchain.py now patches sdcard.c after cloning; a real card is not affected.
+
+Docs updated: CLAUDE.md (the overview and three new traps), build.md, port.md, platform.md, tools.md, progress.md, emulator.md, the build and evo-emulate skills.
+
+Not committed; nothing pushed. The real-machine test is yours: if it fails, the error code on the screen is what I need.

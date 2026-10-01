@@ -1,0 +1,114 @@
+finalize sega deconstructing
+
+****
+
+Four things were still open in orig/sega/README.md. Three of them are
+closed and the fourth is measurably smaller, and all of it came out of one
+structural fix rather than four separate guesses.
+
+The structural fix: switch tables.
+
+A trace from the exception vectors stops dead at "jmp TBL(pc,Xn.w)",
+because which case it takes is in a register. There are 47 of those in
+this cartridge and none of them was being followed. But the table itself
+is not a hole. It begins at the effective address the jmp's own
+displacement names; it is either a run of word offsets from its own start
+or a ladder of bra.s; and no case can jump backwards into it, so it ends
+at the lowest address any of its own entries points at. The compiler also
+puts a "cmpi.l #N,Dn" and a bgt in front, which says the same count a
+second time, and where the two disagree the guard is right - three tables
+read one entry too many on the lowest-target rule alone, and one of those
+three swallowed two bytes of the routine's own code.
+
+switch_tables() in tools/sega/sega_extract.py now reads all 47. That is
+4074 bytes of new code and 1260 new instructions, and among what it opened
+up were the two routines everything else here rests on.
+
+The scenario loader, at $0161F0.
+
+It is a switch on the record tag's high byte: eleven sections, one handler
+each, and every handler says in 68000 how long its record is and what each
+word in it means. The old reading was a pattern - look for runs of records
+whose index counts 1, 2, 3 at a constant spacing - and it was wrong. It
+had the reinforcements down as structures, because a map position's high
+byte is $0A and so is the reinforcement tag, and it reported "3 structures
+(10 bytes each)" for a mission that has no structures at all.
+
+The new reading is the loader's own. The test is that it comes out even:
+read straight through, record after record, and all 27 files land exactly
+on their own $FFFF with nothing left over. missions.txt now has every unit
+and building on the map with its health, the teams with their real
+behaviour and movement names, the reinforcements with when they arrive and
+whether they repeat, the spice blooms, the seed, and the starport's stock.
+Each file is also written back out as the .INI it was converted from, in
+res/data/files/SCEN*.ini.
+
+Three things only the loader could settle. Section 5 is the Sardaukar, not
+the Fremen - $0165AC maps a section number to a house through the table at
+$0714A4, which holds 0, 1, 2, 4 - and they turn up in exactly three
+missions, the ninth of each campaign, with 9000, 15500 and 10500 credits.
+Section 6 is CHOAM, the starport's stock, keyed by unit index. And a
+team's two letters go through the game's own lists, five behaviours at
+$06CE66 and six movement types at $06CE4E; both searches take the first
+match and there are two W's, so of Wheeled and Winged only Wheeled can
+ever be named by a scenario file.
+
+It also turned up a bug. SCENO009.INI is the last file in the directory,
+so nothing follows it to say where it ends, and it was being cut 1212
+bytes short by a hardcoded DATA_END. Parsing the records says where the
+end is: the $FFFF is at $060E82 and the file is 2726 bytes.
+
+The EMC virtual machine, at $016F40.
+
+All nineteen opcodes are named now, and not out of anyone's general
+knowledge of Westwood's VM - the interpreter is in the cartridge and it is
+a 32-way switch with one handler each. Reading the handlers says what the
+machine is: sixteen words of stack at +$16, a frame pointer at +$A, a
+stack pointer at +$B counting down from 15, a return-value register at +8
+and the script's variables at +$C. Opcode 16 is unary ! - ~ and opcode 17
+is binary through a second 18-way switch at $0172A0: && || == != < <= > >=
++ - * / >> << & | % ^. Opcodes 19 to 31 all land on the same two
+instructions, which stop the script, so nineteen is the whole set.
+
+And the calling convention gives two more columns for free. Arguments are
+pushed, the call is made, the caller drops them again - so the n in that
+drop is the routine's arity, and a "push the return value" between the
+call and the drop says the answer was wanted. That is the
+question-from-order split the old functions.txt said could not be made
+from the bytecode: 13 of the 79 routines the scripts actually call are
+questions, the other 66 are orders, and when a routine answers it usually
+answers at every one of its call sites - 7/7, 5/5, 4/4.
+
+Bank 06, which was the largest open stretch.
+
+$060E84 is read twice, at $004B7A and $004BB2, and both do the same four
+instructions: lsl.w #3 for an eight-byte record, move.l $4(a1),$8(a0) for
+the second longword whole, and andi.l #$FFFFFF on the first before it goes
+to $FFBF04, which is where the graphics are read from. So a record is two
+tagged 24-bit addresses - the pixels, and a list that goes with them - and
+$00000000/$FFFFFFFF is an unused slot.
+
+Nothing says how long the table is and nothing has to. Read forwards while
+both halves are addresses inside the cartridge and it stops after 357
+records, at $0619AC - and $0619AC is the lowest address any of those
+records points at. The table ends exactly where the first thing it names
+begins, which is not something a wrong length produces. Feeding its 222
+pixel addresses and 188 list addresses through the same pointed-at pass
+the code's own lea instructions get accounted for most of that bank; it is
+no longer in the top twenty of gaps.txt.
+
+Where the cartridge stands
+
+                    at first    after the art    now
+  code                14.9%          14.3%      14.7%
+  named data          35.7%          78.2%      79.8%
+  unaccounted for     49.4%           7.6%       5.5%
+
+698 named regions, 59905 bytes still nobody's, down from 81427. The
+rebuild is byte for byte against the original's SHA-256 at every step -
+that was checked after each change, and the one time it broke it was a
+shadowed variable in the emitter, not a bad reading.
+
+What is still open: what each of the 104 EMC functions means, the picture
+table's extra blocks at $0416DA, bank 04's static data segment, and the
+remaining few-kilobyte stretches in banks 09 and 0C.

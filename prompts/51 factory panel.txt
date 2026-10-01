@@ -1,0 +1,11 @@
+check one more possible problem. level SPICEDANCE - factory does not allow to produce trike from its menu, only from map level using B
+
+****
+
+Reproduced and fixed. SPICEDANCE is Atreides mission 3, where a Light Factory offers the Trike alone, and its panel listed the Trike, showed its picture and figures, and refused it on A - nothing under way afterwards, no unit spawned - while B on the map started it.
+
+The cause was not the offer logic: the list the panel is built from held the Trike and nothing else, and its icon and picture exist. It was the windows. The front end's drawing library maps its own picture pages into windows 1 and 3 and never maps the game's back (front.asm says every entry point leaves them to map_game). The panel called struct_build_object straight after its menu, so unit_spawn looked for the unit pool in a picture cache and found no free record. The Yard's panel worked because the structure pool is in WORLD, which is always mapped, and B worked because it runs with the game's windows.
+
+The fix: pn_menu (panel.asm) calls map_game after its fade, which covers the build and buttons panels, and the Starport loop does the same after each key. A regression check went into test_struct.py's port rules scenario: a Light Factory placed under A3's Yard, its panel opened through the mailbox, down onto its one item and A on it, then the factory's state and a third Atreides Trike are checked. The check fails on the old panel (state -1, 2 Trikes) and passes on the new one. The full struct suite and make verify pass. The trap is written into CLAUDE.md.
+
+Not committed; the two changed files are src/front/panel.asm and tools/tests/test_struct.py, plus CLAUDE.md and this transcript.

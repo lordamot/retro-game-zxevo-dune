@@ -1,0 +1,13 @@
+sound card is ZX-MultiSound rev.A1(+1Mb GS) - it seems it has only 1Mb ram for GS?
+
+****
+
+Yes, 1 MB, and that is fine: the game was designed for it. It needs 24 of the card's 32 KB pages and a 1 MB card gives 30. What changes against 2 MB is what is resident: at start-up the intro, the title, chosen destiny, evasive action and radnors scheme go on the card; every other tune is streamed when it is about to be wanted, and the first time a tune is asked for that is not there yet there is a short pause with the screen black while it goes on. sound.md walks it through for both sizes. The log's "GS memory" line says what the card reported.
+
+The card's ROM is what mattered, and it checks out. The MultiSound repository (UzixLS/zx-multisound) ships General Sound v1.05b; the game pokes the ROM's own variables, so a different layout would have broken everything. I fetched that ROM and compared it with the 1.05a everything here was read from: 63 bytes differ, in five places - the copyright and version strings, the $30 memory pass counting pages from $40DA instead of $4080, and a sample-end reload in the player. The variable layout is the same. I put 1.05b in the emulator's card and ran the sound checks: all pass. I rendered the intro and a battle tune under both ROMs: after alignment they differ by 0.6% rms, which is a sub-sample offset, so the player patch never touches the game's records and the tempo is identical.
+
+One consequence: 1.05b's memory pass ignores the page-count cut gs.asm makes for the silent $30, so that command takes about 3 s on 1 MB and 6 s on 2 MB - and the bounded card wait was 4.5 s, which would have given the card up on a 2 MB 1.05b card. GS_STALL is now 12 s.
+
+The README says the GS runs at 16 MHz (the PCBWay page says 12). The ROM's tempo is the same either way, so if the music sounded slow on the old build that was not the ROM; tell me whether it does on this one.
+
+In the tree: GS_STALL 12 s; bin/evo/gs105b.rom, fetched by build_toolchain.py; sound.md and emulator.md say which card and ROM the port is played on. build, verify and test pass. Not committed - say so.

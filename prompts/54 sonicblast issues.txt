@@ -1,0 +1,37 @@
+I started mission SONICBLAST and have several new issues to fix also:
+- radar built opens full minimap at once; and strange drawn - all black and white except concretes + enemy bases visible + all other bw - fix it
+- after pause building knobs glitching - rotation phase jumps - fix it
+- selected building cursor flashes above radar minimap - zindex error, fix it
+- music switch leaves its last note repeated while toggling to next - fade it out at the end
+- pause screen current option arrow cursor not animated
+- closing screens like pause or building draws 1 frame with strange colors before draw battle  - fix it
+- sonic tank icon is green - should be blue
+- siege tank has turrent drawn under the hull at some positions (hull up turret up, for example)
+
+****
+
+All eight fixed; build, verify and the tests are green (27 of 27 missions, worst window 1.16 frames a pass). Not committed.
+
+Radar. Two faults. The black-and-white map was mine from yesterday's speed-up: the radar's colour table is indexed by a register's low byte and must be 256-aligned, and the ALIGN sat before the include, three tables too early; the build now aligns that table where it is emitted. The map appearing at once was the design: two pictures, swapped after a whole 64-row scan. The cartridge sends each row straight to VRAM, so now there is one picture drawn in place a row a frame, and the renderer copies it again each time a cell row of it completes (radar_gen, per screen). The first version of that dirtied the radar's cells and the spread redrew every sprite near it - 0.3 frame a pass in Ordos 8 - so the copy is now whole, with the marker, cursor and warning over it, and no cell marked. Fogged squares are pen 12 as S8 says; enemy bases show only where unveiled.
+
+Knobs after the pause: the orb's frame was one byte for two screens; the second screen was left a step behind for good after the first full redraw. It is per screen now (rgo_f0/1), and the trap list has the rule: the renderer has two of everything.
+
+Bracket over the radar: the bracket and corners were HUD layer $20 like the radar and sorted by y, so a selection below y 120 drew over it. They are layer $1F now.
+
+Music switch: gs_music_fade fades the module volume over sixteen frames, then $32, then the volume back; the options screen's switch and the music test's next tune go through it. $32 alone left a note sounding on a channel the next tune did not take.
+
+Options pointer: the cartridge's pointer is one frame that slides 4 pixels a frame between rows and wraps from the last row to the first (opt_pointer_key/step); the port's jumped and stopped at the ends. It slides and wraps now, keys waiting for it.
+
+One frame of strange colours: render_invalidate put the battle palette up at once, over the front end's picture still showing; the palette now goes up at the end of the first pass, after the swap is asked for.
+
+Sonic Tank icon: the cartridge draws each portrait in the palette line its animation record names ($FE line 1, $FF line 3); the extractor gave every unit icon line 3, and the Sonic Tank's is line 1 (so are the Saboteur's and unit 25's). port_ui.py reads the records now; only those three PNGs changed.
+
+Siege Tank turret: hull and turret sorted by their own frame y, and the turret's dy put it before the hull at some headings. The turret takes the hull's key now, so it goes in after it.
+
+Budgets: RENDER 301 bytes free, FRONT 463.
+
+add v.2026-09-29 at top right of intro text screen, build-test and then commit
+
+****
+
+Done: "v.2026-09-29" at the top right of the intro screen (port.txt intro_version, columns 28-39 on line 0; the title moved from y 6 to y 10 so the two do not touch). Build, verify and the tests pass (27 of 27, worst window 1.16). Committed on feat/sega-port with the eight playtest fixes; not pushed.

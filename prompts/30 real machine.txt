@@ -1,0 +1,17 @@
+check ./prompts/hmmm/00.jpg - this is "TRDOS boot" from evo reset service - looks strange; ./prompts/hmmm/01.jpg - intro text - strange thing with colors (music starts, but not from the start of the screen); ./prompts/hmmm/02.mp4 - long video full process, with my comments which are not important (shortly - game with distorted colors and slowed music passes till map area selection animation, then music starts but game process is not) - analyze and try to understand and fix
+
+****
+
+Three separate things, two of them fixed, the third is a question back to you.
+
+1. The colours (01.jpg and the whole video). The BaseConf manual (7.2) says a write to the palette port changes the entry of the colour the beam is showing at that instant; that is the border register's colour only while the beam is in the border. Our vid_palette wrote whenever it was called, so on the real machine the sixteen writes landed in whatever colours were under the beam, mostly the background: a blue intro, a white mentat, an orange house menu, and grainy bands on the lines where the writes fell. The emulator always takes the border register, which is why it never showed. vid_palette now waits for the frame interrupt and writes in the top border (about twenty of its eighty lines), and main_init enables interrupts before the first palette. A fade now costs one extra frame a step.
+
+2. The "TR-DOS boot" screen (00.jpg). The loader printed with the BASIC ROM's font at $3C00; under the firmware's TR-DOS the page at $0000 is not that ROM, so the glyphs were noise. The loader now carries the game's own font (font8.png, cut by dune_trd.py); the bar was right all along.
+
+3. "Music starts but the game does not" after the map. I could not make the game freeze. On random RAM (a new emulator script command, fillram SEED, fills all 4 MB with random bytes as a real machine has them) the front end goes through to the battle exactly as on zeroed RAM; the panel that opens at the end is the last key press selecting the Construction Yard. What the video shows after the map animation is the battle screen with the palette destroyed - dark colours came out white, so nothing readable - and the battle's tune starting is the game running. I expect the palette fix to be the whole of it. Two things done anyway: the boot now zeroes every byte the SPG does not fill (the pages it has no block for, the tail of every page it trims), from a table build_dune.py writes into the boot page, so the game sees the RAM it saw in the emulator; and the test harness waits for that (about 33 frames).
+
+Not fixed, and I need to know more: the slowed music and its late start on the intro. The tunes play on the General Sound card's own CPU at a tempo its ROM derives from its clock, so a card clocked below the classic 12 MHz plays everything slower and unpacks slower. Which card is it - a General Sound, which revision and clock, or a NeoGS in GS mode - and which ROM version does it report? With that I can say whether it is the card or the port.
+
+Please copy the new build/dune.trd and build/DUNE.DAT to the card and try again. make verify passes (22 checks, the disk boot included); make test passes.
+
+Files: src/stub/video.asm, src/main/main.asm, src/boot/boot.asm, tools/build_dune.py (boot_clear_table), tools/dune_trd.py, src/loader/loader.asm, tools/evo-emu (fillram), tools/dune_test.py (BOOT_FRAMES); docs: platform.md, build.md, emulator.md, CLAUDE.md traps, the evo-emulate skill.

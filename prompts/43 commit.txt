@@ -1,0 +1,5 @@
+commit
+
+****
+
+Committed on feat/sega-port: the markers' flash as the cartridge's sprite engine does it, the graphics note, your new external.mod, and prompts 42-43. Not pushed.

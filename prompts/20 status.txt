@@ -1,0 +1,36 @@
+where are we with port?
+
+****
+
+The port plays from start to finish. The last commit (253dfbb, today) moved it from the NES demo to the Mega Drive cartridge, and nothing is uncommitted. I rebuilt it and checked it just now.
+
+make build: build/dune.spg is 3.5 MB of the SPG format's 4 MB limit. That includes 157 KB of Z80 code in 15 banks.
+
+make verify: all checks pass. A battle runs in EGA mode at 14 MHz. One pass of the game loop takes 1.79 frames, and the budget is 3.0. Selecting a unit and moving it works, and so does the credits counter. Building a Windtrap and placing it works. The front end reaches Atreides 1, a lost mission starts again, and the General Sound music plays.
+
+What works:
+- All 27 missions load and play by the cartridge's own rules, running its original EMC scripts. That covers movement and pathfinding, combat, structures, production, the refinery, power, the AI's houses and teams, reinforcements and the win/loss check.
+- The whole front end: logos, title, crests, the mentat's briefings, the campaign map, the victory and defeat screens, the score page, passwords, options and the ending.
+- The structure panels (build lists, the Starport, repair and upgrade) and the Palace's weapon.
+- The HUD (credits, portrait, radar) and all the sound on the General Sound card.
+
+Not done yet (from progress.md):
+- The Tutorial.
+- The campaign map's zoom into the attacked territory (it blinks instead). The title's starfield does not scroll.
+- The grid cursor while placing a building, the radar's view marker, screen shake, the low-credits warning and the Starport's lights.
+- Unit effect animations. An MCV deploys instantly.
+- The B button's full behaviour.
+- Two tunes that don't fit in the card's 2 MB (the house choice and the ending).
+
+The subsystem tests fail, and the docs don't say so. progress.md calls tools/tests/ "partial", but they don't pass:
+- test_core: all pass.
+- test_house: loading 1/2, locations 9/13, harvester 0/2, "seen" 0/1.
+- test_struct:
+  - buildable 82/90. The port sets bit $2000 on structure type 8 and the model doesn't.
+  - production 26/50. In several cases the port's build countdown doesn't move at all, even with 70000 credits.
+  - refine 35/40. Credits are off by a few.
+  - Then the harvest test crashes on an IndexError in the test itself.
+
+I haven't worked out whether the port or the tests are wrong. Production speed and refinery income are gameplay, so this matters more than the missing polish.
+
+My suggestion is to sort out the test failures first, because they measure whether the port matches the cartridge. After that, the Not-yet list. Which would you like?

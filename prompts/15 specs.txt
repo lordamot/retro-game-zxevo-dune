@@ -1,0 +1,22 @@
+check port handover plan, proceed with specs step now
+
+****
+
+S1, the frame, is written and tested. That is the first spec, done on its own as you asked (one by one). Step 1 of the plan, the records, had not been done, so as agreed each spec names the fields it uses in its own State section, with offset, size and the code that reads them. The records step gathers them later.
+
+What is new
+- orig/sega/spec/S1-frame.md: the battle loop, the game clock and every timer, what each object loop does on which tick, Mega Drive against PC, and the cartridge's bugs with a keep-or-fix call each.
+- orig/sega/spec/README.md: the index of the ten specs and their state.
+- tools/sega/sega_spec_check.py: loads a save state built from a sega_touch.py scenario, runs the cartridge frame by frame with a RAM dump each frame, and checks the spec's claims. S1 has 4 scenarios and they pass. As a control, putting the PC's timer periods or the wrong round-robin phase into the model makes the check fail 12 to 400 times.
+
+What S1 found
+- One tick is one frame at 50 Hz. The cartridge is PAL-only, which matches the ZX Evolution's 50 Hz, so tick counts carry over one to one.
+- Each pass of the loop runs the units and then one of teams, structures, houses, structures, in turn. The PC game ran all four every pass. So structures run every 2nd pass and teams and houses every 4th; the structure script's 5 ticks really come out as 6.
+- The clock runs only while a battle frame hook is installed and the selection mode is 1-4. The Start menu pauses the game by taking the hook out, which was measured.
+- Timers are never reset between missions; the clock just keeps counting.
+- Differences from the PC game: unit turning every 2 ticks, not 4; no blinking tick; a unit script budget of 49/17 against the PC's 52/3; Starport delivery counted every 60 ticks, not 180; turrets halve their script delay; decay is the house's amount plus one; the credit cap runs every house pass on whichever house the last loop visited; a Start/A/B press cuts the unit, house and team loops short; a Starport restock turns 0 into 1 where the PC skips it.
+- Record details settled along the way: a house record is $46 bytes, not $26 (the names file header is corrected). $FFC148 is the PC's g_validateStrictIfZero. $FFC348 counts Starport purchases not yet delivered. Unit type +$0C bit 6 is hasTurret and bit 11 is scriptNoSlowdown; building type +$0C bit 1 is factory.
+
+Checks: make orig-sega still rebuilds the cartridge byte for byte, and sega_names.py check is clean. make build and make verify cannot pass right now because src/ was removed in the last commit; that is not caused by this work. Nothing is committed.
+
+Next is S2, objects: creation, pools, removal and references. Say if S1's shape should change before the other eight follow it.

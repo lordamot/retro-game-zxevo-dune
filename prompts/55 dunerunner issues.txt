@@ -1,0 +1,52 @@
+I am checking DUNERUNNER level.
+following to check and fix:
+
+concrete placement ignores partly existing terrain and mountains at initial placing
+  - all 4 placed - this is wrong
+
+spice seeds appear and disappear under cursor - not working maybe?
+
+worm seems to use spice seed sprite enlarged - check and fix if so
+
+arrow cursor in game pause menu is not animated - fix it
+
+destroyed enemy units (siege tank, for example) disappear without
+  explosion animation from time to time - check and fix
+
+recheck initial building health when built without concrete or partly concrete
+
+terrain holes drawn above building (wall, for example)
+
+energy enough after 2 windtraps blown and only concrete repaired under them
+
+check if caryall does not take vehicles into repair
+
+set version in intro text to 2026-09-30 (and make it fill from constant)
+
+****
+
+Six of the ten fixed, four checked and found to match the cartridge. Build, verify and every suite pass (27 of 27 missions, worst window 1.17 frames a pass). Nothing is committed; say the word and I will.
+
+Fixed
+
+- 4-Slab on mixed ground. The slab's per-square check skipped the touch-the-base test by setting validate_strict, and strict also makes every landscape valid, so sand, dunes and mountain were paved. A private flag (st_cl_notouch) now skips only the touch test. Tested on DUNERUNNER: a slab over sand, partial rock and rock paves the rock square alone, as the cartridge does; the old build paved all four. The port-rules test expected all four on Atreides 1 and is corrected (one of its squares is PartialRock).
+- Initial health off concrete. The formula was the cartridge's, but the layout counter clobbered the divisor between two calls, so a Windtrap on bare rock started at 100 of 400 instead of 200, and the loss did not depend on how much concrete was under it. One push and pop. Windtrap on rock is 200 now; a Yard from an MCV 400 of 800.
+- Crater under a wall. A crater cannot land on a wall, so it was there before the wall; the cartridge clears the square's overlay when the wall goes down. The port did that, but on the wrong square: map_place_wall returns with HL on the west neighbour and the finishing step used it. HL is reloaded; the old build kept the crater, the new one clears it.
+- Deaths without an explosion. The port's explosion pool had 16 entries against the cartridge's 162, and a wreck holds its entry for 600 ticks (12 s), a smoking structure up to 204, so in a base fight the pool fills and every new blast, the death ones included, was silently dropped. The pool is 32 entries now and, when full, the wreck or smoke with the least time left gives way to the new blast. Verified on the machine: pool poked full, an enemy killed, its wreck replaces the oldest. To make the room, the stack is 256 bytes instead of 512: measured at most 68 bytes used in 20000-frame battles and the front end.
+- Pause-menu arrow. The cartridge never changes the arrow's tiles; its options loop rotates six palette entries every 8 frames and the arrow's colours are among them, so it shimmers. The previous session made the arrow slide between rows; the shimmer is now six frames cut from the running cartridge, shown one after another every 8 frames. Photographed 8 frames apart, the arrow differs.
+- Version. port.txt now says v.{version} and the value is PORT_VERSION = "2026-09-30" in tools/dune_data.py, the one place to change it.
+
+Checked, not changed
+
+- Spice seeds under the cursor. A bloom is ground icon $D0, drawn as the cartridge draws it, and stays put under the cursor in eight consecutive photographed frames. DUNERUNNER has no blooms at all. It has two Fremen Sandworms on Hunt, and the worm's picture is a round sand mound that leaves the map while it eats and comes back 12 ticks later, plus five more mounds as its explosion, so mounds appearing and vanishing round your units is the worm.
+- Worm sprite. The cartridge draws the worm as animation 213, a 32x32 sand mound with a darker rim, and never animates it. The port draws frame 281, the same picture at the same size.
+- Energy after two Windtraps. Destroying both drops H_WINDTRAPS to 0 and power production to 0 within 600 frames; on the next 900-tick house pass (about 18 s) every structure's maximum health halves and the Yard starts losing health. That delay is the cartridge's. Only a Windtrap ever shows the bolt.
+- Carryall and repair. The cartridge's only automatic lift to repair is in the Guard script: a carriable vehicle on plain Guard, below half health, with an idle unclaimed Repair Facility of its house and a Carryall carrying nothing with no destination. Run end to end on DUNERUNNER: two damaged Siege Tanks were fetched, repaired and released in turn. A unit that is moving, attacking, on Area Guard, or whose Carryall is busy with Harvesters is not fetched, and each failed try waits up to about 15 s.
+
+Also noted: running tools/sega/port_ui.py whole drops campaign_border_*.png and icon_unit_27_x.png that the tree keeps; I restored them and kept only the six new pointer frames.
+
+commit
+
+****
+
+Committed as c079e46 on feat/sega-port: "six DUNERUNNER playtest fixes, the intro version from a constant". Not pushed.

@@ -1,0 +1,31 @@
+and - continue, all in!
+
+****
+
+Continuing through S2-S10 in order, one at a time. Each spec goes to a helper that carries all of the S1 context, and I review what comes back before starting the next. Starting S2 (objects).
+
+(Then, as each finished:) S2 objects: four fixed pools (102 units, 73 structures, 16 teams, 6 houses), the 73-against-78 question settled at 73 by struct_get's own bound, unit slots taken from ranges by type, references in the PC's encoding; 9 scenarios passing. S3 movement: ground units step a fixed 32/256 of a square, and speed only sets how often, so ground speed tops out; the path finder is the PC's with small changes, and a Python copy reproduces all 59 routes the machine planned; 18 scenarios passing. S4 combat: the combat table is rebalanced (fire delays halved, damage x1.5), a unit attacks the first eligible enemy because a truth value is passed where a square is expected (read at $0474D6 and confirmed), explosion falloff, the Palace's extra recharge; 26 scenarios passing.
+
+you can parallel all remaining specs to finish fster
+
+****
+
+Switched to parallel. So the helpers could not overwrite each other, each spec's tests went into a module of its own (tools/sega/spec_sN.py) that the checker loads, and only one helper was allowed to touch the names files, the tools and the regenerated listing afterwards.
+
+All ten specs are written: orig/sega/spec/S1-frame.md to S10-screens.md, about 5800 lines, indexed in orig/sega/spec/README.md. tools/sega/sega_spec_check.py runs 61 scenarios against the running cartridge and all 61 pass; most have a negative control that fails as it should. make orig-sega still matches byte for byte, and sega_names.py check reports 907 routines and no problems. make build and make verify still cannot run, because src/ was removed before this work. Nothing is committed.
+
+What the specs found, in brief
+- S5 economy: spice is a square's state, not an amount; a quota is judged on the credits counter, which is why SPLURGEOLA wins; the spice search takes the first acceptable square, not the nearest.
+- S6 production: build times about a quarter of the PC's; what the factories offer is hard-coded by campaign; production that runs out of money resumes by itself; the computer's build picks were replayed exactly from its random numbers.
+- S7 the enemy: the script machine is the PC's, and a Python interpreter reproduced 33,926 script ticks exactly; computer teams never recruit, because the recruit call walks the enemy's list, so the computer fights only through its units' own orders.
+- S8 the map: the stored maps, the square layout (the PC's bit for bit), the fog's shape, the radar.
+- S9 a mission: a password is a complete save; "over" is hard-coded, checked every 300 ticks; the score has no bonuses; a house freed in the house walk makes it skip the next one.
+- S10 screens: the pad controls, what A does in each case, and the full tables of which sound each game event plays.
+
+What the deconstruction had wrong, now corrected
+- The sound names. The order of the 58 names at $020870 is not the song numbering; the options screen's music and sound tests at $087F3C and $087FD4 pair each name with its song. So song 40 is the menu click, not "explosion 1", and the Mega Drive does have sampled explosions, gunfire and screams in songs 64-83. music.txt, the routine notes, sega-internals.md, sound.md, the handover's sound plan and the CLAUDE.md trap are corrected; song 41 turned out to be a fade-out.
+- The win and lose flag labels in the mission files were the wrong way round.
+- A building's prerequisites are a 32-bit word: the Outpost is required by the Heavy Factory, Hi-Tech, WOR, Barracks, Repair Facility, Wall and both Turrets. buildings.txt and the dependency graph are corrected.
+- The script disassembler had four opcodes swapped and mis-named the return instruction.
+
+Also added: a CLAUDE.md trap that the core's RAM dumps are byte-swapped, like its VRAM, and the handover plan's status. The records step can now gather the field tables the ten specs already contain, rather than starting from nothing.

@@ -1,0 +1,52 @@
+continue
+
+****
+
+I took the comparison tool's own ranking and worked down it. The options
+screen was the furthest from the demo at 1.39; it is 0.64 now, and two
+traps came out of doing it.
+
+The options screen
+
+The demo puts one big ornithopter on a field of gold with two settings on
+top. The port had a list of keys, white on black - more useful on a machine
+with a different keyboard, and worth keeping, but there was no reason for
+it to look nothing like the demo.
+
+So: the aircraft's body is read out of the capture now - one line in
+nes_art.txt, `image thopter at 0,152 size 256x88 from options` - and drawn
+under the port's own words, on the same gold. The words moved up into the
+clear part, as the demo has them.
+
+Two traps, both worth writing down
+
+A plane byte is two pixels, not a colour. I set the screen's clear colour
+to gold and got vertical stripes. vid_clear writes the byte it is given
+into both planes, so colour 7 paints 00000111 - one gold pixel and one
+black - all the way across. I guessed wrong twice about the layout before
+reading .claude/docs/graphics.md, which says it plainly: bits 0-2 and 6 are
+the left pixel, bits 3-5 and 7 the right. vid_fill takes a colour and packs
+it properly; it is in video.asm beside vid_clear and the docs now say when
+each is right.
+
+The front palette is chosen by area, so a picture can vote the words off
+it. Adding the ornithopter dropped pure white from the sixteen - thirty
+thousand gold pixels outrank a few hundred white ones - and every caption
+in the front end went cream. choose_palette now pins white as well as
+black for the front end.
+
+The measurement was wrong too
+
+The port's screenshot is the whole 768x576 frame, border and all, and the
+border is black. So every scene was scoring partly on how much black border
+it had, which flattered the battle in particular. compare.py crops the
+320x200 screen out of the frame now, and the numbers moved:
+
+  intro 0.215   title 0.257   options 0.638
+  house 0.352   mentat 0.216  battle 0.488
+
+The battle went 0.28 to 0.49 - it had been getting credit for its border.
+That is the one to chase next: the port's sand is a more saturated orange
+than the demo's and its rock is browner.
+
+make build and make verify pass. Nothing committed.

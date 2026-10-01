@@ -1,0 +1,11 @@
+gs ram - ./prompts/hmmm/06.jpg
+
+****
+
+Two Samsung K6X4008C1F, 512 KB each: the card has 1 MB, and its ROM found 62 distinct pages in it. The ROM's power-on test marks each page's last byte with the page's number, from the top down, and lists the pages that keep their own, so a plain alias of the upper megabyte onto the lower would have come out as 31 pages - the emulator with its card cut to 1 MB says exactly that. Whatever this card's CPLD does with the upper page bit, it is not a plain alias, and it fooled the ROM. With 62 pages the game loaded thirteen tunes at start-up on top of each other, which is the music you heard.
+
+The game now checks the count itself. After the ROM's number, gs_pages_check marks every listed page at two places, one in each half, reads them all back once all are marked, and cuts the count at the first page that does not hold both of its marks. It uses the same commands the tunes go through, so what collides for a tune collides for a mark. On your card that should come out as 31 or so pages and "1Mb" in the log; then the intro, the title, chosen destiny, evasive action, radnors scheme and the like go on at start-up, and the rest are streamed when wanted - the first time a tune is wanted that is not there, a short pause.
+
+Tested in the emulator both ways: with 2 MB the count stays 62 and every sound check passes; with the card cut to 1 MB (a new gsram command) the ROM lists 31, the check keeps them, six tunes go on at start-up and the battle's music plays - streamed rather than there at once, which is the designed 1 MB behaviour. What I cannot reproduce here is a card that fools the ROM, so the cut itself is proved only by reading.
+
+build, verify and test pass. Not committed - together with the concrete fixes.

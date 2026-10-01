@@ -1,0 +1,26 @@
+commit both
+
+****
+
+I committed the scroll-by-copy work (9382490), then did option 1 and committed it (764a53f). I costed option 2 before writing it; it is not worth doing.
+
+Option 1, the cartridge's scroll speed. Reading irq_battle_free_cursor showed that S10 left the speed out, and it is not the cursor's. With C held, $006E3A-$006E6E moves the view 7 pixels a frame for the first 60 frames C and a direction are held together, then 14; the count starts again when either is let go. Without C the view follows the cursor at up to 3 pixels a frame ($0070BE-$0070D4). The port moved 8 pixels a pass, about 2 a frame by then.
+
+Now:
+- C held moves the view at 7, then 14 pixels a frame.
+- A cursor pushed at an edge moves it at 3 pixels a frame. The port keeps its own rule of following only at the edges.
+- The pixels a pass earns go into a carry-over per axis, and the view moves by whole cells (view_move in ui.asm).
+- Measured in Atreides 1 with C and right held: 392 pixels in the first 60 frames, about 6.5 a frame against the cartridge's 7, at a pass every 4 frames.
+- Faster moves are bigger moves, so the copy now runs up to 32 cells across and 20 down. A byte copied costs about 17 T-states and one drawn about 37, so any overlap pays.
+
+Tests: the scroll suite gained the big moves (10/10 byte-identical), and a new "view move" suite in test_ui checks the carry-over against a model (60/60). make build, make verify and make test all pass. gamedesign.md now records the speed, the edge rule and one difference: the cartridge moves the cursor on when the view stops at the map's edge with C held, and the port's cursor stays.
+
+Option 2, the stack copy: I am not doing it. My 0.45M estimate forgot that POP reads upwards and PUSH writes downwards, so every chunk has to re-point SP twice, and with every register holding data that means patching addresses into the code per chunk. Counted out, the best version comes to about 15.8 T-states a byte against 16.6 for the sixteen-LDI loop: about 5%, 0.1 frame per scroll pass, with interrupts off. A fully unrolled copy with no patching would need 24-48 KB of code, and RENDER's bank is 16 KB. LDI is the practical floor.
+
+Where a scroll pass goes now, about 4 frames: the copy 0.57M T-states, the edge cells and the HUD about 0.14M, sprites about 0.13M, and the game's own pass about 0.2M.
+
+works good, commit
+
+****
+
+Glad it works. Committed prompts/25 as "record the latest exchanges in prompts". The tree is clean.

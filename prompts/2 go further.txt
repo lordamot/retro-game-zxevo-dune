@@ -1,0 +1,54 @@
+Source is ../orig/sand_emperor_demo5d9.nes
+Hardware ZX Evolution BaseConf, extended video mode, double turbo 14 MHz,
+and GeneralSound soundcard.
+
+Analyze project docs and continue port.
+
+Deconstruct NES version to grab all graphics and convert it to necessary format -
+instead of trying to get screenshots!
+
+Lets switch to NES music and use as in NES game - but play it onto GeneralSound
+
+Add pathfinding and block reservation for units.
+
+****
+
+1. The art now comes out of the cartridge, not screenshots
+
+New tools/nes_rom.py takes the ROM apart: 256 KB PRG + 128 KB CHR = 8192 uncompressed 8x8 patterns.
+
+- --atlas draws them all (tmp/nes/rom/tileset.png, sprites.png, banks.png, one sheet per bank), which is what a picture is now named off.
+- --identify SCENE works out, for every 8x8 cell and every hardware sprite of a captured screen, which ROM pattern drew it — a nametable entry fixes the pattern's offset inside a 1 KB bank, leaving 128 candidates, and only one reads the pixels as a consistent four colours. 0 of 960 cells unidentified on both battlefield scenes.
+- --screen rebuilds a whole screen from ROM patterns beside the capture as proof; the title and mentat screens come back essentially pixel-exact.
+
+nes_art.py now sources every pixel from the ROM, so sprite transparency is the pattern's own value 0 — the "copy the background from an uncovered twin" heuristic is gone. It also gained a second way to name a picture, for things the demo never draws:
+
+palette steel 0F,38,2D,0C
+building factory tiles $10A,$10A,$10A,$151/$16D,$16E,$16F,$151/... pal steel
+sprite   tank    tiles $000,$002/$001,$003 pal unit
+
+That filled in the factory, barracks, silo, turret, trike, tank, harvester, MCV, shell and three explosion frames — previously all like duplicates, so every vehicle was the same blue squad.
+
+Two bugs fell out of doing this: a scrolled NES screen crosses into the next nametable rather than wrapping, and the capture's palette RAM is not what the screen was painted with (the cartridge rewrites it mid-frame). Both are in CLAUDE.md's traps.
+
+Caveat, stated plainly: the starting buildings, terrain, infantry and cursor are identified against a screen the demo really drew. The vehicles and explosions are chosen off the atlas by eye — the demo never puts one on screen (I added a late scene that runs the battlefield for two minutes; it does not play itself). progress.md item 1 records this.
+
+2. NES music on the General Sound card
+
+tools/nes_sound.py records the cartridge and cuts two tunes; tools/gs_sound.py is the shared machinery (sega_sound.py now uses it too and is kept as the other original). The demo's theme plays over the whole front end and its battlefield tune for the whole of a battle — where the demo plays them. 224 KB of the disk, 7 card pages.
+
+Two things worth noting: a looping theme has to be cut where it repeats, so --bars measures the bar by envelope autocorrelation (title 1.515 s, battle 2.385 s) and each len is 8 bars; and resampling now box-filters instead of point-sampling, which matters a lot for square waves.
+
+All six sound effects are the AY's now — the demo plays its effects over its music with no way to silence it, so there is no moment where one can be recorded alone. That drops the two sampled Mega Drive blips; say the word if you'd rather keep those.
+
+3. Pathfinding and square reservation
+
+New src/path.asm:
+
+- MAP_UNIT ($7000, 4096 bytes): unit index + 1. A unit claims the square it stands on and, for the length of a step, the one it is crossing into; nothing may enter someone else's claim. Movement is now strictly one square at a time with clamped arrival, which is what makes a claim mean anything at speed 3.
+- The search: breadth-first flood over a 16×16 window centred on the unit, keeping the first 8 steps (2 bits each) toward the reachable square nearest the target; when they run out it floods again. At most one flood a frame (pf_budget), at most 256 squares. A blocked next square drops the path and waits 8 frames, and because claimed squares are impassable to the flood too, the re-search usually goes round rather than queuing.
+- Side benefit: un_at is one plane read instead of 48 un_cell calls.
+
+Verified on the machine: units cross the map (a harvester went (18,26) → (21,12), an enemy trike drove from x=640 to x=160), and the occupancy plane stayed consistent at three sample points — no stale claims, every live unit's square claimed by it.
+
+Docs, skills, Makefile (make rom added) and README are updated. Nothing is committed — say the word and I'll put it on a feat/ branch.

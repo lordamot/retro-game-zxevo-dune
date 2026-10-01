@@ -1,0 +1,45 @@
+Source is ../orig/sand_emperor_demo5d9.nes
+Hardware ZX Evolution BaseConf, extended video mode, double turbo 14 MHz,
+and GeneralSound soundcard.
+
+Analyze project docs and continue port.
+Start animation, main menu, side choose, mentat directions - as close to NES as possible.
+Game itself - should be playable close to what and how is playable in NES (map generation,
+opponents logic etc).
+
+I also seen that game controls look like be in pressed state inifinitely even if button
+not pressed anymore - check and fix.
+
+*****
+
+Everything builds, verifies and plays. Here's what changed.
+
+The stuck controls
+
+The bug was in the emulator, not the game. libxpeccy counts key presses per matrix bit and only lifts a key when the count returns to zero — but SDL repeats KEYDOWN while a key is held, and evo-play passed every repeat through. Two presses, one release, and the key stayed down for ever.
+
+- tools/evo-emu/evo-play.c drops ev.key.repeat and releases everything when the window loses focus.
+- tools/evo-emu/evo.c makes evo_key idempotent, so no frontend can jam the matrix by accident.
+- src/input.asm: the arrow keys now work — they reach the machine as CAPS SHIFT + 5…8, so in_read reads 5/6/7/8 as cursor keys too. Fast scroll moved from CAPS SHIFT to SYMBOL SHIFT, because CAPS is half of every arrow key and made them permanently "fast".
+
+Confirmed in the running game: hold ←, cursor moves 10→5; release, it stops.
+
+The front end, as the NES demo has it
+
+Starfield → Arrakis sliding in from the right with its spice cloud → the title over it (MAP / ENEMY / MISSION) → controls → Select your House, four crests → eight pages of the mentat. The planet, the mentat and the crests are the demo's own pictures, captured by two new scenes (intro, house).
+
+- tools/nes_art.py gained an image kind: a rectangle of a screen in pixels, optionally masked, with a minblob filter that leaves the demo's starfield behind instead of letting it travel with the planet. Each image is cut into the half one EGA pass reads and packed into 16 KB pages of its own (front0..2 on the disk, mapped into window 1).
+- Two palettes now, swapped per screen — a desert and a planet in space share almost no colours.
+- $7FFD bit 3 gives the front end a second screen, so a title never appears in vertical stripes while the two passes paint.
+
+Playing closer to the demo
+
+- Both sides land a convoy and no base — MCV, harvester, trike, infantry — at a random spot on a rock plateau, one in each half of the map. Select the MCV, press ENTER, it unpacks into a construction yard. The enemy does the same on its first turn. Win/lose only counts buildings once a side has had one.
+- The enemy's build order now starts with unpacking and runs yard → refinery → windtrap → factory → two harvesters → turret → tanks, and it picks targets down a list so it can still aim at a player who has not unpacked.
+- Two bugs that made the economy non-functional:
+  - a harvester's spice-search radius only ever grew, so after eating the square under it, it drove twenty squares away instead of working its field;
+  - un_order sets US_MOVE, so a full harvester that set itself "returning" lost that fact the instant it set off, and never cashed in. It now routes on cargo, not state. Both sides' credits now actually move.
+- bl_place returns with IX on the building record, so un_kill after it was zeroing the yard that had just gone up. That one silently ate every MCV deploy.
+- MISSION 1/2 now means something: the second lands the other house with 3000 credits.
+
+make verify passes all fifteen checks; the battle loop runs at ~39 Hz. Docs, skills, README and CLAUDE.md's trap list are updated. Nothing is committed — say the word and I'll put it on a branch.

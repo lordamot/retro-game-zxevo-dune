@@ -1,0 +1,19 @@
+started second atreides level by putting in password DIPLOMATIC. concrete built disappears when placing; started second concrete build but then instantly go into yard and started wind trap construction - game hangs
+
+****
+
+game load screen shows GS 2Mb ok which is not correct also - and uses old music loading scheme as I understood, still
+
+****
+
+Both concrete bugs reproduced in the emulator, and both are fixed. They were two bugs, and the second was hiding behind the first.
+
+The vanishing slab. The slab branch of struct_place walked the layout from the record's own position. A slab waiting in the Yard has none - (0, 0) - so the concrete was laid at squares 0, 1, 64 and 65, the map's top-left corner, instead of under the cursor. The building branch sets the position from the placement square first; the slab branch jumped away before that. It now walks from the placement square, as the cartridge's routine does.
+
+The hang. The corner walk ran a slab's location check at a square off the map, and that check returned from inside its loop's pushes, so the CPU returned into a pointer. Fixed. But with that fixed the game still died one pass after a slab went down, from a completely different place - the units' map update - and the crash catcher could only say the CPU had slid into window 1. Two new emulator commands found it: pctrap prints the last 64 opcode fetches when the CPU reaches an address range, and wtrap prints who writes into one. The stub of every bank is code only, so a write there is always a bug: wtrap 0000 09FF named struct_list_unlink. When a freed structure was on no side list it went on into list_unlink with HL at the side entry instead of the list descriptor, and the "unlink" wrote $FF into OBJ's copy of unit_info. A slab freed at placement is exactly a structure never on a list, so every slab placed corrupted the stub and the next unit update jumped into the void. It now returns, and the free-slot count does not move, as S2 says. Your second sequence - a second slab, then straight to the Windtrap - runs through in the emulator: the Windtrap replaces the slab and the Yard finishes it.
+
+Regression: a slab case in test_struct (the concrete under the cursor, none in the corner, the record freed, the check off the map, and every bank's stub still MAIN's), and make verify now compares every code bank's stub with MAIN's after the battle. build, verify and test all pass.
+
+GS 2Mb. The line says what the card's own ROM found in its power-on test, and that test writes each page's number into its last byte from the top down and lists only the pages that still hold their own, so a 1 MB card whose second megabyte aliases the first would be reported as 30 pages, "1Mb". 62 pages means the ROM found 62 distinct ones: either the board has a 2 MB chip, or its decoding of the upper megabyte is something stranger than aliasing. Can you check the RAM chip on the card, or send a photo of the log? With 62 pages the game loads thirteen tunes at start-up, which is the scheme designed for 2 MB, not an old one; on 30 pages it would load five and stream the rest.
+
+Not committed - the concrete fixes, the tests, the emulator's two traps, the docs.

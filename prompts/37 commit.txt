@@ -1,0 +1,5 @@
+game works now, lets commit
+
+****
+
+Committed on feat/sega-port as "fix the level start on a real machine: no profiler marks in a game build" - the whole of the three sessions since 0ddf11a in one commit: the pad read with the shadow ports shut, A9 on port xx77, the bounded card waits, the crash catcher, the front end's tables moved into WORLD, the emulator's gsdead and its faithful $7FFD decode, the docs and the prompts. build/ stays out as always. Not pushed.

@@ -1,0 +1,41 @@
+lets rework intro part more.
+- make sure it wont make strange sounds during loading (currently it so)
+- first screen after start - black screen white text left aligned, lines one by one when actual (so actual but very simple checks; stop load if err):
+* ZX Evo BaseConf detect ok
+* GS detect ok
+* GS memory 4Mb ok
+* GS init done, loading
+here we show progress bar we had previously (bottom of the screen), but text lines appearing should explain what we currenty load there
+
+then, second screen - intro music playing, my text, and "press any key". press any key - dune intro starts
+
+****
+
+The start-up is now two screens, and nothing loads while music plays.
+
+Screen 1 is a black log with white text, left-aligned. Each line appears when its step runs, and "ok" or "error" is added when it finishes. An error stops the start-up for good (for example, with no card the log ends at "GS detect error").
+
+  ZX Evo BaseConf detect ok
+  GS detect ok
+  GS memory 2Mb ok
+  GS init done, loading
+  Sound effects ok
+  Music: intro ok
+  Music: ordos dirge ok
+  ... one line per tune ...
+  Music: title ok
+
+The progress bar sits along the bottom as before. The "GS memory" line shows up first and waits during the card's own memory test (about 11 s after power-on); the size is added when the test is done.
+
+The checks are deliberately simple:
+- ZX Evo BaseConf: the memory manager puts RAM pages 64, 128, 192 and 255 into a window, and each one has to keep its own byte. That proves 4 MB of separately addressable pages, which a smaller machine can't give. The bytes are put back afterwards.
+- GS detect: the existing card probe.
+- GS memory: after the card's test, command $23 gives its page count. On your line you wrote "4Mb", but the line shows the card's real size: 2Mb for this project's card. Fewer pages than the game needs gives an error.
+
+Screen 2 is your Russian text with PRESS ANY KEY blinking under it while the intro tune plays. A key (keyboard or joystick) fades the screen out, and the Dune opening starts. The key is waited up again so the opening doesn't treat it as a skip.
+
+About the strange sounds: I couldn't reproduce them. In the emulator the old version's loading under the intro had zero buffer underruns. The likely cause is still that loading: while the card plays a tune, a tune sent to it competes with its one Z80 for time. So I took it out entirely: every tune now goes to the card before any music starts, and nothing loads under the intro. A recording of the new start-up is flat silence until the intro tune starts. The one exception is a single level step at about 10 s, when the card's reset sets its outputs to mid-level. That comes from the card itself; if it's what you heard as a click, it happens once per power-on.
+
+It's also faster: the log ends and the intro starts at about 29.5 s. Before, the screen was black until 22 s and loading went on under the intro until 37 s.
+
+Checks: make build passes, make verify passes (its sound run now presses a key on the intro screen, and it checks that every start-up tune is on the card before the intro tune plays), and make test passes. The docs are updated (sound.md, graphics.md, progress.md, the sound and text skills). INTRO_CHUNKS is gone from dune_sound.py. Nothing is committed yet; tell me if you want it committed.

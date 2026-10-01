@@ -1,0 +1,81 @@
+continue all
+
+****
+
+I started on the port's sound effects, which is what I had said was
+unblocked, and the deconstruction answered the question instead of solving
+it. Then I took the cartridge from 13.3% unaccounted to 7.6%.
+
+The sound effects: the answer is no, and here is why
+
+The plan was to lift the Mega Drive's effects as samples. First I needed
+their rate, and that came out of the code: a sample's flags byte carries a
+YM2612 timer A period in its low nibble - the driver at $01370 writes
+registers $24 and $25 with the negated nibble - so one byte leaves the DAC
+every k ticks and the rate is 53267 Hz over k. Four values are in use: 5,
+7, 8 and 10, so 10653, 7610, 6658 and 5327 Hz.
+
+The emulator agrees, which is the point of saying it. Dumping the Z80's
+8 KB frame by frame and watching the stream pointer at $02FC, a nibble of 5
+consumes about 202 bytes a frame and a nibble of 10 about 106 - 10.0 and
+5.3 kHz at 49.7 frames a second. The two-to-one spread I had first read as
+measurement noise turned out to be the format.
+
+Then I found the game's own sound list: 58 names of 16 bytes at $020870,
+eighteen tunes and then the effects and the speech. The code proves the
+numbering - moveq #25 before the sound dispatcher is "credit down", moveq
+#40 is "explosion 1", and that one appears at thirteen call sites.
+
+And that settled it. A note is only a pitch; what makes the noise is the
+instrument the track's patch names, and type 1 is the sampled one, taking
+YM2612 channel 6 which is the DAC. Reading every song that way:
+
+  positive select, invalid select, building, rifle (fx),
+  machinegun (fx)                                        PSG noise
+  placement, countdown, credit down, credit up, rifle,
+  machinegun, explosion 1                                FM
+  songs 64-83, the twenty unnamed ones                   sampled
+
+The Mega Drive's gunfire and explosions are synthesised. Only its speech is
+sampled. There is no sampled explosion in this cartridge to lift, so the
+port's six effects stay with the AY - not because no clean recording
+exists, which is what the docs said, but because the sound does not exist
+as a sample in either original.
+
+What the port can have instead is speech: 30 clips, extracted at their real
+rates by sega_seq.py --wav into res/sound/samples/. I have not named them
+individually. Nothing in the cartridge names them and telling "yes sir"
+from "acknowledged" needs an ear, not a measurement.
+
+The cartridge: 13.3% unaccounted to 7.6%
+
+Four things did it.
+
+The picture table at $0416DA. 36 longwords in groups ended by a zero, each
+group an asset list and then the Format80 blocks that go with it. CLAUDE.md
+already knew this table named two asset lists; it names fourteen more
+things besides. The blocks check each other - $03246A's stream ends at
+exactly $032E56, the next entry - so the extents are exact. What is in them
+is still open: not whole tiles, and not tilemaps either, since both were
+tested and both fail.
+
+A pointed-at pass. Anything still nobody's that a traced instruction builds
+the address of - lea $60E84.l,a1 is not a guess - now gets a banner saying
+who reads it. That is 40 KB, and it is a weaker claim than the rest, so the
+tool counts it apart and says so on its own line rather than burying it in
+the total.
+
+The sound name tables, and the 29 names of the PC Dune II's own music files
+kept whole beside them.
+
+And the sweep fix from the last round kept paying: two more name tables it
+had been reading as instructions.
+
+Where it stands
+
+  code                14.3%
+  named data          78.2%   (3.9% of it only pointed at)
+  unaccounted          7.6%
+
+376 named regions, biggest remaining gap 4234 bytes. Both ROMs rebuild byte
+for byte; make build and make verify pass. Nothing committed.

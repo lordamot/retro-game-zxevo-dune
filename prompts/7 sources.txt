@@ -1,0 +1,93 @@
+continue - we need all
+
+****
+
+I took "all" as far as evidence would carry it and then stopped rather than
+guess. The cartridge went from 63.0% named data to 72.4%, and from 22.1%
+unaccounted to 13.3%. Both ROMs still rebuild byte for byte; make build and
+make verify still pass.
+
+The rest of the sound
+
+All four resource pointers command $0B installs are decoded now, and they
+turn out to be one idiom four times: a directory of 16-bit offsets relative
+to itself, where the first offset divided by the entry size is how many
+entries there are, because entry 0's data follows the last offset. Nothing
+in the format states a count.
+
+  pointer 0  instruments, 39 bytes each          46 / 105
+  pointer 1  pitch envelopes, (ticks, step)      6 / 10
+  pointer 2  the songs                           13 / 84
+  pointer 3  samples, 12 bytes a note            6 / 25
+
+Two checks I did not have to be given. The sample descriptors chain - each
+starts exactly where the one before it ended, and the last ends exactly on
+the song directory, in both banks. And all sixteen envelopes parse as
+triples to the byte, ending exactly where the instrument directory begins.
+So each bank is one contiguous run - samples, songs, envelopes, instruments
+- and every byte of it is spoken for.
+
+The sweep was calling pictures code
+
+Worth saying plainly because it made a published figure too high. The gap
+sweep in sega_extract.py reads unclaimed bytes forwards and keeps any run
+of five or more instructions that ends in a return. It knew about traced
+code but not about named regions, so it was free to walk into artwork. A
+Format80 stream beginning 81 00 decodes perfectly happily as sbcd.b d0,d0.
+
+It now takes a bitmap of what is already spoken for and stops at it. That
+moved 5762 bytes out of "code", so the code figure went down, 14.9% to
+14.3%. Down is the correct direction.
+
+Art the loader never sees
+
+The (count, pointer) asset lists are not the only way this cartridge finds
+a picture. Some of it hangs off a plain table of longwords. The bar is
+three in a row where every pointer is even, lands inside the cartridge, and
+what it lands on survives Format80 decompression and comes out to an exact
+number of tiles - the same whole-tile test that separates a real asset list
+from six bytes shaped like one.
+
+Five tables in a megabyte: 9, 3, 7, 4 and 4 pointers, 3911 tiles, 44 KB
+that nothing else claimed. I rendered them and looked: terrain, lettering,
+map tiles. They are pictures.
+
+Two smaller things, both self-checking
+
+$02EC72 is 256 sprite frames of 26 bytes - a count word and two pieces of
+twelve, each a width, a height, an x, the VDP's size and link bytes, its
+attribute word and a y. The format checks itself: the size byte carries
+width and height in two-bit fields of its own, and all 512 pieces agree
+with the words beside them.
+
+$0A68CA is the score ladder - seven thresholds and $FFFF, then the nine
+ranks at seventeen bytes each, centred with spaces, Sand Snake through
+Ruler of Arrakis, then the three house names at nine bytes each.
+
+What I would not claim
+
+Bank 06's 37 KB is one linked structure - an index of (tag, 24-bit
+pointer) records at $0614C0 pointing into $0655xx, another into $062Bxx -
+and it holds sprite pieces of the same 12-byte shape as $02EC72, but the
+framing round them is not settled.
+
+Bank 03's 16 KB is Format80 streams sitting between the asset lists at even
+addresses, chaining properly, but decompressing to 402, 1918, 2480, 6271
+bytes - not whole tiles, so not tile blocks. Westwood's .wsa animations are
+the obvious guess and a guess is all it is.
+
+Bank 04's 26 KB is the static data segment: $04AA1C and its neighbours are
+pointer variables the code loads through, so it is a table of tables and
+each one wants following.
+
+I also tested and threw away two hypotheses. The gaps in banks 09, 0A and
+0C are not raw tiles: matching every 32-byte window against 2789 distinct
+tiles from five live VRAM captures finds 120 hits in 195 KB, which is
+noise. And the gaps do not tile as Format80 from any start offset.
+
+New: orig/sega/gaps.txt
+
+Every unaccounted run of 16 bytes or more, largest first, written by the
+pass that measures the coverage. The next thing worth chasing is always the
+biggest of those, and guessing which that is has now been wrong twice.
+Nothing committed.

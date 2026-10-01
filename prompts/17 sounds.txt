@@ -1,0 +1,38 @@
+lets prepare sounds first
+- tooling to rebuild sega's psgs into GS-compatible mod files - as mentioned before - not from result wavs but from psg
+- add ./src/res/prebuilt/music and ./src/res/prebuilt/sfx folders and put converted resources into them (so mod files in fact) for music and sound effects
+
+****
+
+Done. make sega now turns the Mega Drive's music and effects into General Sound modules. src/res/prebuilt/ holds 20 tunes in music/ and 45 effects in sfx/, 2.7 MB in all. All 65 load and play through the GS ROM's own player in the emulator.
+
+How it works, from what the chips were told:
+- tools/sega/sega_driver.py is the cartridge's Z80 driver, modelled in Python. It decides which note starts on which of the 11 chip channels, when, with which instrument, and at what pitch and attenuation.
+- FM instruments are rendered through the Genesis core's own YM2612 (bin/gen/chiprender, built by build_toolchain.py) with exactly the registers the driver writes. PSG instruments are made with the driver's own software envelope. DAC samples come straight from the cartridge.
+- tools/sega/sega_mod.py builds 4-channel M.K. modules from that. Tempo is exact: the BPM is picked from the GS ROM's own table at $1831. Loops use Bxx, pitch envelopes become slides, key-offs become release slides. Effects are rendered whole into one sample each.
+- src/res/sega_sound.txt lists what gets converted. src/res/prebuilt/report.txt says, per tune, what was kept, moved and dropped.
+
+Checks:
+- Every module is read back, and every note the driver model placed is found at its exact tick, channel, sample and note. 24 of spice trip's 3446 land in the right row but not the right tick.
+- The model's full render matches the real game's music test at zero lag throughout. Onset correlation is 0.8-0.9 and pitch-class similarity 0.8-0.9 (cyrils council, spice trip, title).
+- tools/gs_modtest.py plays any .mod through the card's ROM ($30, the bytes, $D2, $31) and records it.
+
+Found along the way:
+- The cartridge is PAL (region E), not NTSC. Tempos are 49.70 frames a second, and the DAC rates in music.txt were 1% high. Both are fixed in sega_seq.py, and music.txt and the sample WAVs are regenerated.
+- commands.txt was wrong in two places: voice flag 7 is read by the channel allocator, and the loop stack is four deep, not three.
+- A new GS trap: $30's answer has to be read without waiting, because the card's own read clears the flag. Also, the emulated card's interrupt runs 0.4% fast; that is the emulator, not the ROM.
+
+Worth knowing:
+- In 6-track tunes the 4-channel budget drops notes. Title loses 68 of 76 notes on track 4 and 60 of 105 on track 2. Trenching loses most of tracks 1 and 5. The report lists every case, and a tracks= option in the list overrides the choice.
+- The balance follows the chip model: drums near full scale, FM mostly 15-25 dB below. So FM instruments sit at volume 2-15.
+- Most in-game tunes end rather than loop, as the cartridge has them.
+- I haven't listened to any of it. The checks are measurements.
+- The .mod files are binaries under src/. You asked for that, but it goes against the "no binary assets in src/" rule.
+- make build still fails as before, because src/ has no port code since the last commit.
+- Nothing is committed.
+
+commit
+
+****
+
+Committed on main as "convert the sega sound to general sound modules": the converter and its tools, the 65 modules under src/res/prebuilt/, the manifest, the regenerated sound listings and samples, and the docs.

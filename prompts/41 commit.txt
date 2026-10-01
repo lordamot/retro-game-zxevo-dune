@@ -1,0 +1,5 @@
+commit
+
+****
+
+Committed on feat/sega-port: the concrete fixes, the card's page check and the longer card wait, the emulator's gsdead, gsram, pctrap and wtrap, the 1.05b ROM, the slab test and verify's stub check, the docs and prompts 38-41. Not pushed.

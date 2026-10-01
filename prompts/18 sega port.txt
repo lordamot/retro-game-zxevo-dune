@@ -1,0 +1,91 @@
+./orig/sega now contains fully disassembled game, all of its resources and specifications described
+./src/res/prebuilt contains full set of prebuilt .mod files for music and sounds from sega, in format compatible with GeneralSound card
+
+target platform is ZX Evolution BaseConf (double turbo - 14 MHz) + GeneralSound (extended to 2 Mb)
+
+goal is to prepare port of sega dune game onto target platform, as close to original as possible
+during development - add handles to ease debug and checks for you - e.g. start exact level, move unit etc
+
+final state should be:
+- fully playable game in TRD format
+- all sources and resources under ./src (asm compatible with sjasm assembler, resources like pictures - should be in png or bmp format and converted into necesary binary form using build tools from ./tools - create those if neccessary)
+- make run allows to run game here in emulator
+
+****
+
+(sent while the work was under way)
+
+as for sprites layout - you can relayout them to format more comfortable for ZX Evolution
+
+****
+
+Noted - I'll relayout the sprites into whatever form suits the EGA planes best (pre-shifted, pre-masked, recoloured per house at load time).
+
+*origs should be untouched, of course
+
+****
+
+Understood - orig/ stays read-only; every extraction tool reads from it and writes into src/res/ (PNG + text), and the build converts from there.
+
+(asked: a TR-DOS disk holds about 636 KB, but the prebuilt music is about 1.9 MB and the effects about 0.8 MB - how should the sound be shipped?)
+
+Lets replace original task in terms that game should be in SPG format instead of TRD
+
+****
+
+*make sure to use high-resolution graphic mode of BaseConf for game port
+
+****
+
+(asked: which BaseConf mode - ATM EGA 320x200x16, or ATM hi-res 640x200 multicolour with two colours per 8x1 block?)
+
+ATM EGA 320x200x16 (Recommended)
+
+****
+
+EGA 320x200x16 it is, delivered as an SPG.
+
+(the rest of the turn's work ran until the usage limit; the reply it ended with:)
+
+Your usage limit has been reached, so I'm stopping here. I've told the five background agents to leave their banks in a state that assembles and send their reports. The combined build does not assemble at the moment: the MOVE, COMBAT, STRUCT and HOUSE agents are mid-edit, with label clashes and missing labels. My own banks show no errors. Everything I list as tested below was run in the emulator before their edits broke the build.
+
+Done this session
+
+Battle controls (new UI bank, tested):
+- The cursor speeds up while a direction is held, as on the Mega Drive.
+- Holding C moves the view with the d-pad, and the view also follows the cursor at the screen edges.
+- A selects a unit or structure, and plays the Mega Drive's acknowledgement sounds.
+- A again gives the order that fits what's under the cursor: Harvest, Deploy, Guard, Attack or Move.
+- B drops the selection.
+- In the emulator, a Trike was selected and given Move to exactly the square under the cursor.
+
+Credits counter: a line-by-line port of the Mega Drive's rolling counter, with its click sounds. The mission quota is checked against this number, so it had to match exactly. It isn't tested yet.
+
+HUD, drawn as sprites:
+- The cursor and the brackets round a selected unit are tested.
+- The credit digits, the selection's portrait and its health bar are written but not tested.
+- All the HUD pictures are now in the sprite set. The sprite directory is smaller and packed better, so all the art ends at page 96.
+
+Renderer fixes:
+- A real bug from before this session: the loop that marks screen areas for redrawing never stopped at its end. It marked cells far past the dirty table and made each pass take about 9 frames; with the fix a pass takes 2.
+- Sprites that haven't moved are no longer redrawn every frame. Anything overlapping a changed area is still redrawn in the right order. This change isn't tested yet.
+
+Sound: the sound set is now part of the build, loaded into memory from page 128. At start-up the game finds the General Sound card and uploads everything, which takes about 22 s of emulated time. Effects, voices and the battle's random music now play through the card. Debug flag bit 3, or test mode, skips all of this. None of it has run yet.
+
+Build and verify:
+- tools/verify_build.py is rewritten for the SPG. It checks that a battle is running, that a click gives a unit an order, that the loop stays within 3 frames a pass, and that the sound card plays. It hasn't been run.
+- make shot and make demo now use the SPG, and the key help in the Makefile is updated.
+- A new pass counter in the battle loop feeds the speed check.
+
+Front end: it is delegated to a fifth agent. It owns its own bank, a new picture tool and pages 100-127, and the build already runs the tool when it exists.
+
+Left to do
+1. Merge the five agents' reports and get the combined build assembling again.
+2. The last step of Move still writes the target directly; switch it to MOVE's unit_set_destination once that exists.
+3. Radar: the colour tables are generated, and I had finished reading how the Mega Drive draws it and switches it on and off. The code isn't written yet, nor is radar_update_state, which STRUCT will call.
+4. Structure panels (build list, Starport), the placement cursor, and the Start/options screen.
+5. Mission flow: front end, briefing, battle, result, next mission.
+6. Run make build and make verify, then update tools.md, the skills and progress.md.
+7. Add this exchange to prompts/. I didn't, because the opening prompt is no longer in my context and I couldn't copy it word for word.
+
+Nothing has been committed.

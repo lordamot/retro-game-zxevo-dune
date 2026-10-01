@@ -1,0 +1,5 @@
+remove temporary test builds, make sure final one is ready and commit everything
+
+****
+
+Done. The temporary builds are gone (the mission, sound, 1 MB, channel-test and noload ones, and verify's own three), build/ was rebuilt from scratch - build/DUNE.DAT and build/dune.trd, 20:25 today - and make verify and make test both pass on it. Everything is committed on feat/sega-port in one commit: DUNE.DAT as the only product, the level-transition fix with its test, the emulator's clock switch and wider write trap, the channel-test tool and the intro-module option, the 1 MB switch, the notes and prompts 47-50. Not pushed.

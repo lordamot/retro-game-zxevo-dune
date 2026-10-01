@@ -1,0 +1,20 @@
+- highlight squares only after win 2nd round - victory and score screens - new level start; direct SPICEDANCE password input does noy create them
+- sounds in dune's option menu plays very rare - rocket launch played only 2 times per 12 button presses (I even disabled music before that - no diff) - check whats wrong
+- check prompts/hmmm/08.jps - is it what you mean by GS log? seems it is 2 mb - I found 2 more samsung on other pcb side
+- check ./prompts/hmmm/09.mp4 and 10.mp4 - music sounds crappy; check 11.mp4 - intro sounds crappy also
+
+after all - lets try to repackage dune to be 1mb only just to test; leave only lego tune for battle music and disable streamed uploading - lets check
+
+****
+
+The light squares. Found and fixed. Winning level 2 in the emulator and going through the victory and score screens into level 3 gave exactly your picture, and the emulator's write trap named the writer: the mission loader itself, stamping the spice-bloom icon under every unit. The loader keeps a pointer to the file's Bloom section, set when a file has one and never cleared, and every mission is read into the same buffer - so a mission without blooms loaded after one with them took the old pointer into its own records, where the unit positions now lay. A password load starts with the pointer at zero, which is why SPICEDANCE typed in was clean. The loader clears it per file now; a test loads a mission after another.
+
+The sound test. "Rocket launch" is one of nine effects the port leaves out on purpose - none of the game's own tables ever plays them, they are the synthesised twins of sampled effects and a few strays - so that entry is silent by design, not by failure; the whole list is in build/gen/sound.txt. Every entry that has an effect goes to the card: twelve requests in a row in the emulator reach it and are answered "played" every time, at 12 MHz and at the MultiSound's 16 MHz alike. If you tried entries other than rocket launch and got silence, tell me which. A build with dune_sound.py --keep-all would include the nine, at the cost of card pages.
+
+The log. Yes, that is it, and with four chips it is right: 2 MB, and the tunes have their room. The memory is not the problem.
+
+The recordings. I pulled the audio out and compared it with the emulator's render of the same tunes: the pitch matches to within a percent, so the card runs the tune at the right rate, as its logic source says it should - the GS Z80 at 16 MHz, the interrupt from a 12 MHz counter at the standard 37.5 kHz. The handshake flags in that source are the standard ones. I gave the emulated card a settable clock: at 16 MHz the ROM plays the same notes, refuses no effect and never underruns. What the recordings do show is two to three times the emulator's energy above 4 kHz, which is distortion or noise, and nothing on the host's side that I can point at makes it. What is left is the card's own output stage. The one experiment that separates the two: play any .mod on that card with a plain General Sound player - if it sounds the same, it is the card.
+
+The 1 MB test build is in build-1mb/: dune.trd + DUNE.DAT. The card is taken for 1 MB whatever it reports, only the intro and the lego tune go on at start-up, nothing is loaded afterwards, and any tune the game asks for that is not there is played as the lego tune. In the emulator: 30 pages, two tunes, the battle on the lego tune, no loading. It is dune_flags2 bit 0, build_dune.py --flags2 1.
+
+build, verify and test pass. Not committed: the loader fix and its test, the emulator's gsclock and the wider write trap, the 1 MB switch.

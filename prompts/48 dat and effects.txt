@@ -1,0 +1,15 @@
+forget about 1mb pass now - checked, not a reason at all;
+
+critical points:
+- stop building spgs - it is wrong file we do not use anymore - we use DUNE.DAT
+- heavy problem with sound effects in game. they all play from time to time only - even main dune menu selection beeps 1 per 3-4 switches; and its the same for all game sounds. and not related to streaming uploads it seems - just serious bug in sound play pipeline or something like that
+
+music itself - we will outwork later separately
+
+****
+
+DUNE.DAT is the build's only product now. It always was the same bytes as dune.spg - the disk's loader reads the SPG-format file under that name - but there is no dune.spg any more: build_dune.py writes build/DUNE.DAT and build/dune.trd, every tool and test loads DUNE.DAT, and the notes say so. The emulator's spg command keeps its name; it loads DUNE.DAT.
+
+The effects. In the emulator every request reaches the card and is answered "played", twelve in a row, at 12 MHz and at 16 MHz, so the pipeline on the host side does what it should, and the ROM is the same one. What is different on your card is what comes out of it. One beep in three or four, the same for every effect, is the shape I would expect from four DAC channels of which one reaches the output: the ROM picks a free DAC for each effect itself, and a tune's four channels sit on all four DACs - which would also make the music thin. So the test build in build-chan/ plays, as the intro's tune behind PRESS ANY KEY, four tones in turn - low, a fifth up, an octave up, higher - then all four together, then silence, and round again. In the emulator they come out on the left, right, right, left in that order, because the ROM puts the module's channels on DACs 0, 2, 3, 1. Tell me which of the four you hear on the card and on which side. A note that is missing is a DAC the card does not bring out, and then the effects and the music have the same cause, on the card.
+
+tools/gs_chantest.py makes the module; build_dune.py --intro-mod plays any module as the intro's. build, verify and test pass. Not committed.

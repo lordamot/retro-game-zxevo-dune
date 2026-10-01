@@ -1,0 +1,15 @@
+normal version hanged the same way as before; noload version hanged after displaying song 18 ok - so did not pass to intro text screen
+
+****
+
+Two answers in that.
+
+The no-load hang was mine: the switch left the count of start-up tunes at 32 instead of 0, so after the intro's tune it went on loading garbage ids and waited for one that could never arrive. Fixed (gs_bnext is 0 with the flag).
+
+The normal build hanging the same way with every card wait bounded means the Z80 is stuck somewhere that is not a card wait, before the level's music switch - the tune plays on because nobody told the card anything. So I went back to the BaseConf manual for what a real machine does that the emulator does not, and found it in our own port value.
+
+The video-mode port is xx77 and half of what it says is in the address. We wrote it as $8177. Its bit A9 is 0 there, and the manual defines A9 = 0 as "hold TR-DOS mode on regardless of where the CPU executes". Two consequences on a real machine, neither in the emulator: port $1F is then the floppy controller's status register, not the Kempston joystick - and the frame interrupt reads $1F every frame for the pad; and every access to a floppy port is served by the firmware's virtual-drive trap, which is armed because the game boots from the virtual drive. The pad reader drops reads with bits 5-7 set, but a floppy status with only low bits set passes as a stick held down; the menus act on new presses, so they worked, while the level start, which waits for the pad to be released, waits for ever. The trap on every frame is a second way to die.
+
+PORT_77 is now $8377 (A9 = 1): TR-DOS mode drops at the first instruction from RAM and the shadow ports stay open through $BF bit 0, which is what the palette and the manager need. In the emulator nothing changes; make verify (22 checks, the disk boot included) and make test pass.
+
+Please try the new build/dune.trd + build/DUNE.DAT first. build-noload/ is rebuilt with the same change and the count fixed, for the card question if the level still does not start. Not committed yet.

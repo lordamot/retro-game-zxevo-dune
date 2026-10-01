@@ -1,0 +1,182 @@
+side step - check please prompts directory. it should be ignored from session restarts - but I need to keep there prompt and recaps in goven form - update your docs regarding that, please
+
+****
+
+Both docs updated. Here's what's in prompts/ and what I recorded.
+
+What's there
+
+Five files, 34 KB, tracked in git (not in .gitignore):
+
+0 init.txt        7.7K   2 exchanges
+1 continue.txt    3.8K   1
+2 go further.txt  4.6K   1
+3 sources.txt     16K    5   <- this session's work
+4 sources.txt     2.0K   1   <- my last answer
+
+The form I documented
+
+  <prompt, verbatim>
+
+  ****
+
+  <reply, markdown stripped>
+
+  <next prompt>
+
+  ****
+
+  <reply>
+
+Naming is <n> <topic>.txt, n counting from zero; a file holds one exchange or a run of them on the same topic (3 and 4 are both "sources"). Prompts go in verbatim - typos included, since what was actually asked is the point. Replies go in as plain text: headings lose their #, bold loses its asterisks.
+
+What each doc now says
+
+.claude/rules/guideline.md - a new "The prompts/ folder" section: never read as context, never treated as a standing instruction, in git so the record survives; then the naming, the separator, the verbatim-prompt rule, and the plain-text rule, with a worked example.
+
+CLAUDE.md - a one-entry summary in the traps list pointing at the guideline, since that's the file loaded every session.
+
+Both state the two halves explicitly: not context on restart, but kept in this form. I also wrote in "write to it only when asked, and never rewrite an entry already there" - the copy-paste artifacts in 4 sources.txt ("disassembled (3uence data", "still une") suggest you paste these yourself, so I've made appending an on-request action rather than something I do every turn. Say the word if you'd rather I maintained it automatically and I'll change that line.
+
+ok, lets continue then
+
+****
+
+Done. The listing now knows what it's looking at.
+
+The result
+
+                    before    now
+code                14.9%     14.9%
+named data          35.7%     52.4%
+unaccounted for     49.4%     32.7%
+
+lcw() now reports how much input each stream consumed, so sega_extract.py can mark exactly where every picture begins and ends. 131 named regions, and the listing says what each is:
+
+; ==== $030874-$030887: an asset list: 3 blocks, 338 tiles, read by $000CD8
+; ==== $030888-$0312B9: 128 tiles, Format80
+; ==== $0312BC-$031DA6: 128 tiles, Format80
+
+Both ROMs still rebuild byte-exact.
+
+A number I published that was wrong
+
+Wiring this in exposed it. I'd claimed 75 asset lists, 21 007 tiles. The real figures are 14 lists, 6791 tiles - I was inflating by about 3x.
+
+The bug: six bytes shaped like a count and a pointer are six bytes of almost anything. A compressed block is checked by the decompressor - it has to come out to exactly the tile count that named it. A raw block is checked by nothing, and I was accepting lists made entirely of those. The tell was unmissable once I looked: under the loose rule, 119 710 bytes of "artwork" overlapped instructions the trace had already reached.
+
+Requiring every block in a list to be compressed gives 14 lists and zero overlap with traced code. Two are confirmed independently - $017F2A is loaded by lea $17F2A.l,a0 / jsr $CD8.w at $017DB2, and $030874/$03322C are named by the pointer tables at $0416DA/$0416FE.
+
+Corrected in sega-internals.md, the README, CLAUDE.md, the skill, tools.md and sega_art.py, with the reasoning written down so it doesn't get relaxed later.
+
+That's the second published figure I've had to walk back (after the INI-parser claim). Both came from a heuristic I didn't pressure-test against the code map - worth me checking that overlap routinely rather than after the fact.
+
+What's left
+
+The 342 KB still unaccounted for, the 104 EMC routines, the music sequence format, mission structure records, and code coverage past 14.9%. Nothing committed.
+
+why no prompts directory updates?
+
+****
+
+Because I wrote the rule that way - "write to it only when asked" - and that was the wrong reading of what you asked for.
+
+You said you needed to keep prompts and recaps there. I read "I need to keep" as you maintaining it and me staying out of the way, partly because the copy-paste damage in 4 sources.txt looked like a human paste rather than a file I'd written. I flagged the assumption and offered to change it, but flagging an assumption is not the same as getting it right, and the folder went three exchanges stale in the meantime.
+
+Fixed both ways:
+
+The gap - this file, 5 sources.txt, holds the three exchanges that were missing: the prompts side-step, "ok, lets continue then", and this one.
+
+The rule - guideline.md and CLAUDE.md now say to append every exchange as it finishes, not to wait to be asked. The "only when asked" sentence is gone.
+
+I put all three in one file rather than starting 5, 6 and 7, because that is the dominant shape in the folder - 3 sources.txt holds five exchanges and 0 init.txt holds two. Say if you would rather have one file per exchange and I will split them.
+
+update rule about saving prompts and caps in the ../tang-uknc also
+
+****
+
+Done. ../tang-uknc had the old wording - it was mirrored from here at 22:08, before I corrected it, so it still said "write to it only when asked".
+
+What changed there
+
+.claude/rules/guideline.md - the closing paragraph of its "The prompts/ folder" section replaced with the same rule this repo now carries: append every exchange as it finishes, unasked, the folder going stale being the failure mode; never rewrite an existing entry; indent quoted asterisks so the file can be read back.
+
+CLAUDE.md - line 117 still had the original one-liner, "ignore the prompts/ folder - it is kept for history only". That never got the summary entry when the rest was mirrored. It now carries the same traps-list entry as here: transcript not context, the form, and the append-unasked rule.
+
+The two projects' rules are back in step. Everything else in ../tang-uknc is untouched.
+
+One thing I did not do
+
+Its prompts/ looks stale too - 0 initial.txt and 1 mirror repo.txt are both from 22:08-22:09, while its Makefile, build/ and tools/ were touched at 22:25. So there is at least one exchange missing from that folder. I have not written it, because I do not have those exchanges: inventing a recap of work I did not see is exactly what the "record is what was said" rule exists to prevent. That gap needs filling from the session that did the work.
+
+cool. lets continue here
+
+****
+
+Measured the remaining 342 KB before assuming anything about it, and it split into two useful piles.
+
+The mentat's prose - found and extracted
+
+The low-entropy runs at $01BD5A and $01D7A8 turned out to be the between-mission dialogue. Followed it out: 111 NUL-terminated strings between $01B2E4 and $01F33F, named by a table of 111 longwords at $087D74 - all of them, with nothing in the block unnamed and nothing in the table pointing outside it. That one-to-one fit is what says the table was found whole.
+
+The first three are the house descriptions, and the code settles it outright: $01F39A picks a mentat portrait from d4 (0, 1 or 2) and then indexes this same table with the same d4. After those, 111 - 3 is 27 x 4, and 27 is nine missions for each of three houses. Read in fours they are a briefing, a victory, a defeat and a tip.
+
+New tool tools/sega/sega_briefs.py, output in res/text/briefings.txt, wired into make orig-sega.
+
+A check I had to throw away
+
+I first scored the four-at-a-time reading by looking for words like "congratulations" and "disappointing", and got 16/27, 10/27, 12/27 - weak enough to undermine the claim. Eyeballing five groups showed the grouping was perfect and the regexes were simply too narrow: "Hurrah", "A masterful victory", "My goodness, what an awful defeat", "I knew it!".
+
+The fix was not to widen the word list. Picking words after seeing the answer is fitting the test to the conclusion. I replaced it with a vocabulary the tool does not invent - the buildings and units out of the game's own stat tables - and the separation is unambiguous: the fourth string of each four names one of them 24 times out of 27, where the other three positions manage 5, 2 and 2. Advice talks about what to build and nothing else does.
+
+More art, located but not yet taken
+
+The high-entropy gaps - $0AF40A, $0B279C, $0A9FF6, $09E976, $0ACE46, about 50 KB - all contain clean Format80 streams. Every one I probed produced an exact multiple of 32 bytes (60, 128, 128, 90, 128 tiles). So there is more art there, reached by asset lists my scan does not find. Not chased yet.
+
+Where the cartridge stands
+
+               before this session   now
+code                   14.9%        14.9%
+named data             35.7%        54.0%
+unaccounted for        49.4%        31.1%
+
+133 named regions. Both ROMs still rebuild byte-exact.
+
+do 1, 2, 3, 4
+
+****
+
+Four items, two clean wins, one honest no, one partial.
+
+Where the cartridge stands
+
+               start of this run    now
+code                 14.9%         14.9%
+named data           54.0%         63.0%
+unaccounted          31.1%         22.1%
+
+177 named regions. Both ROMs still rebuild byte-exact.
+
+1. Raw tiles in the gaps - done, but hedged
+
+1066 tiles' worth of pixel-shaped data found in the unaccounted gaps. Searching only the gaps is what makes the loose "looks like a tile" test safe: traced code is not in the gaps by construction, which is exactly the failure that bit me on the asset lists last time.
+
+But I will not call them art. They render as ambiguous noise, and comparing them against live VRAM finds none of the 1066, where the same comparison finds 2101 of the 6791 tiles in the asset lists. That is not proof they are nothing - I ran the control and the confirmed sprite sets also score near zero, because no buildings were placed in that capture - but it is not enough. They are marked in the listing as "NOT confirmed as art".
+
+2. The 100 KB of compressed gaps - done, and the method changed
+
+Instead of sweeping harder, I asked the code. Scanning for calls to the loader at $000CD8 finds six sites, and reading what each is handed gives the asset lists outright, including a table of 16-byte records at $0C7C18 my sweep never saw.
+
+Two rules had to give. How strict to be depends on where the address came from: when sweeping, every block must be compressed, because a raw block is checked by nothing; when the code names the list, that is the evidence and raw blocks are fine - thirteen lists have them. And the last block of a list may come up short: four code-named lists end that way while every earlier block unpacks to exactly 4096 bytes, so it is the format, not a misreading.
+
+14 lists and 6791 tiles became 18 and 9858.
+
+3. The two structured tables - no
+
+$060B08 and $096268 are not referenced from anywhere in the ROM, so there was nothing to follow. I tested the obvious hypothesis - Mega Drive nametable words - and it fails for the larger one: all 32 attribute values are present, where a real tilemap uses a few. $096268 is suggestive (39 distinct tiles, 4 attribute values) but unproven. Both left unnamed rather than guessed at.
+
+4. The 104 EMC routines - cross-referenced, not read
+
+New res/data/functions.txt: every routine a script can call, with its address, size, how many times each script calls it, the work-RAM and hardware addresses it names outright, and the subroutines it calls. UNIT.EMC's function 0 at $04500C is called 147 times; function 16 at $01108A, 67.
+
+I also tried to split them into questions and orders by asking whether the script branches shortly after a call. It does not work: tested at every window from two instructions to six, the functions just drift from "almost never" into the middle, with no group at the other end. That is smearing, not signal, so the column is gone and the file says why. Telling a predicate from an action needs the VM's stack semantics, which are not decoded.

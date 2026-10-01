@@ -1,0 +1,68 @@
+continue - need all
+
+****
+
+I went at the top of the port's own list - confirming the chosen art - and
+came back with a measurement rather than a fix. Four of the port's pictures
+are provably not the demo's.
+
+The check, and why it is a check
+
+A building's picture in the demo is sixteen bytes in the program: four rows
+of four tileset numbers, one 2x2 map square to each 2x2 of them. That is
+not a guess. The refinery's four cells were identified off a real screen
+long ago -
+
+  cell 8,8  $10A,$10A,$160,$161      cell 9,8  $10A,$151,$162,$151
+  cell 8,9  $170,$171,$150,$150      cell 9,9  $172,$151,$150,$152
+
+- and the sixteen bytes at $02470 in the file are those same patterns read
+across instead of square by square:
+
+  0A 0A 0A 51 / 60 61 62 51 / 70 71 72 51 / 50 50 50 52
+
+Sixteen bytes agreeing with a screen to the byte is not luck. It is also
+the only check available, because the demo never draws a factory, so a
+picture invented out of the atlas cannot be caught any other way.
+
+The result
+
+nes_rom.py --buildings now runs that lookup for every building line in
+src/res/nes_art.txt, with the refinery as a control so a broken check
+cannot pass silently.
+
+  control: the refinery, read off a real screen, is in the program at $02470
+  factory   is NOT in the program: invented from the atlas
+  barracks  is NOT in the program: invented from the atlas
+  silo      is NOT in the program: invented from the atlas
+  turret    is NOT in the program: invented from the atlas
+
+So those four are the refinery's frame with middles picked off the atlas by
+eye. They are the cartridge's own pixels and they draw as buildings, but
+they are not the cartridge's own buildings. nes_art.txt, progress.md,
+nes-art.md and the skill all say so now, in those words.
+
+What I tried and would not do again
+
+Playing the demo into building one. I drove it to the battlefield, selected
+a building, opened the build menu and cycled it: exactly two items at
+mission start, and Left/Right alternates between them. Mission 2 starts
+from the same three buildings on different ground. The demo does not build
+for itself. Getting to a factory means playing several minutes of Dune II
+through a blind script, and I stopped rather than spend the session there.
+
+Matching against the Mega Drive's named sprites. Those are the 128-pixel
+mentat-screen portraits, not map tiles, so there is nothing to match.
+
+What replacing them needs
+
+The demo's building table. The tool draws all 42 candidate pictures in
+bank 0 to tmp/nes/rom/buildings.png and several are unmistakable - a long
+building with a row of doors and a vehicle apron, nine round tanks on a
+slab, a gun ring - but which entry the game calls a factory needs its
+drawing code read, and the NES side is 22% disassembled because a JSR
+below $C000 lands in whichever bank was paged in. That is the next step
+and I have not taken it.
+
+make build and make verify both pass; the port is unchanged. Nothing
+committed.

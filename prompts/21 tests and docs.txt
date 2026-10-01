@@ -1,0 +1,402 @@
+continue according to plan - tests then not done, parallel if needed
+
+****
+
+Five agents are running in separate worktrees. Here's where things stand.
+
+Tests - mostly done already:
+- Stale builds: most of the failures came from the suites defaulting to per-subsystem build folders left over from earlier this morning, before the final commit. Against a fresh make build, test_house passes completely.
+- Real bug, fixed: the production tick in src/struct/structs.asm hung the machine whenever a factory was building and its house had between 1 and 255 credits. The "pay what you have" check jumped between two labels forever. In the game that means a lockup as your money runs out mid-build. It now follows the cartridge ($00C23A): pay whatever is left, and go on hold only at zero.
+- Test bug, fixed: the mission test gave the construction animation 14 ticks, but it needs about 18, because the cartridge steps at most one pair per tick.
+- Test changes: the suites now default to build/, and test_struct counts calls that never finish. That's how the hang showed up, as shifted results.
+- Result: test_core, test_house and test_struct all pass, and make build and make verify still pass.
+
+Running in parallel, each starting from my fixes and none committing:
+1. Tests: new test_move and test_combat suites (none exist yet), a make test target, and fixes for any move or combat bugs they find.
+2. Front end: the campaign map's zoom, the scrolling title starfield, then the Tutorial.
+3. Battle UI: the grid cursor while placing a building, the radar's view marker, screen shake, the low-credits warning, and the full B button.
+4. Effects: unit effect animations (so the MCV plays its deploy animation) and the Starport's lights.
+5. Sound: getting the house-choice and ending tunes onto the 2 MB card, by shrinking the set or loading them when needed.
+
+When they finish, I'll merge their patches, rebuild, run verify and every suite, update progress.md, and ask you before committing anything.
+
+CLAUDE.md's overview still describes the old NES-based port and a TR-DOS disk, and so does the top of sound.md. The sound agent is updating sound.md. I'd like to rewrite that section of CLAUDE.md for the Mega Drive port too - say if you want that.
+
+yes lets make docs recent ones
+
+****
+
+Most of the docs now describe the current port. I rewrote or corrected:
+- Top level: CLAUDE.md (overview, commands, traps) and the rules in guideline.md.
+- .claude/docs: platform.md, graphics.md, build.md, gamedesign.md and emulator.md; port.md, nes-tools.md, nes-art.md and sega-handover.md got smaller corrections.
+- Skills: art, asm, text, evo-emulate, trd, nes and nes-art.
+
+Every fact was checked against the code; a few statements I'd written from memory turned out wrong and are fixed.
+
+The main corrections:
+- CLAUDE.md overview: it now says the Mega Drive cartridge is the game and the output is one SPG file. The NES demo is described as reference material from the earlier port.
+- Traps: the ones about deleted NES-era code are gone. The memory-manager trap contradicted the code (it said "never use the short port form", but the stub uses it after one long-form write), so it's reworded to match. Two new ones: the unfinished-mailbox-call problem that hid the production hang, and the stale build folders.
+- port.md said sprites are stored four times pre-shifted and recoloured at start-up. In fact each frame is stored once per house palette line and shifted at draw time by rotating the planes.
+- Frame rate: docs said 50 Hz, but the Pentagon frame is 48.8 Hz. So the port runs about 2% slower than the PAL Mega Drive, not faster.
+- Resource rule: it said "no binary assets in src/", but the PNGs extracted from the cartridge and the .mod files are binary. It now matches your decision to allow them.
+- gamedesign.md now lists every cartridge bug the port fixes, taken from the specs' tables.
+
+Waiting for the agents: tools.md, sound.md, progress.md and the build and sound skills are being edited by agents right now. I'll finish those after merging their patches.
+
+Found while writing, not yet fixed:
+- make sheet fails because build_dune.py no longer has --sheet.
+- make compare still boots the old build/dune.trd.
+- Editing src/res/art/ui.txt doesn't trigger a front-end rebuild, because build_dune.py only watches the ui/ folder next to it. I'll fix that after the merge.
+- About 20 NES-era tools (nes_art.py, font_gen.py, text_gen.py, compare.py and others) aren't used by the build any more.
+
+Do you want the two broken targets and the unused NES-era tools removed, or kept as history? The docs currently describe them as leftovers.
+
+remove broken targets and unused nes-era tools
+
+****
+
+Done. The five make targets and 18 tools are removed, and make build and make verify still pass.
+
+Removed targets: sheet and compare (both broken), and nes, rom and play (they only ran the removed tools). make run nes still works; make nes on its own now reports no such target.
+
+Removed tools: nes_art.py, nes_capture.py, nes_dump.py, nes_rom.py, nes_play.py, nes_ref.py, nes_sound.py, compare.py, front.script, nes_battle.script, font_gen.py, text_gen.py and md_art.py. I also removed bmp2zx.py, pt3lib.py, pt3_tables.py, pt3_check.py and zx_control.py: they aren't NES-specific, but they're from the same earlier period and just as dead. They read inputs that no longer exist (src/pt3.asm, bin/zesarux) or nothing uses them. All of it is in git history if you want any back. Nothing left in tools/ imports a removed file.
+
+Kept, because something still uses them:
+- neslib.py: the NES deconstruction uses it.
+- The TR-DOS tools: gs_modtest.py still builds a disk with trd_build.py.
+- z80_disasm.py: the sound driver disassembly uses it.
+- md_dump.py and make md: the Mega Drive video dump, which is unrelated to the NES.
+
+Docs that followed from this:
+- Deleted nes-art.md and the nes-art and nes skills. They described only the removed pipeline. The part of the nes skill that still works (running the demo, its buttons, the author's controls note) moved into the orig-nes skill.
+- README.md was still entirely about the NES-era port (a TR-DOS disk, NES art and music, old controls, "the Mega Drive art is not readable yet"). I rewrote it for the current port.
+- Also updated: CLAUDE.md, build.md, nes-tools.md, originals.md, the art skill, and the docstrings of md_dump.py and nes/nes_chr.py.
+
+Still to do after the merge: tools.md lists the removed tools, and the tests agent is editing that file now. I've told the sound agent to drop the NES recording workflow from sound.md and the sound skill. gs_sound.py and sega_sound.py (the old recording route for Mega Drive sound) stay until the sound agent reports whether anything still uses them.
+
+can you ask agents to pause - we are out of limit soon
+
+****
+
+I've asked all five to stop at their next step. Each will save its work so far as tmp/agent-<name>.patch and write tmp/agent-<name>.notes.md (what's done, what's half-done, the exact next step), then end.
+
+One had already finished: the effects agent. Its patch is complete in tmp/agent-fx.patch, and all checks passed. The MCV now blinks for 255 frames before deploying, as on the Mega Drive. The Devastator's self-destruct and the flash on an attacked enemy are in. The Starport's lights now run only while the Frigate is coming. It also fixed a real bug: the MCV never deployed from the keys, because A on it gave Move.
+
+Nothing is merged or committed yet. The main tree has my struct fix, the doc rewrite and the tool removal, all uncommitted. When you're back, I can resume the four paused agents from their notes, then merge all five patches and re-run everything.
+
+schedule auto resume at 17:30 MSK
+
+****
+
+The resume is scheduled for 17:30 MSK today, which is local time here. It runs once, and only if this session is still open then.
+
+When it runs, I'll:
+1. Resume the four paused agents (tests, front end, battle UI, sound) from their notes to finish their tasks. The effects agent is already done.
+2. Merge all five patches into the main tree. Before that I'll check that the tutorial's pages don't collide with the sound pages, and reconcile by hand the two patches that both change ui.asm and render.asm.
+3. Run make build, make verify and every test suite.
+4. Finish the remaining docs (tools.md, sound.md, progress.md, the build and sound skills), and fix the front-end rebuild not noticing changes to ui.txt.
+5. Report to you and ask before committing.
+
+The sound question is still open: may songs share an instrument's sample when their pitches are within one semitone? The sound agent will finish its checks and docs in the meantime, but I won't treat that choice as approved until you answer.
+
+Auto-resume (scheduled at the user's request): continue the paused parallel work on the ZX Evolution Dune II port.
+
+1. Resume the four paused worktree agents (tests, front end, battle UI, sound; their worktrees are under .claude/worktrees/) with SendMessage: continue from your notes in tmp/agent-<name>.notes.md, finish your original task under the same rules (no commits, do not edit the docs the coordinator owns), then rewrite tmp/agent-<name>.patch and the notes and report. The effects agent is already finished; its patch is final.
+2. Sound: the sample sharing within one semitone is still waiting for the user's OK. The agent may finish verify and its docs, but do not treat that choice as approved.
+3. When all have reported, merge the five patches into the main tree. They were made against 253dfbb plus tmp/base.patch, which is already in the main tree. Check the tutorial's pages 249-255 against the sound pages from 128. Reconcile the effects and battle UI edits to src/ui/ui.asm and src/render/render.asm by hand. Then run make build, make verify and every tools/tests suite; update tools.md, sound.md, progress.md and the build and sound skills; make build_dune.py also watch src/res/art/ui.txt; append the exchange to prompts/.
+4. Do not commit. Report to the user and ask.
+
+****
+
+All five agents are finished and their work is merged into the main tree. make build, make verify and make test all pass. Nothing is committed.
+
+The checks on the merged tree:
+- make verify: every check passes, including the walk through the front end into a battle. A battle pass takes 1.64 frames (budget 3; 1.79 before today).
+- make test: all 7 suites pass: core, move, combat, struct, house, fx and ui.
+- The SPG is 3.57 MB. The sound set uses pages 128-245 and the Tutorial 249-254, so they don't collide.
+
+What's new in the game:
+- Front end: the Tutorial plays, from the menu and as the title's idle attract; it's the cartridge's own picture scripts, compared screen by screen and by timing with the Mega Drive. The title's starfield scrolls. The campaign map's territories fall one after another, then the map zooms into the attacked territory.
+- Battle: the grid cursor while placing a building; the radar marker on the cursor's square; screen shake; the CREDITS LOW warning; the full B button; the MCV's deploy blink; the flash on an attacked enemy; the Devastator's self-destruct; the Starport's lights while the Frigate comes.
+- Sound: the house-choice and ending tunes now play.
+
+Bugs fixed:
+- The machine locked up when a factory was building and its house had 1-255 credits.
+- Units fired from any distance once their gun faced the target.
+- A destroyed structure you had selected stayed selected, and later pointed at whatever was built in its slot.
+- A on the MCV gave it Move instead of deploying it.
+- A hidden unit in the fog could be attacked; the Mega Drive gives Move there.
+
+Merging: the tests patch conflicted only on the Makefile line I'd changed; I added make test by hand. The battle UI's rewrite of the B-button routine overlapped the effects agent's hook; I spliced them as the UI agent advised. The front-end patch conflicted in tools.md and build_dune.py, both resolved by hand. build_dune.py now also rebuilds the front end when ui.txt, dune_art.py, dune_tutorial.py or the sound ids change. The last closes a gap where the menu's music ids could go stale.
+
+Docs: progress.md, graphics.md, gamedesign.md, build.md, tools.md, port-code.md, the rules, the art and asm skills, and the extractor's radar-marker description. The agents updated sound.md, the sound and build skills, port.md and parts of port-code.md. Also removed: the two unused sound tools, gs_sound.py and sega_sound.py.
+
+Found and left open (listed in progress.md): the credits counter rolls about half as fast as on the Mega Drive; three front-end sounds are uploaded but nothing plays them; three smaller engine discrepancies; a list of front-end approximations.
+
+Three things need you:
+1. Sound: may songs share an instrument's sample when their pitches are within one semitone? That's what makes all 20 tunes fit. On average it measures slightly closer to the Mega Drive; the biggest drop is in "turbulence". Exact pitch only doesn't fit: either the ending tune goes, or two front-end sounds. The merged tree has one semitone, not treated as approved.
+2. Commit? I'd propose one commit on feat/sega-port: "add tests, tutorial, battle ui, effects and all tunes; refresh docs". Or separate commits per area if you prefer.
+3. The agents' worktrees under .claude/worktrees/ and their worktree-agent-* branches: shall I remove them? Their work is merged, and the patches remain in tmp/.
+
+1. for music - lets not share samples. music which plays - in gs ram of course; next one - loads slowly among other background processes so at a time when we need next one - it is in GS already; then free gs ram from 1st and go next etc
+2. yes, commit current progress
+3. yes, lets remove which is not needed anymore
+
+****
+
+Done: the commit and the cleanup. The music streaming is under way.
+
+2. Committed as 7edff0e on feat/sega-port: "add tests, tutorial, battle ui, effects and all tunes; refresh docs" (134 files). This includes the one-semitone sample sharing as it stood; the streaming work replaces it.
+
+3. Removed:
+- the five agents' worktrees and their worktree-agent-* branches (none had commits of its own; all their work is in the commit);
+- the eleven stale per-agent build folders (build-house, build-struct and so on) that caused this morning's false test failures - make verify's three stay;
+- the merged patches and notes in tmp/.
+
+1. Music: your design fits the card well. The port already writes the card's memory directly, so it can keep the effects resident, play one tune, and load the next into free card pages in the background.
+
+The catch is on the ZX side. Without sharing, the music is about 1.90 MB, and with the effects that's more than the ~1.94 MB of RAM pages left for sound (128-248; the Tutorial has 249-254). So the plan is to store the music compressed in the SPG. Delta coding plus LZ roughly halves it (zlib on the deltas gives 0.47). The background loader decompresses the next tune while sending it to the card. Nothing is lost in quality. As a bonus, the card only needs the effects and the first tune at power-on, so sound should be ready sooner.
+
+An agent is building it now in the main tree:
+- no shared rendering;
+- the battle shuffle picks its next tune in advance, and the front end's order is known;
+- victory and defeat are preloaded if the card has room.
+
+It has to pass build, verify and all tests, measure the frame cost and the load times, and check every tune with WAV captures. I'll review and report when it's done, and I won't commit without asking.
+
+(later, when the streaming agent finished)
+
+The streaming works, and build, verify and all seven test suites pass. But the card is too busy while music plays for your "load the next one in the background" to work fully. Nothing is committed.
+
+What's in place:
+- No shared samples: every tune is rendered on its own. I checked that the tunes are byte-identical to the unshared ones from before the sharing.
+- Compressed on the ZX side: the music is stored at 0.57 of its size and unpacked while being sent to the card. Sound now uses pages 128-218 instead of 128-248, and the SPG shrinks from 3.57 to 3.13 MB.
+- On the card: the effects stay loaded; the tune playing sits in its own pages, and the rest of the card works as a cache. A tune that has been used stays on the card until its space is needed. A whole campaign's tunes fit, so each one loads once per session.
+- Sound ready: 18.6 s after power-on, down from 21.5 s. The card's own memory test is 10.8 s of that.
+
+The catch: the card's ROM spends 91-100% of its time mixing whenever a tune plays, and only accepts data between mix buffers. So loading while music plays is only a trickle, 0.05-1.1 KB/s, against a tune size of around 100 KB. Loading therefore happens mostly in silences:
+- Front end: the four front-end tunes are loaded at start-up, because the screens change faster than a tune could arrive. That's a deviation from your brief, and it costs 3.6 s of the start-up time.
+- Next battle: its first tune loads during the victory or defeat picture, so it starts on time.
+- First play of each battle tune: 4-5 s of silence before it starts. This happens at most five times per session, because the tunes stay cached.
+- Rare tunes (finale, ending, the Tutorial's tune, the music test) start after 1.5-3 s of silence.
+
+Your call: which do you prefer?
+A. As it is now: sound ready at 18.6 s, with those first-play silences in battle.
+B. Also load the five battle tunes at start-up. The card has room, so there's no silence in battle, but sound is ready later. My estimate, not measured: about 25 s.
+
+Two small things I'd fix next, if you agree:
+- The random sequence: choosing the next battle tune one ahead makes an extra draw from the game's random generator. From each battle start, the game's random sequence then no longer matches the cartridge's, which affects AI and combat rolls. I'd give the music look-ahead its own random source, since the tune order is only cosmetic.
+- Music after the briefing: the battle music waits 3000 frames (about a minute) before it starts. The cartridge starts it on the battle's first pass. This is an old port bug the agent spotted, not caused by the streaming.
+
+For your information: three tunes (spice_trip, command_post, conquest) overload the card's mixer on their own, with 2-4% buffer underruns, i.e. small stutters. The committed version does the same, so it's the ROM, not the streaming.
+
+Shall I go with A or B, make the two fixes, and then commit?
+
+lets do B - but can we move it before dune intro starts? kinda progress bar "loading" before start - that allows any delays actually
+fixes - yes please
+
+****
+
+Yes, that fits well. Today the upload already runs before the intro, but behind a black screen. So the change is to put a loading screen with a progress bar over that time, and to load the five battle tunes there too.
+
+An agent is doing it now in the main tree:
+- Loading screen: in the front end's own font and colours, before the logos. The progress bar is honest: the card's memory test (about 11 s, and the card gives no progress) advances by time against its expected length, then the uploads advance by bytes. Once it finishes, the intro starts with everything on the card.
+- What's loaded: the effects, the front-end tunes, all five battle tunes, then, in order of likelihood, victory, defeat, the finale, the ending and so on, as far as the card holds. Anything left, on a 1 MB card or for the music test's rare tunes, still streams.
+- The string: the cartridge has no "loading" or "wait" text, so the word is the port's own, in a new, clearly marked src/res/data/text/port.txt. I've added that one exception to the rules.
+
+The two fixes:
+- Random sequence: slightly different from what I proposed, and better. With all five battle tunes on the card, the look-ahead isn't needed at all, so it goes. The next tune is drawn from the game's generator exactly when the cartridge draws it, so the game's random sequence matches the cartridge's again. The agent will prove that by comparing a sound build and a no-sound build draw for draw.
+- Music after the briefing: the battle shuffle will start on the battle's first pass, as the cartridge does.
+
+It has to pass build, verify and all tests, and show screenshots of the loading screen, the start-up time, and WAV captures of the battle music. I'll review and report, and ask before committing.
+
+whats left, except sound we are working on?
+
+****
+
+Beyond the sound, here's what's left. Nothing below blocks playing: the port runs the whole game, front end to ending, by the cartridge's rules.
+
+Differences from the Mega Drive still to fix (small):
+- Credits counter: it rolls about half as fast. The port steps it once per game update (about every 1.6 frames); the cartridge steps it every frame.
+- Three engine discrepancies, found while writing the tests and effects:
+  - A reference-clearing routine also clears a unit's attack target in a case where the cartridge never does.
+  - Time spent in a structure's panel is counted into the next game update, so timers jump when the panel closes.
+  - A worst-case path search takes 3-6 frames. That's the cartridge's own algorithm, but it's the biggest threat to the frame budget.
+- Build panel: when a factory refuses to rebuild (no room, or no aircraft slot), the Mega Drive shows a warning label; the port doesn't.
+- Campaign map: the falling territories and the zoom can be skipped with a button; the Mega Drive doesn't allow that.
+
+Approximations forced by the machine (listed in progress.md, probably staying):
+- The title's planet slides in 8-pixel steps, and the logo fades dim the stars too.
+- The Tutorial uses 16 colours per picture group (the sand is more orange), its fades are coarser, and its pad is cut to 58 lines.
+
+Not yet checked, which I think matters more than the list above:
+- Most missions have barely run. make verify plays only Atreides 1; the test suites load 5 other missions briefly. The other missions, and a full campaign through to the ending, have never been run. An automated test that loads each mission, plays a while, then forces a win to reach the next, would catch hangs or crashes there.
+- Busy late-game battles: the frame budget is only measured at the start of mission 1 (1.64 of 3 frames). Nobody has measured a big late-game fight with many units, where path searches pile up.
+- Real hardware: everything has run only in the emulator. The card timings (the mixer's load, the loading speeds) were all measured on the emulated card.
+
+Tidying: the old arrow pictures in the front-end assets are now unused.
+
+I'd do the all-missions test and the late-game budget measurement next, then the credits counter and the three discrepancies. Real hardware needs you, or someone with a ZX Evolution. Want me to start once the loading-screen agent is done?
+
+can you do something [useful] while waiting for agent results?
+
+****
+
+Yes. I worked in a separate copy of the last commit (tmp/wt, git's own worktree inside tmp/), so nothing collides with the agent's builds. Three results, all saved as one patch that I'll apply once the agent is done.
+
+1. All 27 missions checked, for the first time. A new checker, tools/tests/test_missions.py, starts each mission directly by poking the debug block and lets it run with the player idle. The computer builds, harvests and attacks. Each mission is checked for starting, running without hangs, and staying within the frame budget. 27 runs in parallel take under a minute.
+- Quick run, 3000 frames each: 27/27 pass. Missions 3-9 run at 2.0-2.2 frames a pass.
+- Long run, 20000 frames each (about 7 minutes of game time): no hangs. Two missions are lost by the idle player: Harkonnen 1 at about 8300 frames, and Atreides 3 at 19300. Two readings that first looked like hangs turned out to be mission ends (the checker now reports those as wins or losses) and a stale build I had replaced mid-run.
+- One budget overrun: Atreides 4, around 18000 frames, a big fight at the player's base averages 3.14 frames a pass for 500 frames. The profile of that stretch: 16% is waiting for the frame flip (2.64 frames of work rounds up to 3), drawing cells and sprites is about 0.8 frame, preparing and sorting the sprites about 0.4, and the units' tick about 0.6. Path finding is not the problem. Bringing such passes back to 2 frames means cutting about 0.7 frame from sprite preparation and drawing - a real optimization job, which I've left as a candidate.
+
+2. The credits counter now rolls at the Mega Drive's speed. The cartridge also steps it once per pass, but its passes are one frame long. The port now takes one step for every GUI tick since the last call, capped at four, and looks at the low-credits warning only once a call. Otherwise its blink would speed up.
+
+3. The dead clause in obj_var4_clear. The cartridge zeroes variable 4 ($023E2E) before comparing the unit's target with it, so its "clear the target too" can never change anything. The port compared before zeroing and cleared targets the Mega Drive keeps. Removed, with a comment citing the addresses.
+
+Build, verify and all seven suites pass with these changes, and the quick missions run is 27/27. The patch is tmp/side.patch and applies cleanly to the main tree.
+
+(later, when the loading-screen agent finished)
+
+Everything is done and merged into the main tree. Build, verify and make test (now eight suites, including all 27 missions) pass. Nothing is committed.
+
+Loading screen:
+- The screen: "LOADING" and a sand-coloured bar on black, in the title's colours, before the logos.
+- The progress bar: it moves by time during the card's memory test, since the card reports nothing then. It gives the test its share of the expected time, then jumps forward if the card finishes early. After that it moves by what's been sent. Predicted and measured upload times agree (17.8 s against 18.0 s), so it keeps a steady pace and never goes back.
+- What's on the card: the effects plus 12 tunes, which fill all 62 pages of the 2 MB card: the front-end chain, the three houses' mentat tunes, all five battle tunes, and the Tutorial's tune. The finale, the ending's tune and the music test's rarities still stream in when needed, after 1.5-3 s of silence. On a 1 MB card, fewer fit and the rest stream.
+- Start-up time: the intro starts 29.3 s after power-on, up from 18.6 s. The card's own memory test is 10.9 s of that.
+- Bonus fix: with no sound card, the game used to hang 42 s at start-up. It now starts in 0.12 s. The catch: the new card detection assumes real hardware reads the card's status bits the way both emulators do. If that's wrong, a real card would be taken for none and the game would run silent. It's worth one check on a real Evo, with and without a card.
+
+The two fixes:
+- Random sequence: the look-ahead is gone. The next battle tune is drawn exactly where the cartridge draws it ($01253A). The agent ran the battle with and without the card and compared the random draws. They're identical for the first 476 passes. After that, a pass with the card sometimes takes a frame longer and the two runs drift apart. That's timing, not extra music draws.
+- Music after the briefing: the battle music now starts on the first pass, as on the Mega Drive; the agent checked that on the running cartridge.
+
+Beyond the brief - your call: the mentat's tune is now each house's own (radnors for Harkonnen, cyrils for Atreides, ammons for Ordos), as the cartridge does and as the agent confirmed on the running Mega Drive. The port had played radnors for everyone. Say if you'd rather revert it.
+
+Also merged: my side work. That's the all-missions checker, the credits counter rolling at the Mega Drive's speed, and the dead clause removed from obj_var4_clear. The docs are updated for all of it, and the side copies are removed.
+
+Still open (in progress.md):
+- Music: the cartridge also draws a new battle tune when the options screen or a panel closes, which the port doesn't. And after the final victory, the mentat's tune plays over the finale, where the cartridge just lets the sound fade.
+- Frame budget: big fights can go over it (Atreides 4).
+- Panel time: time spent in a structure's panel is counted into the next game update.
+
+Shall I commit? I'd propose: "stream music with a loading screen; check all missions; fix music timing".
+
+commit, want to keep if possible
+
+****
+
+Committed on feat/sega-port as "stream music with a loading screen; check all missions; fix music timing". The per-house mentat tunes stay: radnors for Harkonnen, cyrils for Atreides, ammons for Ordos, as the cartridge plays them. The working tree is clean.
+
+whats left?
+
+****
+
+Everything the game has is in: front end, Tutorial, all 27 missions, the whole battle, and all the tunes. What's left is fidelity details, one performance risk, and checks only real hardware can do.
+
+Differences from the Mega Drive worth fixing (small, fixable):
+- Music:
+  - The cartridge also draws a new battle tune when the options screen closes, and in the build and Starport panels' loops ($021570, $028906, $028C98); the port doesn't.
+  - After the final victory, the port starts the mentat's tune over the finale, where the cartridge just lets the sound fade.
+  - Three front-end sounds (front_noise, front_fm1, front_fm2) are on the card, but nothing plays them yet.
+  - The Tutorial's one tune, heavy_drop (song 30), isn't in the sound set, so that stretch is silent.
+- Panel time: time spent in a structure's panel is counted into the next game update, so timers jump when it closes.
+- Build panel: when a factory refuses to rebuild, the Mega Drive shows a warning label; the port doesn't.
+- Campaign map: the falling territories and the zoom can be skipped with a button; the Mega Drive doesn't allow that. It's kept only so verify's walk through the front end works.
+
+Performance (the biggest real risk):
+- Big fights on screen: they can exceed the frame budget. Atreides 4 hits 3.14 frames a pass during an attack on the base; everything else stays at 2.8 or under.
+- The fix: cut about 0.7 frame from sprite preparation and drawing, so such passes fit in 2 frames. That's a real optimization job, but a contained one, in the renderer.
+
+Limits of the machine or the card (probably staying):
+- Card mixer overload: five tunes ask more than the card's 12 MHz mixer can do, and stutter slightly.
+- Start-up: it takes 29 s. Unpacking tunes during the memory test could save only about 1.4 s.
+- Streaming silences: tunes not on the card (the finale, the ending, the music test's rarities) start after 1.5-3 s of silence.
+- Front-end approximations: the planet's 8-pixel steps, and the Tutorial's colours, fades and pad height.
+
+Needs real hardware - only you can do these:
+- Sound card detection (the new no-card check): does a real card pass it? If not, the game runs silent.
+- Card timings in general (the loading speeds, the mixer's load) were all measured on the emulated card.
+- The whole game has so far run only in the emulator.
+
+Tidying: the old arrow pictures in the front-end assets are unused.
+
+My suggestion for next: the music and panel fixes as one small batch, then the renderer optimization for big fights. A test on a real Evo would be the most valuable thing of all, if you have access to one.
+
+fix panel, then optimisation, music does not look critical at all
+
+****
+
+Both are under way, in parallel, since they touch different code: an agent is optimizing the renderer in its own worktree while the panel fixes land in the main tree.
+
+The panel, part 1 - the time spent in it: done. The cartridge calls time_resync ($004764) when the options screen ($02156A), the build panel ($0289F6) or the Starport panel ($028D5E) closes, so the next pass counts its frames from then on, and the panels add their duration to the music countdown ($028A02, $028D6A) because the tune kept playing. The port did neither: the whole time spent in a panel landed in the next pass's frames_this_pass, and every timer jumped. Now ui_time_resync does both, after the options screen and after a structure's panel. A new test group in test_ui (resync, 12/12) checks it; build, verify and the UI and production tests pass.
+
+The panel, part 2 - the missing label turned out to be bigger. The Mega Drive's no-sign label (a small red no-entry sign, shown when a factory can't build) sits on the bottom half of the battle's sidebar, and the port draws only the top half (the portrait and the health bar). The bottom half - what a factory is building, a second bar for production progress, upgrade countdown, Palace charge, Windtrap power, spice gauge, Starport delivery or Harvester load, and the label - is missing altogether. The cartridge's routine for it (ui_draw_selection_panel, $0294BE-$0299DC) is about 1.3 KB of 68000 code with a branch per kind of structure and unit, so a second agent is doing it: the decisions in the UI bank, the pictures as new HUD frames, and only a small hook in the renderer, so it merges cleanly with the optimization.
+
+The optimization agent's target: Atreides 4's big fight back under the budget, ideally at 2 frames a pass, with every drawn frame pixel-identical for the same game state. The first idea to try: let the next pass's game logic run while the screen flip is pending, instead of idling - in the heavy fight that idle wait was 16% of the time.
+
+I'll merge both when they report, run everything, and ask before committing.
+
+(later, while the renderer optimization is still running)
+
+The panel work is finished and in the main tree; build, verify and make test (all eight suites, 27/27 missions) pass. Nothing is committed yet.
+
+- The sidebar's bottom half: the agent reproduced ui_draw_selection_panel ($0294BE): the lower picture (what a factory builds, the Repair Facility's unit, the Palace's Fremen for the Atreides), the second bar (production, upgrade, Palace charge, Windtrap power, spice gauge, Starport delivery, a Harvester's load), and the no-sign label when a factory can't build. It was checked side by side against the running Mega Drive in eleven situations, and a new test group (sidebar, 400/400) checks the logic against a model of the cartridge routine. Cost: about 0.005 frame of logic a pass, and up to 0.08 frame of drawing while a building factory is selected. Its render change is one small hook, kept apart for merging with the optimization.
+- A real bug it found, now fixed: every structure a mission places started damaged and decaying - the Construction Yards at 200 of 800 hit points. Placing a structure off concrete takes health off and sets decay, and the cartridge's mission loader then puts both right (scen_read_structure, $0168DE-$0168FC); the port's didn't. Since build speed follows health, every mission's first Yard built about four times slower than on the Mega Drive. The same loader also starts the player's Yard upgraded from mission 7 on ($01693E), which the port missed too; both are in now, and test_struct checks every structure of three missions starts whole.
+
+The renderer optimization agent is still working.
+
+send pause and prepare resume urgent
+
+****
+
+Paused. The optimization agent has been told to stop at once, save its work so far as tmp/agent-render.patch and write tmp/agent-render.notes.md with the exact next step. The main tree holds the finished panel work, uncommitted but passing everything. A note in my project memory has the resume steps: resume or restart the optimization from its notes, merge its patch with the sidebar's render hook by hand, run build, verify and make test, update progress.md, and ask you before committing.
+
+oh, cancel pause - we are about to reset
+
+****
+
+Pause cancelled: the optimization agent has been told to carry on with its task, from its notes if it had already written them. The resume note in my project memory stays as a fallback in case the session is lost.
+
+(later, when the renderer optimization finished)
+
+The optimization is done and merged together with the panel work. Build, verify and make test pass. Nothing is committed.
+
+The frame budget is no longer a problem:
+- Atreides 4's heavy fight: from 2.66 frames a pass to 1.01 (the agent measured 2.66 on the last commit, not my 3.14).
+- The worst window of all 27 missions over 20000 frames: from 2.81 to 1.33. Most missions now run at 1.0-1.1 frames a pass, and make verify's battle at 1.01.
+
+What changed, with what each gave:
+- The biggest gain: the renderer no longer waits for the screen flip. It asks for the flip and returns, and the next pass's game logic runs while the flip is pending; drawing waits for it only when it has to. That alone took most missions from 2.0-2.2 to 1.0-1.1.
+- Reading the map squares: 35K T-states to 14K.
+- The sprite list, now kept sorted as it is built: 109K to 57K.
+- The dirty tracking, now per cell: 100K to 45K, and 463K to 156K in a big fight.
+- Drawing cells: 188K to 105K.
+- Drawing sprites: 78K to 33K.
+In a big fight, drawing a frame went from 3.12 million T-states to 1.79 million.
+
+How it was checked:
+- Pixel identity: the agent recorded game states from the old build - five missions, plus selections, scrolling, shake, placing, the radar and crowds over the 64-sprite limit - and drew each with the old and the new renderer. Across 1132 frames, 0 bytes differed.
+- The sidebar: its hook never went through that replay, so I reran the sidebar agent's 13 port captures on the merged build. The sidebar region is identical in all of them.
+
+Cleanup:
+- view_grid (176 bytes of WORLD) is no longer used and is removed.
+- Five docs that still said a pass takes about 1.8-2 frames are updated.
+- The agent's worktree and branch, the temporary build and the patch files are gone.
+
+Still slow: a whole redraw after the view moves takes about 8 frames (10 before), nearly all of it copying 1000 cells twice. Going further would need a different icon layout.
+
+Ready to commit. I'd propose: "reproduce the sidebar and panel timing, start structures whole, speed up the renderer". Shall I?
+
+commit
+
+****
+
+Committed on feat/sega-port as "reproduce the sidebar and panel timing, start structures whole, speed up the renderer". The working tree is clean.
+
+(then) That subject was 84 characters, over the git rules' 72, so I amended the commit's message in place before anything else: it is now "reproduce sidebar and panel timing; fix start health; speed up render" (3bb0c47). Nothing else changed.
+
+commit
+
+****
+
+Committed the prompts note as "record the latest exchanges in prompts". The working tree is clean.

@@ -1,0 +1,17 @@
+check changes and state from last session. build, verify et
+
+****
+
+Everything from the last session is built, verified and tested, and the tree is ready to commit.
+
+What was pending: three uncommitted changes from yesterday - the pad read with the shadow ports shut (src/stub/input.asm), port xx77 with A9 set so TR-DOS mode drops (src/evo.inc), and every wait on the sound card bounded (src/gs.asm) - had been edited but never built. I added the platform.md paragraph on port $1F that the notes said was still missing.
+
+The build failed at first: the FRONT bank ended 164 bytes past its 16 KB. The 21 bytes the pad read added to the stub, which every bank carries, pushed the front end's page-aligned tables (fe_owntab, fe_inktab, 800 bytes) over a 256-byte boundary, and the ALIGN before them cost a whole page. The bank was full to within 82 bytes anyway. I moved the two tables into page WORLD (world_vars.inc, aligned at $BA00; 224 bytes still free before the stack) and the FRONT bank now ends at $3C8E with 882 bytes to spare.
+
+Results:
+make build - passes; dune.spg, dune.trd and DUNE.DAT written.
+make verify - all checks pass: EGA at 14 MHz, the battle, orders, building, the front end to Atreides 1, defeat and restart, the disk boot from FAT16 and FAT32 cards, the sound card loaded and the battle music playing; the loop runs 1.01 frames a pass.
+make test - every suite passes and all 27 missions run (worst window 1.23 frames a pass, O9).
+I also walked the front end screen by screen and photographed it: the campaign map draws its territories right, so the moved tables work.
+
+Not committed yet - say the word and I commit as "read the pad with the shadow ports shut; let TR-DOS mode drop; bound the card waits". Then build/dune.trd + build/DUNE.DAT are the ones to try on the real machine. Still open: which General Sound card, clock and ROM version the machine has, and the firmware version - the music played slowed and started late on the earlier build.

@@ -1,0 +1,218 @@
+Analyze project docs and continue.
+
+Create two new folders:
+orig/sega
+orig/nes
+
+orig/sega should contain fully deconstructed sega game - sources, resources, sprites, texts, music whatever else
+all the tooling and docs available in main repo structure
+
+orig/nes should contain fully decosntructed nes game - sources, resources, sprites, texts, music
+all the tooling and docs avaiulable in main repo structure
+
+make run sega - should build sega game and run it in emulator
+make run nes - should build nes game and run it in emulator
+
+tools specific for deconstructing and building those should be in bin, tools subfolders (nes, sega also)
+build and tmp folder should have subfolders respectively
+
+****
+
+What was built
+
+orig/nes/ — Sand Emperor (6502, VRC6, 384 KB)
+- src/prg00-15.asm — 16 program banks, 21% disassembled as instructions, rest .byte
+- src/header.asm, src/nes.inc — iNES fields, PPU/APU/VRC6 registers by name
+- res/chr/*.png — all 8192 patterns as 32 indexed sheets + chr.txt index
+- res/text/strings.txt, font.txt — I found the text encoding: the demo draws with 8×16 sprites, so a character is stored as 2*(c-$20)+1, which is why grepping the ROM for NORM finds nothing
+
+orig/sega/ — Dune II (68000, 1 MB)
+- src/rom00-0F.asm + vectors.asm, header.asm, megadrive.inc — 15% disassembled, 47 347 instructions
+- res/text/assets.txt — the game's own table pairing each thing with its Westwood file (Const Yard / construc.wsa), carried over from the 1992 PC original
+- res/art/, res/sound/ — uncompressed tiles, palettes, and the Z80 driver / 280 KB of DAC samples
+
+Tooling (tools/nes/, tools/sega/, binaries in bin/nes/, bin/gen/): matched disassembler/assembler pairs (m6502.py, m68k.py — 151/151 and 91 494/91 494 instructions round-trip), two-pass assemblers, extractors, builders, runners, and retro-play.c, an SDL2 window for both cores.
+
+Targets: make orig, make orig-nes, make orig-sega, make run nes, make run sega — all verified; make nes/make sega keep their old meanings. make verify on the port still passes at 38 Hz.
+
+The design decision worth knowing
+
+A disassembler may not write down anything it cannot read back. Every instruction is re-encoded the moment it is decoded, and anything that doesn't come back identical becomes dc.w/.byte. That's why a wrong guess about where code is costs readability and never correctness — and why the byte-exact rebuild is provable rather than hoped for. It's recorded in CLAUDE.md's traps and both skills.
+
+What I did not do
+
+- The Mega Drive art is compressed — about 100 tiles of 2000 are stored plainly; the rest is in something close to Westwood's .wsa/.cps. res/art/art.txt says so rather than emitting guesses. Undoing that is the next job.
+- Neither game's music is taken apart into notes — both sequence formats are their drivers' own. Where they live is documented; what they say is not.
+
+Nothing is committed — git status above shows the changes if you want them staged.
+
+--------------------
+
+continue with sega deconstruction. improve disasm also
+...
+provide good docs explaining sega version game internals also - ai algo, units, base, missions logic description etc
+
+****
+
+Both ROMs still rebuild byte-exact and boot. Here's what changed.
+
+The big find: Dune II is barely in the code
+
+The cartridge carries the PC original's own data files, whole, behind a directory of name/data pointer pairs at $052C2C that two routines look through. tools/sega/sega_files.py takes all 37 back out:
+
+┌─────────────────────────────┬────────────────────────────────────────────────────────────┐
+│                             │                                                            │
+├─────────────────────────────┼────────────────────────────────────────────────────────────┤
+│ PROFILE.INI, HOUSE.INI      │ still plain text — costs, build times, [COMBAT], [RANKING] │
+├─────────────────────────────┼────────────────────────────────────────────────────────────┤
+│ REGION.INI, REGIONA/H/O.INI │ the campaign map, with the translator's note still in it   │
+├─────────────────────────────┼────────────────────────────────────────────────────────────┤
+│ SCEN{A,H,O}001-009.INI      │ the 27 missions                                            │
+├─────────────────────────────┼────────────────────────────────────────────────────────────┤
+│ BUILD/PLAYER/TEAM/UNIT.EMC  │ the AI, as Westwood script bytecode                        │
+└─────────────────────────────┴────────────────────────────────────────────────────────────┘
+
+The proportions are the story: 19 876 bytes of UNIT.EMC against 200 of PLAYER.EMC. There is no strategic planner — there's a huge amount of per-unit behaviour and a thin layer above it.
+
+What's now readable
+
+- buildings.txt — 19 records at $06AFA6. The +$1E bitmask decodes into the full prerequisite graph: everything routes through the Windtrap; Heavy Factory needs Light Factory + Windtrap; IX needs Windtrap + Starport + Refinery.
+- units.txt — 27 records at $06BC00. Nine of them aren't units (rockets, the sandworm, the frigate) — zero cost is the tell. +$48 is a turret sprite, -1 where the gun doesn't turn independently.
+- houses.txt — 6 records at $06C750, every field settled. Harkonnen buildings decay 2 points at chance 85, Ordos 1 at 10, Atreides never — which is why one house needs a Repair Facility and another doesn't.
+- missions.txt — Brain holds H or C, and exactly one house per mission is H. Missions 1–2 are spice quotas; 3–9 are fought to the end. The computer's credits run 0 → 200 → 800 → 1825 → 3000 while its unit cap goes 16 → 30.
+
+Disassembler improvements
+
+- Pointer tables emit dc.l label instead of hex — but only when the trace independently landed on ≥3 distinct targets and they're most of the table. Four bytes of artwork are a valid ROM address, so the naive test ate the graphics; this one doesn't.
+- Named region banners — the listing now says when you've reached the Z80 driver, the EMC scripts, the file directory, the stat tables or the DAC samples.
+- Pointer-table targets seed the trace, and tables are excluded from the code sweep.
+
+Written up in .claude/docs/sega-internals.md (271 lines), with orig/sega/README.md, tools.md, CLAUDE.md and the orig-sega skill updated.
+
+What I did not settle
+
+- The EMC opcode set. The scripts are located, extracted and marked, but not read. "How does the AI decide" is in this repo and still closed — that's the biggest thing left.
+- The scenario record grammar. Header, house sections and unit/team/structure counts are proven (a run of indices 1,2,3 at constant spacing). The fields inside a unit record aren't — I tried a constraint solve across all 27 files and got 22/27, which isn't good enough to publish as fact. missions.txt says so rather than guessing.
+- Which cost wins. The binary table says Palace 999 / Carryall 800; PROFILE.INI in the same ROM says 0 / 300, and there's an INI parser at $041C20. Both are documented; which the game uses needs that code read.
+
+Code coverage is unchanged at 14.9% — the new seeds found a little more, the tightened data rules gave a little back. Nothing is committed.
+
+--------
+
+continue
+
+****
+
+I cracked the AI scripts — the thing I'd flagged as the biggest open item.
+
+The EMC format is decoded
+
+FORM/EMC2 with an ORDR chunk of 16-bit entry offsets and a DATA chunk of bytecode. An instruction is one big-endian word: three flag bits plus a five-bit opcode in the high byte, the flags saying where the parameter comes from.
+
+Two things prove the reading rather than assume it: all 61 entry points across the four files land exactly on an instruction boundary, and so does every jump target — 336 of them, none off by a word.
+
+Six opcodes are named because the structure shows them (goto, goto-if, return, call, push.w, push.b). The rest keep their numbers.
+
+One script per thing — proved, not assumed
+
+BUILD.EMC has 19 entry points and there are 19 buildings. UNIT.EMC has 27 and there are 27 units. The sizes settle the pairing past coincidence: the four kinds of infantry get 19 words each, Trike and Raider Trike 19 each with identical code, the two turrets 45 each, Barracks and WOR 17 each, the two concretes 9 each.
+
+What a Tank's behaviour actually is
+
+unit_tank:
+ 2005  4201       op2    1
+ 2006  8559       goto    w1369
+ 2007  4801       return
+
+Three words. Fourteen of the eighteen buildable units end exactly like that, at the same shared routine; the five projectiles share a second one. There is one combat behaviour in Dune II and nearly everything that fights uses it unaltered.
+
+What gets a script of its own is what has a job — Carryall 262 words, Sandworm 168, Frigate 140, Harvester 124, MCV 118. Nearly half of UNIT.EMC goes on six units that move without being ordered to. In BUILD.EMC it's the same shape: Starport 51 (the only building that talks off-map), Refinery 40, Repair 36, a slab of concrete 9.
+
+So what is the AI?
+
+PLAYER.EMC — the computer player's own code — is 200 bytes: six near-identical fifteen-instruction loops. There is no strategic planner. The scenario hands the computer its credits, its unit cap and its starting position; teams are declared as templates, not formed; difficulty is arithmetic (credits 0 → 3000, cap 16 → 30 across a campaign).
+
+The enemy isn't thinking. It feels alive because the things on the map — the Carryall coming for a stranded harvester, the worm eating it, the frigate arriving at the Starport — have real behaviour of their own.
+
+Still closed
+
+The call function indices. UNIT.EMC invokes 53 different ones and I can't say what number 26 or 39 does — that's the dispatch table in the 68000. Finding it in orig/sega/src/ turns these listings from structure into meaning, and it's the next job.
+
+tools/sega/emc_disasm.py is wired into make orig-sega; both ROMs still rebuild byte-exact. sega-internals.md is now 343 lines; README, skill, tools.md and CLAUDE.md updated. Nothing committed.
+
+-----------
+
+whats left on sega?
+
+****
+
+1 MB total — 14.9% disassembled as code, 35.7% named data, and 518 KB (49.4%) still unexplained.
+
+The list, worth-doing order
+
+1. The compression — ~450 KB, the single biggest thing
+rom03, rom09, rom0A, rom0B, rom0C are almost entirely unexplained and their entropy is ~7.0 bits/byte, which is compressed data, not tables. This is all the art: tiles, sprites, the mentat faces, the briefing pictures. Comparing live VRAM (make md) against the ROM finds ~100 tiles of 2000 stored plainly; the rest is in something close to Westwood's .wsa/.cps.
+
+Approach: find the decompressor in the 68000 — something reads these regions and writes to VRAM. Verification is unusually clean: decompressed output must match tmp/md/vram.bin byte for byte, so you know immediately whether you have it.
+
+2. The EMC call function table — small job, large payoff
+UNIT.EMC invokes 53 distinct function indices and I can't say what any of them mean. The listings currently show structure (call 26, call 39) without meaning. The interpreter dispatches through a table of ~63 entries somewhere in the 68000; find it and every script becomes readable prose. This is probably the best value-per-hour item left.
+
+3. The scenario record fields
+Counts and strides are proven (a run of indices 1,2,3 at constant spacing); the fields inside a unit/structure/team record are not. My constraint solve across all 27 files got 22/27, which isn't good enough to publish. The fix is finding the loader, not more pattern-matching.
+
+4. The Z80 sound driver — cheap, currently untouched
+~3.5 KB at $00294E (second copy at $02C3FE), located and baned. The repo already has tools/z80_disasm.py. Doing this
+gives you the music sequence format, which is item 5.
+
+5. The music sequences — blocked on 4.
+
+6. Code coverage past 14.9%
+The limit is computed dispatch (jmp (a0,d0.w) through tablesinishing returns compared to 1–3.
+
+7. Which cost is real
+The binary table says Palace 999 / Carryall 800; PROFILE.INI, and there's an INI parser at $041C20. One afternoon of
+reading that parser settles it.
+
+One loose end I noticed but didn't chase
+
+There's a 16,416-byte exact duplicate: $0001BC == $029C6C. I0 KB region was duplicated wholesale — checked it just now
+and that's wrong, it's only 12.4% identical. Just this one bboot/init code; worth a glance but not a big win.
+
+Nothing here is blocked on tooling — the disassembler, assemct rebuild are all in place. Say which one you want and I'll
+start.
+
+---------------------
+
+continue all
+
+*****
+
+1. The compression — cracked
+
+Westwood Format80, decompressor at $000C32, with 16-bit fields still little-endian inside a big-endian cartridge because the data came over from the PC unchanged.
+
+Two things come out:
+- The cast — tables of 19 buildings ($08829C) and 27 units ($08F1C8), each asset laid out as palette / tile-map / size word / stream. Every one unpacks to the byte, which is what proves the decompressor rather than merely suggesting it. Written to res/art/sprites/ in their own sixteen colours.
+- Everything else — the loader at $000CD8 reads (count.w, pointer.l) lists. The catch: bit 15 of the count is the compressed flag, not the pointer's — MOVEA sets no flags on a 68000, so the bpl after it is testing the previous move.w. Sweeping for that shape found 75 lists, 21 007 tiles: terrain, font, mentat, briefing pictures.
+
+2. The EMC function tables — found
+
+The loader at $016C0E hands each script its own table: UNIT→$0FED20 (64), TEAM→$0FECE4 (15), BUILD→$06B998 (25). Each covers its script's indices exactly and no further. Listings now read call 26 ; -> L_044358.
+
+3. Scenario records — units and teams settled
+
+Not by analogy but by their own values across all 27 files: health is 256 in all 290 unit records, facing takes exactly {0,32,64,…,224}, and a team's minimum is never above its maximum in any of 142 records. Mission 1 now reads out as a real layout — 4 Atreides units, 14 Ordos soldiers, with positions and facings. Structures still resist and say so.
+
+4. The Z80 driver — disassembled
+
+Bounds from the uploader itself ($00152A copies $188A bytes from $00294E), not guessed: 6282 bytes, 3064 instructions. Verified it touches the YM2612 (16 refs), the bank register, and the PSG.
+
+7. Which cost is real — and I was wrong
+
+I need to flag this. I previously wrote that the ROM contains an INI parser at $041C20. It doesn't. That address is tutorial text — "…OVER THE CONSTRUCTION YARD".
+
+Files are opened by names the code builds, and there are exactly two builders: "SCEN%c%03d.INI" ($016086) and "%s.EMC" ($016D26) with UNIT/TEAM/BUILD. The words PROFILE, HOUSE, REGION and PLAYER appear nowhere in the code. So PROFILE.INI, HOUSE.INI, the REGION*.INI and PLAYER.EMC are never read — dead PC data. The binary tables are authoritative. I've corrected this in sega-internals.md, the README, CLAUDE.md, the skill and sega_data.py.
+
+Also: PLAYER.EMC isn't loaded at all — this port never runs the computer player's own script.
+

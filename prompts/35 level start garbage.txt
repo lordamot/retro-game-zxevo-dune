@@ -1,0 +1,28 @@
+now ./prompts/hmmm/04.jpg instead of battle start
+
+****
+
+one more point for tests - we now always start dune.trd + dune.dat (files browse - mount disk a; trdos boot) - it is the only correct startup sequence; forget of spg
+
+****
+
+04.jpg is the machine back in ZX mode with a red border, showing page 5 - half of one of the game's EGA screens - as a plain Spectrum picture. That is a crash, not a wrong screen: nothing in the game ever writes ZX mode after the loader. I could not reproduce it, and I could not find it by reading, so the build now catches it on the real machine and tells you where it was.
+
+What the emulator says. Booting the disk with random RAM and sound, then walking through the front end, reaches the battle. Killing the sound card at the mentat's PROCEED (a new emulator command, gsdead: the card takes no command and gives no byte, the way a crashed card looks to the host) costs one four-second stall on the campaign map and the battle runs on in silence - so the bounded waits are not it.
+
+What the BaseConf's FPGA sources say (tslabs/zx-evo, pentevo/fpga/base). The shadow ports are open while TR-DOS mode is on or $BF bit 0 is set, and port $1F is the floppy controller's whenever they are open - so the pad read with them shut is right by the hardware's own logic. TR-DOS mode turns on only by an opcode fetch at $3Dxx from a window that is ROM with the mix flag set; every window here is RAM, so that cannot happen, and the firmware's virtual-drive trap needs ROM in window 0, so it cannot fire either. A9 = 0 on port xx77 forces TR-DOS mode on for ever, which is what $8177 did. I had one more candidate, the renderer being the only bank whose bytes reach past $3D00, but those bytes are sprite lists, not code.
+
+What is in the tree now.
+A crash catcher. The frame interrupt counts frames in which the game neither halted for a frame nor beat the counter itself (the battle's pass, the start-up progress); after 30 seconds it maps the FRONT bank and prints, on the log's screen: 0 (stuck) or 1 (a jump to address 0), PC, B (the bank in window 0), SP, and eight words from the top of that stack. A jump to 0 no longer restarts the game; it shows the same screen. Tested in the emulator by poking a hang and a jump to 0 into the battle loop: both screens come out right. Photograph it and I read it against build/dune.sym.
+A debug flag 64: the joystick port is never read.
+Three variants beside build/: build-nosound (no card at all), build-nojoy (keys only), build-nosnd-nojoy (both). Each is a dune.trd plus DUNE.DAT.
+The start sequence you named is now written down in CLAUDE.md as the only one; verify's disk check inserts the disk as a floppy, so the firmware's virtual drive is still the part the emulator does not model.
+make build, make verify and make test all pass with the catcher armed.
+
+What to do on the machine, in this order.
+1. build/dune.trd + build/DUNE.DAT: start a level. If the screen with the numbers appears, photograph it. If it still ends in garbage with no numbers, that says interrupts were off when it died, which is itself a clue.
+2. build-nosound: does the level start?
+3. build-nojoy: does the level start?
+And the questions still open: which General Sound card is it (GS, NeoGS), its ROM version and clock, and the firmware version - the log screen at start-up says what the card reported.
+
+Nothing is committed; say so and I commit.

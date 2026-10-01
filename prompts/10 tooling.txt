@@ -1,0 +1,79 @@
+add tooling to manipulate game. you need to be able to check what and how
+happens. final goal is the same - game should look like and sound like that
+nes one
+
+****
+
+Two tools, and the first thing they caught is already fixed.
+
+The problem with what was there
+
+Everything in this repository photographed the demo: a script of button
+presses from power-on, a screenshot at the end. That is fine for a screen
+that is always the same and useless for "what does this button do", because
+the answer costs a full boot and cannot be compared with the answer before
+it. My last session died on exactly that - I spent a long time driving the
+demo's build menu blind and got nowhere.
+
+nes_play.py - drive it, do not photograph it
+
+retro-run can now save and reload the whole machine (and reset, and dump
+cartridge RAM). So a mark is a moment, and every experiment after it is
+load, press, look. A step is 0.7 seconds instead of a minute, and two
+experiments from the same mark differ only by what was pressed.
+
+  nes_play.py marks                            boot, battle, menu
+  nes_play.py do battle "b, start"             press and dump everything
+  nes_play.py watch battle "run 4, right, ..." which of the 2 KB moved
+  nes_play.py find battle 1500 --u16           where a number lives
+  nes_play.py goto battle 144 112              put the cursor there
+  nes_play.py state battle                     what is known, decoded
+
+It works. watch found the cursor in one run: $001A and $001C, four at a
+time, and nothing else in the 2 KB moves when a direction is pressed. goto
+uses that and then reads the position back rather than trusting the
+arithmetic - asked for 120,96, got 120,96. KNOWN in the tool is the memory
+map so far, and it says how each entry was found, so it grows by
+measurement rather than by guessing.
+
+What I did not find: the credits. 1500 is not in the work RAM as 16-bit,
+BCD, digits or anything else I tried, and the cartridge has no SRAM to
+look in. It is somewhere I have not thought of yet, and the tool is how
+that gets settled rather than a reason to stop.
+
+compare.py - the port beside the demo
+
+make compare puts the two side by side, screen for screen, in
+tmp/compare/, with a number beside each.
+
+The number is not a pixel diff, because there is nothing honest to diff:
+320x200 in sixteen of 64 against 256x240 in the NES's own palette, and a
+port that deliberately shows more map. What can be compared is how the
+colours are used - each screen reduced to its palette and the share of the
+picture each colour holds, matched by colour distance. A screen that is
+the same picture in the same colours scores near zero however different
+its resolution; one that has drifted to the wrong palette scores badly.
+
+  intro 0.278   title 0.351   options 1.394
+  house 0.489   mentat 0.243  battle 0.279
+
+It ranked the options screen worst on its own, which is right: the demo
+shows a yellow ornithopter and the port shows a list of keys. That is item
+4 on the port's own list, and the tool found it without being told.
+
+The first fix
+
+The battle comparison showed the port printing 01500 where the demo prints
+1500. txt_num pads with zeros; there is now txt_numb beside it that blanks
+the leading ones, which costs nothing because glyph 0 is the space, so the
+number stays right-aligned in the same five columns. The credits and the
+build costs use it; the map seed still prints padded, which is what a seed
+wants.
+
+make build and make verify pass. Nothing committed.
+
+What the comparison says to do next, in its own order: the options screen
+(1.39) is a whole picture that is captured and unused; the house screen
+(0.49) and title (0.35) are next. The battle at 0.28 is mostly the sand
+being more saturated in the port than in the demo, which is a palette
+question the tool can now be pointed at directly.

@@ -1,0 +1,36 @@
+checked first level for atreides - couple of minor bugs to fix:
+- mentat's mouth move too quick when he is "talking"
+- cursor does not change when selecting unit to move, same for building selection
+- contruction yard does not show "ok" animation when building is ready to place but player decided to B it back for yard for now
+- very critical: harvester not shown at refinery parking and disappears forever after spice loadout
+
+****
+
+All four are fixed and merged into the main tree, and nothing is committed yet. On the combined tree make build and make verify pass, and make test passes too: every suite, all 27 missions, worst window 1.11 frames a pass.
+
+Harvester (the critical one). There were two causes.
+It never came out: on the way home the Harvester and the Refinery claim each other through script variable 4. On docking, the cartridge's unit_drop_references ($04900E) breaks that claim both ways; the port's did not. So the Refinery's script found the link still there after unloading, skipped release and waited for ever.
+It was not drawn on the pad: the cartridge shows the sprite of a docked Harvester while it is off the map (c_spr_show $048966), and the port drew no off-map unit at all. There is now a flag for that, set on docking and cleared when the unit is taken off, picked up or released.
+A new dock test checks the whole cycle, and it fails on the old code. In Atreides 1 the Harvester now unloads on the pad, drives out, harvests and comes back.
+
+Cursor. On the cartridge (ui_battle_button $028596) the shape depends only on what is selected, not on what is under the cursor. One of your units: the crosshair, and a white bracket on the unit blinking 11 frames on, 11 off. An enemy unit or your Saboteur: the square and a red bracket. A structure: blinking corners. An armed Palace: the crosshair. Before, the port always drew the square pointer, and a selected unit got a box of corners that did not blink. Checked against the running cartridge, with two new test suites.
+
+Yard OK. The port had never drawn the cartridge's structure markers. They are now drawn as struct_animate ($00DC98-$00DDA2) sets them: OK on a Yard whose building waits and which is not selected (B deselects it, so OK appears), OK on a ready Palace, the repair hammer, and a Windtrap's low-power bolt.
+
+Mentat's mouth. The port chose a new mouth every 4 frames. The cartridge (mentat_animate_face $01F622) holds each shape for a time that depends on the shape, about 12.8 frames a change, and the port now does the same (12.0). Two more timing differences were fixed in the same routine: the pause after a sentence is one and a half times as long as the sentence took, not a fixed 40 frames, and there is a wait before the first sentence.
+
+Two things to know. First, S10 says the pointer's shape follows what is under it, and the cartridge says otherwise; I left the spec as it is. Second, the four worktrees and their branches are still there.
+
+Shall I commit it, as "fix harvester docking, cursor, structure markers and mentat mouth"? Once it is committed I will remove the worktrees.
+
+commit
+
+****
+
+Committed as 1dab9ac, "fix harvester docking, cursor, structure markers and mentat mouth", on feat/sega-port. It holds the four fixes, their tests, the doc updates and prompts 22 and 23. I removed the four worktrees and their branches; only feat/sega-port and main are left. This entry is the one change not committed yet.
+
+commit
+
+****
+
+Committed the end of prompts/23 as "record the latest exchanges in prompts". The tree is clean.

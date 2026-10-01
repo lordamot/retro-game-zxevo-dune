@@ -1,0 +1,54 @@
+overall game speed (not about map scroll of course) seems to be a bit faster than needed (specifically - music plays quite fast it seems)
+
+****
+
+The game was not the cause: the emulator's window, evo-play, was running the whole machine too fast.
+
+evo-play paced itself by the monitor's vsync and ran one emulated frame per screen refresh. Your display is 59.96 Hz, and a ZX Evolution frame is 49.1 a second (20.36 ms), so everything ran 23% fast, the General Sound card included. The sound queue threw away whatever it could not hold, which is why the music in particular sounded rushed. On real hardware the game would not do this.
+
+Fix, in tools/evo-emu/:
+- evo_frame now records how much emulated time each frame covered (frame_ns).
+- evo-play waits until the wall clock has caught up with that time instead of waiting for vsync. After a stall it counts on from now rather than racing to catch up.
+- Sound: before, the fast pacing kept the queue overfull, which hid the problem. At the right speed it would run dry and crackle, so it now starts with 80 ms of silence queued and is steered by a millisecond of pacing a frame either way to stay near that level while the sound card's clock and the PC's drift apart.
+- New --frames N quits after N frames, and EVO_PLAY_STATS=1 prints the rate it actually ran at.
+
+Measured headless: 500 frames in 10.18 s of wall time and 10.18 s of emulated time, 49.12 frames a second, where the old one ran at the monitor's 60. The sound written to a file came to 10.19 s for the same run, so nothing is dropped. make verify passes. I rebuilt bin/evo/evo-play and evo-run from the source, and documented the change in emulator.md and as a trap in CLAUDE.md.
+
+For comparison, the game counts the same frames as the cartridge, but at 48.8-49.1 Hz where the Mega Drive runs 49.7 Hz, so it is about 1-2% slower in real time than the original. That is negligible. The Mega Drive player, retro-play, already paced itself by the core's own rate.
+
+Please try make run again; the music should now play at its proper tempo. Shall I commit it as "pace evo-play by emulated time, not vsync"?
+
+commit, I'll check soon
+
+****
+
+Committed as "pace evo-play by emulated time, not vsync", with this exchange in it. The tree is clean. If the tempo still sounds off, run make run with EVO_PLAY_STATS=1 set and tell me the rate it prints when you quit.
+
+all works way cool now!
+
+****
+
+Great, glad the tempo is right now. This exchange is added to prompts/24 and is not committed yet; it can go in with the next commit. When you want to carry on, the item from the open list you notice most while playing is the slow full redraw when the view scrolls.
+
+commit and lets dig into scrolls
+
+****
+
+Committed the prompts update (d8bda51). The scroll is now nearly twice as fast. Nothing of it is committed yet.
+
+What it cost. I measured one render_frame after the view moved a cell (Atreides 1, test mode): 2.05M T-states, 7.2 frames. 1.75M of that was copying all 1000 cells in both passes.
+
+What it does now. The screen showing was drawn last pass, one cell from the new view. rf_scroll copies its picture over the screen being drawn, moved by the difference. A plane is 40 bytes a line, so a move of whole cells is one block copy per plane, done with sixteen LDIs a turn. The screen drawn then takes over what the other knows about what it shows: its squares' records, moved by whole squares, and its sprite list, moved by the pixels. Only what the copy left out is drawn: the new edge, the squares that changed, the sprites that moved, and the HUD, which the copy moved along with everything else. A move of more than 12 cells across or 8 down, or a screen drawn over, still redraws everything.
+
+Measured:
+- One cell: 0.98M T-states (3.4 frames), down from 2.05M (7.2). The copy is 0.57M of it.
+- In a real battle, C and right held for 200 frames: 50 passes and 49 cells moved, where it was 28 passes and 27 cells. A scroll pass is now 4 frames, down from 7.
+- The shake now costs two copies instead of two full redraws.
+
+Proof. The new tools/tests/test_render.py runs ten chains of moves: every direction, diagonals, back and forth, the largest moves, too far, and both corners of the map. Each chain is copy after copy, then the other screen is drawn whole at the same view and the two must match byte for byte. All 10 pass. To check the test can fail, I broke the code twice on purpose, once skipping the edge and once not moving the sprite list; it failed both times. make build, make verify and make test all pass.
+
+Two choices for you:
+1. Scroll speed like the cartridge. The view still moves one cell (8 pixels) per pass whatever the pass costs, so it now scrolls at 2 pixels a frame. On the Mega Drive, C and the d-pad move the view at the cursor's speed, which builds up to 3 pixels a frame over about a second. I could move the view by the pixels the pass earned instead, in whole cells. That would be faithful, reaching about 1.5 cells a pass at full speed and costing nothing more per pass.
+2. A faster copy. A stack-based copy (POP and PUSH with interrupts off in short bursts) would take the copy from about 0.57M to 0.45M, a further 0.4 frame per scroll pass. It is more complicated code.
+
+Shall I commit this as "scroll by copying the screen showing, not redrawing"? And do you want either of the two above?

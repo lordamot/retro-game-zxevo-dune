@@ -1,0 +1,83 @@
+host hang. continue last session
+
+****
+
+Nothing was lost - both ROMs still rebuilt byte for byte and every figure
+from last time was still on disk - so I picked up the item that had been
+sitting at the top of the "what's left" list in two files: the Mega Drive
+sound driver's sequence format.
+
+The sound looked dead, and I was wrong
+
+The 68000 side is a C library of one function per driver command, and a
+cross-reference scan over the whole cartridge said nothing calls any of
+them except the initialiser - which installs four pointers to four FF
+bytes. Read literally that means Dune II never plays a sound.
+
+The scan was wrong, not the disassembler. The library is called with
+jsr $1624.w - absolute short, 4EB8 - and I had only looked for 4EB9, 4EBA
+and the branch forms. The listing had it right the whole time.
+
+What settled it was measurement rather than more reading. I patched the
+Genesis core to hand out the Z80's own 8 KB and gave retro-run a z80
+command for it, then dumped that RAM at four points of the opening. The
+command ring at $1B40 holds FF 0B and four live pointers into the sample
+banks, and at the mentat it also holds FF 10 29, FF 12 00, FF 10 09. The
+driver is busy; my scan was blind.
+
+How the 68000 asks for a tune
+
+Two bytes of Z80 RAM are the mailbox - a write index at $0036 the 68000
+owns, a read index at $0037 the Z80 owns - over a 64-byte ring at $1B40. A
+command is FF, an opcode and its arguments. There are 24 opcodes and the
+game sends seven. The two that matter are $0B, which installs four 24-bit
+addresses the driver reads everything through, and $10, which starts a
+song by number. The game installs two sets: the front end's at $02DD14 and
+the game's at $02DCC8.
+
+What a song is
+
+The third pointer is a directory of 16-bit offsets, little-endian inside a
+big-endian cartridge. The song count is the first offset over two, because
+song 0's header follows the last entry. A header is a track count and one
+offset per track; each track gets one of the sixteen 32-byte voices and is
+a byte stream:
+
+  under $60   a note - the voice's sound slot says what it sounds like
+  $60 to $72  nineteen commands: end, patch, volume, loop, jump, set,
+              branch and the rest
+  $80 to $BF  how long the note sounds, six bits a byte
+  $C0 to $FF  how long until the next event, same encoding
+
+13 songs in the front end's bank, 84 in the game's, 143 tracks between
+them. New tool tools/sega/sega_seq.py, output in res/sound/music.txt with
+a full event listing beside it, wired into make orig-sega.
+
+Why the reading can be trusted
+
+I made the tool check itself and refuse to finish if the check fails.
+Follow every track to its end and add up the bytes: in both banks the
+total is exactly the distance from the directory to the last track's last
+byte - nothing claimed twice, nothing left over. And both banks stop where
+the next resource pointer begins: the front end's songs end at $0D01F5 and
+the game's at $0FE129, which are the very addresses command $0B installed
+beside them. Neither of those falls out of a misread header.
+
+Where the cartridge stands
+
+               start of this run    now
+code                 14.9%         14.9%
+named data           66.1%  (was 63.0%)
+unaccounted          19.0%  (was 22.1%)
+
+180 named regions. Both ROMs rebuild byte-exact, make build and make
+verify both pass.
+
+Two things I did not do
+
+The instruments. The songs are read; what a sound is is not. The driver's
+first, second and fourth resource pointers feed the sixteen 39-byte sound
+slots and the DAC, and those three formats are still shapes rather than
+fields. The README says so rather than guessing.
+
+Committing. Nothing is committed.

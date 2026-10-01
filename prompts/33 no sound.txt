@@ -1,0 +1,9 @@
+lets forget about noload build for now. I checked recent normal one - it does not play music/sound at all. and level start now goes into screen shown ./prompts/hmmm/03.jpg
+
+****
+
+03.jpg is the game's opening, so the level start now jumps to address 0 and the game starts over; and no sound at all, not even the intro's tune. Both come from one line in the BaseConf manual: port #xx1F, the Kempston joystick, is marked "noshad" - it answers only while the shadow ports are shut. The game keeps them open all the time ($BF bit 0, for the memory manager and the palette), so the frame interrupt's read of $1F never reached the joystick. With TR-DOS mode held on (the old $8177) it read the floppy controller's status, stable, and only the level start's wait for a released pad could hang on it. With TR-DOS mode off (the new $8377) the port is nothing at all, and nothing at all on the Evo reads as the byte the video is fetching: random presses every frame. The intro screen is skipped before its tune plays, the menus wander, sooner or later "restart" is chosen, and at level start the pad is never released. The emulator answers the floppy status there and never showed any of it.
+
+pad_read (src/stub/input.asm) now shuts the shadow ports for the one read and reopens them - xor a / out ($BF),a / in a,($1F) / ld a,1 / out ($BF),a; the manager's settings are latched and stay - and rejects left with right or up with down, which no stick gives. Documented in CLAUDE.md's traps and platform.md.
+
+This is edited but not built: the tool checker went down before make build. After a restart: make build, make verify, make test, then build/dune.trd + build/DUNE.DAT on the card. The handover with the exact state is in memory (real-evo-spg). Nothing committed since 0ddf11a; the tree holds the bounded card waits, the no-load switch (with its count bug fixed), PORT_77 = $8377 and this pad change.

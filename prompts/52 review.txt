@@ -1,0 +1,93 @@
+check what we currently have; review port code for problems and obstacles
+prepare possible refinements list
+
+****
+
+Nothing was changed. The tree is clean at 8aadeba on feat/sega-port, and on it make build, make verify and make test all pass today: DUNE.DAT is 3 219 968 bytes in 209 blocks, verify's battle runs at 1.02 frames a pass, the disk boots from FAT16 and FAT32, all 27 missions run with a worst window of 1.20 frames a pass.
+
+What we have
+
+The whole cartridge sequence, playable on the real machine: front end, 27 missions on the 27 stored maps, the cartridge's AI scripts on the port's interpreter, the HUD and panels, the music and effects on the General Sound card. The known approximations are listed in progress.md "Not yet" and gamedesign.md and were not re-listed here.
+
+Budgets (from the listing):
+  code banks: FRONT 538 bytes free, RENDER 565, TUTOR 1253, MAIN 2005, STRUCT2 2418, STRUCT 2462, VM 3761; the rest 4-11 KB free
+  WORLD variables: 199 bytes before the 512-byte stack
+  pages: 15 free below #E0, of which only 57, 99, 123 and 220 are really spare; maps pages 31-35 full, text page 37 full
+  sound set: 93 pages, ends at 220, the Tutorial starts at 221 - zero slack
+
+Problems found (six reviewers, each item checked against the code by a second reading; the top four I re-read myself)
+
+1. Death Hand aim is never scattered, and it is a cross-bank pointer. unit_launch_house_missile (combat2.asm ~1446) hands HL = cb_2p, a COMBAT2 private static, to cb_tile_move_by_random in COMBAT by FCALL. After the switch window 0 is COMBAT, so the callee reads COMBAT's code bytes at that address, sees a coordinate out of bounds and writes nothing. Every missile lands exactly on the picked square, and any relayout of COMBAT turns the miss into a 4-byte write into code. Fix: pass the centre through arg_pos in WORLD as ef_u_survivor already does.
+2. The Death Hand's off-map blasts are not skipped where the burst actually runs. The skip lives in projectile_burst (combat.asm ~2398), which nothing calls; unit_move's own copy in moves.asm (~1566) blasts unconditionally and pos_square wraps an off-map blast onto row or column 63. gamedesign.md and S4's table claim the fix. Fix: one burst routine, with the bounds test.
+3. The renderer's sprite list drops the HUD first. rf_prep_sprites adds units, dust, markers and effects and the HUD last; rps_frame stops at 64 entries. A screen with about 32 turreted units, or 48 units plus a full effects list, loses the cursor, the bracket, the credits and the radar. Fix: add the HUD before the units (the sort key decides drawing order, not insertion order).
+4. The sound card's init runs with its waits disabled. gs_init clears gs_ok first and every gs_wcmd/gs_wdat loop returns at once while gs_ok is 0, so the $12 argument, the $12 and the $F3 warm reset go out back to back with no wait for the card to take each. A race with a 12-16 MHz card; the emulator passes. Fix: a separate "given up" flag for the wait loops.
+5. The disk loader's command timeout reports success. sd_cmd's retry counter falls through into the .ok exit with Z set and A = $FF, so cmd8's jp nz,fail never fires and a dead card is reported as E_ACMD41 rather than E_CMD8 (a wrong diagnosis, not a hang).
+6. Documented S4 fix not implemented: struct_destroy computes the credits lost from the low words of storage and credits, the cartridge bug the spec table says the port fixes.
+7. A Yard destroyed while a building is pending leaks the linked off-map record, and struct_allocate then re-appends a fixed slab or wall slot to struct_find whatever is there, so the array can grow past its end. Rare.
+8. unit_spawn reads IY (the type record) after unit_choose_home and unit_blocked_here have clobbered it; latent today because no caller takes that path.
+9. ef_u_aim stores the type record's address as targetMove for units without a turret; masked because every script site follows aim with go.to.
+10. The mentat's box has four lines and Ordos 1's defeat text wraps to five; the fifth line is not drawn. The only overflow in all 111 texts.
+11. The cheat LOOKAROUND is a no-op; the reveal flag it should toggle already exists (dbg_flags bit 0).
+12. The stub-equality check at build time covers pages 8-23 only, so PANEL's stub (page 122) is checked by verify alone.
+13. FCALL costs about 446 T-states round trip, not the 250 the docs say. With about 470 static sites, per-unit paths pay for it.
+14. No card, or a card with fewer pages than the set needs, stops the start-up for good on "error". The silent no-card path in gs.asm is reachable only through a debug flag.
+
+Obstacles (structural)
+
+- Art and front-end pages meet with zero slack and no guard: art ends at 97 and the front end's page list hard-codes 97, 98, 123 as spare; one more sprite page makes both tools write page_097.bin and the later writer wins silently. The sound set likewise ends exactly where the Tutorial begins, and dune_sound.py's LAST_ZX_PAGE constant still says 248.
+- FRONT and RENDER are within about 550 bytes of full, WORLD within 199. Anything in the refinements below that lands in those three has to pay for itself first. Moving fe_owntab/fe_inktab (800 bytes, front-end only) out of WORLD into a front-end page is the obvious relief.
+- The frame budget check at 3.0 against a measured 1.0-1.3 lets a 2x slowdown pass.
+- The emulator does not model: port $1F with the shadow ports open, palette writes mid-frame, TR-DOS mode on xx77 A9, the firmware's virtual drive, and its SD card always answers as SDHC so the loader's byte-addressed SDSC and v1/MMC paths never run under verify. fillram, gsram 1024 and gsdead exist as script commands but no automated run uses them.
+- The effects pool is 16 entries against the cartridge's 162; corpses hold an entry 600 frames each, so a big fight silently drops later blasts and smoke.
+- No test suite touches FRONT, PANEL (one case), TUTOR, the EMC machine directly, SCEN's parser, or the sound streaming; the last four real-machine bugs were all in those. test_house.py checks done on 3 of 14 mailbox calls.
+- Where the 6-frame fight goes: restoring the cells under moving sprites is about 70 percent of it, the sprite blits are not.
+
+Refinements list, grouped, roughly by value over cost
+
+Correctness (small, each a test case away)
+  a. Death Hand aim through arg_pos; one burst routine with the bounds test; delete the dead one (250 bytes back in COMBAT).
+  b. HUD first in the sprite list.
+  c. Card init with real waits; gs_dead flag instead of gs_ok in the wait loops.
+  d. sd_cmd's timeout returns NZ.
+  e. struct_destroy's credits lost from 32 bits, or the docs say "kept".
+  f. Reload IY in unit_spawn; reload HL in ef_u_aim and drop the route.
+  g. The linked-structure leak: free it, and struct_allocate skips a slot already listed.
+  h. Reinforcements through unit_spawn as S9 says (degrade roll, distDest, speed).
+  i. Fifth line in the mentat's box, or the cartridge's width.
+  j. LOOKAROUND toggles the reveal.
+  k. A no-card start-up that prints the error, waits a key and plays silent.
+
+Fidelity (the cartridge does it, the port does not; none listed in progress.md yet)
+  - The title's three pointer demonstrations before the menu (menu_demo_play).
+  - Choose house: A Atreides, B Ordos, C Harkonnen directly, not a highlight.
+  - "Pick another house" straight to the house screen and mission 1, not through the logos.
+  - The ending's credits loop and take a button only on the second pass; its sound 150 frames in.
+  - The Starport panel's Send Order row with the total; the panel prints the low word of the credits only.
+  - The unit loop's cut on Start/A/B input (S1), noted "none yet" in moves.asm.
+  - Options close and panels drawing a battle tune; front_noise/fm1/fm2 never played; the finale under the mentat's tune (already in progress.md).
+  - Pixel-exact HUD bars; the Fremen portrait (already in progress.md; both need RENDER room).
+  - The shaken view clamped at the map's edge (shows one cell beyond the playable area while shaking).
+  - The team AI: recruit is inert by the cartridge's own bug and the PC rule sits behind ai_recruit_fix = 0. A deliberate choice; worth offering as a difficulty option in the options screen rather than a build flag.
+
+Performance
+  - An "opaque cells" mask per frame from dune_art.py so the renderer stops restoring cells the sprite paints solid: perhaps 30-40 percent of the fight's cell work.
+  - Skip rc_copy for a cell whose overlay is solid; inline the two cell routines into the row loop.
+  - FCALL: keep A/HL in the alternate set and read the inline bytes with ex (sp),hl, about 100 T a call.
+  - Profile map_find_spice at radius 32 on a map with the spice gone (an estimated 3-4 frames worst case, on every Harvester leaving a Refinery) and the path finder's per-probe table lookups.
+  - Streaming during a battle: send a chunk only when the card's buffer is free, or halve it.
+  - A larger effects pool if WORLD room is found.
+
+Robustness of the build and the tests
+  - Derive the front end's spare pages from art.inc and the sound ceiling from the Tutorial's first page; assert both; make load_pages refuse a page written twice.
+  - Print per-region pages used and free and the fullest bank's bytes left; fail under one page spare.
+  - check_stubs over every LOGIC_BANK/DRAW_BANK page, PANEL included.
+  - Tighten FRAME_BUDGET to 2.0 or a stored baseline.
+  - verify: a fillram run, a gsram 1024 run with --flags2 1, a gsdead run, an SDSC-answering card, a fragmented file and a partition not at 2048.
+  - Suites for FRONT (passwords, campaign map, score), PANEL, the EMC machine, SCEN's parser; done checked on every mailbox call; test_missions' inf when a mission ends in its first window.
+  - The loader: refuse FAT12 by cluster count with its own code, decide MBR by the partition entry rather than the first byte, and say in build.md that exFAT, GPT and FAT12 are not supported.
+  - Move fe_owntab/fe_inktab out of WORLD.
+
+Docs to correct
+  port-code.md FCALL "about 250 T"; world_vars.inc "4.5 s" against GS_STALL 12 s; stub.asm "every bank's stub"; tools.md and sound.md Tutorial at 249; build.md's front table listing 123; dune_test.py's state --house; the "bank full to within a hundred bytes" comment in front.asm; smul_d8 clobbers B; comments at scen.asm 454, structs2.asm 1466 and 2654 that contradict correct code; the ui.asm radar "was on" bit comment.
+
+If you want, I start with the correctness group: a, b, c, d are each an hour with a test, and none touches a full bank.

@@ -1,0 +1,37 @@
+where are we with dune port?
+
+****
+
+The port is feature-complete and playable from the logos to the ending. The tree is clean on feat/sega-port, and the last code commit is 3bb0c47 (sidebar and panel timing, start health, a faster renderer). I read this from the progress doc and the commit history. I did not rebuild or rerun anything for this answer.
+
+What works
+
+The whole Mega Drive game is there. The front end, the Tutorial, the mentat briefings, the campaign map, victory and defeat, the score page, passwords, the options and the ending are the cartridge's own. All 27 missions and all 27 battlefields are in.
+
+Battles run by the cartridge's rules. Units run its EMC scripts. Movement, pathfinding, combat, structures, production, power and decay all follow the specs, and so does the AI with its teams. Reinforcements arrive and the level-end check runs.
+
+The screen, the HUD and the panels are done. That covers the radar, the credits counter, the side panel for every kind of selection and the build and Starport panels.
+
+On a 2 MB General Sound card all 20 tunes and 36 effects play. Twelve tunes are uploaded behind a loading screen, and the rest are streamed to the card when they are needed.
+
+make build, make verify and make test (every subsystem and all 27 missions) passed at the last commit. The worst mission averages about 1.33 frames a pass, down from 2.0-2.8.
+
+What is still open, roughly in order of how much a player would notice
+
+1. Scrolling the view is slow. A full redraw takes about 8 frames, almost all of it copying 1000 cells twice. A full-screen fight costs about 6 frames of drawing. This is the biggest remaining performance item.
+2. Start-up takes 29 s with a 2 MB card, 10.9 s of it the card's own memory test.
+3. The finale and the ending's tune start after a 1.5-3 s silence while they load. On a 1 MB card the battle tunes also wait the first time.
+4. A worst-case route plan takes 3-6 frames. That is the cartridge's own algorithm.
+5. Small differences from the cartridge:
+   - The health bars are drawn in eighths.
+   - A Fremen unit shows the wrong upper portrait.
+   - The planet slides in 8-pixel steps.
+   - The Tutorial's fades have 4 steps.
+   - Song 30 (heavy_drop) is missing, so that part of the Tutorial is silent.
+   - The zoom and the fall can be skipped with a button.
+   - The options screen and the panels do not draw a new battle tune when they close.
+   - After the last victory the mentat's tune plays over the finale.
+6. front_noise, front_fm1 and front_fm2 are uploaded to the card, but nothing plays them.
+7. Four tunes and part of a fifth are more than the card's mixer can handle at 12 MHz, and they stutter slightly.
+
+If you want a next step, I would pick the scroll redraw. It is the one open item you notice while playing.

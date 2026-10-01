@@ -1,0 +1,29 @@
+lets update docs, then performance; allow dune to start without GS (but no music and sounds then); fix issues you listed 1..14
+
+****
+
+Done, apart from one background run still finishing. Build, verify and the test suite are green on the tree (27 of 27 missions, worst window 1.14 frames a pass, was 1.20).
+
+Docs: the stale figures and comments corrected (Tutorial pages, FCALL cost now "about 450 T, a dozen a pass", GS_STALL 12 s, smul_d8 and mul16 headers, scen/structs2/ui comments, dune_test's usage); progress, gamedesign, sound, build, graphics, tools, port-code and emulator updated for what follows; two new traps in CLAUDE.md (a bank's own address across an FCALL; the profiler must be on before the SPG runs - a profiling build crashed at its first mark until then).
+
+No card: the log's card checks say "error", then "no sound: press a key to play without"; a key, and the start-up goes on with the card given up (gs_abort), the intro and the game silent. New verify check with the emulated card answering nothing.
+
+Fixes 1-14: the Death Hand's aim through arg_pos (it now scatters - by the cartridge's rule, sin*160>>3, up to ten squares); off-map blasts skipped in the burst that runs (the dead projectile_burst is left in place for now); the sprite list keeps room for the HUD (what it took last pass plus two); the card's waits give up on gs_dead, not gs_ok, so gs_init really waits; the loader's timeout answers NZ; credits lost with a structure from 32 bits; a destroyed Yard frees its waiting building and struct_allocate never lists a slot twice; unit_spawn reloads IY; aim stores the reference; the mentat's box takes five lines; LOOKAROUND toggles the reveal; the build's stub check covers PANEL; the FCALL doc figure. Tests added: combat "missile" and "aim", struct "destroy".
+
+Performance, measured with the profiler: FCALL was not worth touching (11 calls a pass). Done: the orb pass only when the frame moves on or a record was remade (9.4K to 1.5K T), the radar's row in one loop, units far from the view rejected on their high bytes. Ordos 9 idle: 1.24 to 1.17 frames a pass. Left as the next target: the sprite list's sorted inserts (33K T a pass) and the unit loop (111K).
+
+Budgets now: RENDER 453 bytes free, FRONT 528, WORLD 199 before the stack.
+
+Not done: the usage limit was reached while the combat and struct suites were rerunning in full (each new group passed on its own); nothing is committed.
+
+continue
+
+****
+
+The full combat and struct suites had finished green. Then the one follow-up left, the uncalled projectile_burst in COMBAT (about 250 bytes with its four statics), was deleted; the build, make verify and the combat and missions suites pass again (27 of 27, worst window 1.14). Fix 2 is complete: one burst routine, in MOVE, with the off-map test. Still nothing committed.
+
+commit
+
+****
+
+Committed on feat/sega-port (one commit, amended once to carry this entry, so its hash is not quoted here): the fourteen fixes with their tests, the no-card start, the three speed-ups, the doc corrections, the two new traps and prompts 52-53. Not pushed. The tree is clean.

@@ -1,0 +1,5 @@
+commit
+
+****
+
+Committed on feat/sega-port: the slab paving every square once its footprint passed, a factory's item one its panel offers, the orb off a ruin's marker square, the card check at eight places a page with the page-table guard, the three test cases, the notes, prompts 44-46. Not pushed.

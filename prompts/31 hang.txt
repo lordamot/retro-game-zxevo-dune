@@ -1,0 +1,27 @@
+lets deal with hanging game first. colors are fixed - commit please
+
+file ./prompts/hmmm/hang.mp4 - one more hang exactly at where level should start
+as far as I can see - lego tune does not switch at all now but plays - this means game loop actually hanged
+can we prepare some test dune version without background music loading onto GS - only one lego tune (do not remove from code, just make it disable)? that might be the clue also
+
+if nothing works in tools - lets save handover to resume; and I'll reboot claude code
+
+****
+
+Committed: 4b044da (the start-up rework left from the previous session) and 0ddf11a (the disk delivery, the palette in the border, the boot's RAM clear, the Tutorial below #E0, the emulator's --sd and fillram, the libxpeccy card patch).
+
+The hang. Your observation is the clue: the tune plays on, so the card's mixer is alive, and the game sits in one of its waits on the card. Every wait in src/gs.asm on the card's status port was unbounded - gs_wcmd (a command taken), gs_wdat (a data byte taken), and the inline loops in gs_block, gs_send, gs_send_delta, gs_fetch and gs_stream. A card that keeps mixing but never takes the next command freezes the Z80 for good, and the video shows exactly that screen: the region piece still on the map's dark screen, the level's first commands to the card never answered.
+
+Two things built:
+
+1. Every card wait is now bounded, about 4 seconds at 14 MHz (GS_STALL). When it runs out the card is given up - gs_ok = 0, gs_dead = 1 - the waiting routine carries on as if answered, and every later sound call does nothing. The game goes on in silence. So on the real machine a stuck card now shows as "the music stops after a few seconds and the level starts" instead of a hang, which is itself the diagnosis.
+
+2. The test switch you asked for: debug flag 32 (DBGF_NOLOAD, src/world.asm bit 5). With it only the intro's tune goes to the card at start-up, nothing is loaded from the game's loops afterwards (gs_step does nothing, gs_intro_done does not refill the card), and a tune that is not on the card simply means silence. The code stays; the flag selects. The build is in build-noload/ (python3 tools/build_dune.py --build-dir build-noload --flags 32): build-noload/dune.trd and build-noload/DUNE.DAT.
+
+What to try, in this order, and what each outcome means:
+- build/dune.trd + build/DUNE.DAT (normal, with the bounded waits). If the level starts after a few seconds of silence, the card stopped answering a command and the card is the problem; if it starts with music, the earlier hang was a wait that a real card answers late and the timeout is now the whole fix.
+- build-noload/dune.trd + build-noload/DUNE.DAT. If this one starts levels normally (silent), the background loading - the chunks written into the card's pages under the ROM's "do not mix" flag at $4086 while a tune plays - is what the card cannot take, which points at a ROM other than 1.05a or a card that reads its status differently.
+
+Either way I need to know which card it is (General Sound revision and clock, or a NeoGS, and the ROM version), since the port writes into that ROM's variables by address; a different ROM explains a stuck command, the slowed tempo and the late start together.
+
+make verify passes (22 checks, the sound check included, so a healthy card is not disturbed by the timeouts); make test passes. The handover is in memory (real-evo-spg) in case of a restart. Not committed yet.

@@ -1,0 +1,124 @@
+continue deconstruction - and start from EMC
+
+****
+
+The EMC side is now most of the way closed, and it turned up a correction
+to what I said last time.
+
+The correction first. I had the calling convention backwards. A call site
+is
+
+    push.b  4                  the argument
+    call    0
+    drop    1                  the caller takes its arguments back
+    push    the return value   - only if it wants the answer
+
+and I had been looking for that push *before* the drop. Reading it the
+wrong way round said 13 of the 79 routines the scripts call are questions
+and the other 66 are orders. Reading it the right way round says 36 and
+43. The wrong figure is the one that should have looked suspicious: it had
+the twenty-property getter down as a routine whose answer nobody ever
+wanted.
+
+Then the routines themselves. The 104 call slots are 88 distinct routines,
+because the three tables share some - the delay is UNIT 16, TEAM 0 and
+BUILD 0. Twenty of them are moveq #0,d0 / rts and do nothing at all. Of
+the rest, 48 are now named in res/data/functions.txt, read one at a time
+in orig/sega/src/; the remainder were read and not settled, and the file
+says so rather than putting a name on a guess.
+
+Two things made the reading go quickly once they were found.
+
+The three scripts differ only in which global they work on: $FFDEA0 is the
+unit a UNIT.EMC script is running for, $FFD5AC the structure a BUILD.EMC
+script is running for, $FFDCA8 the team, and $FFC208 whichever of those it
+is - which is what the shared $011xxx routines use. So the same shape of
+code means three different things depending on which table it is in.
+
+And everything a script passes around is a tagged reference: one word, the
+top two bits the kind and the low fourteen the value. The $02Exxx module
+reads them - 0 is nothing, 1 a structure, 2 a unit, 3 a square of the map.
+$02E2FA says whether a reference is still good, $02E256 gives its world
+position, $02E1F6 its map square, $02E17C builds one. That is why a script
+can say "go to that" without caring whether that is a building, a vehicle
+or a patch of sand.
+
+The vocabulary that comes out of it, for a unit: get - twenty properties
+through one switch - and then act, go.to, aim, fire, turn, step, speed,
+stop, die, explode, deliver, dock, launch, delay, distance, enemy?, kind,
+clear?, find.idle, find.home, wander, count. For a building it is much
+shorter: produce, release, animate, aim, fire, sound, target. For a team
+shorter still: members, recruit, centre, find.target, attack, behave.
+
+The fourteen orders
+
+$0436A0 is the routine that gives a unit an order and it reads a table of
+twelve-byte records. The name of order n is the longword four bytes
+*before* its record - that is where the record in front ends - and getting
+that wrong is what puts Move at 0 instead of Attack, which then reports
+every unit in every mission file one order out. The list is Attack, Move,
+Retreat, Guard, Area Guard, Harvest, Return, Stop, Ambush, Sabotage, Die,
+Hunt, Deploy, Destruct.
+
+Two independent checks say the numbering is right. Every unit type's
+default order at +$28 of the unit table comes out sensible - Guard for
+everything that fights, Stop for the Carryall, the Harvester, the MCV and
+every projectile, and Attack for the Sandworm, which is the one thing on
+Arrakis that needs no telling. And the only two orders whose record says
+they may interrupt a unit that is already busy are Die and Destruct.
+
+It is one numbering across the whole game, so missions.txt now says Hunt
+and Ambush for the enemy soldiers and Area Guard for the player's, and a
+script's act reads as a word.
+
+And variable 0 of a unit's script is the order it is under. That is not a
+reading of the pattern: the script object lives at unit+$16 and its
+variables at +$C, so variable 0 is unit+$22, and $043766 inside $0436A0 is
+move.w d3,$22(a2) with d3 the order. So a unit script is a switch on its
+current order, and the twenty-seven entry points are what each kind of
+unit does differently inside it.
+
+What a listing looks like now
+
+    w0:
+        0  4404       push.b    4
+        1  4E00       call    0   ; get facing
+        2  4C01       drop    1
+        3  4200       push    the return value
+        4  4701       push.loc    1
+        5  5103       binary    !=
+        6  2F00 8016  goto-if    w22
+        8  4E1A       call    26  ; stop
+        9  4701       push.loc    1
+       10  4E07       call    7   ; turn
+       11  4C01       drop    1
+    w12:
+       12  440A       push.b    10
+       13  4E00       call    0   ; get turn.left
+       14  4C01       drop    1
+       15  4200       push    the return value
+       16  2F00 8016  goto-if    w22
+       18  440A       push.b    10
+       19  4E10       call    16  ; delay
+       20  4C01       drop    1
+       21  800C       goto    w12
+    w22:
+       22  4801       pop    and return
+
+which is "if you are not facing that way, stop and turn, then wait until
+you have got there" - the routine every other unit routine calls before it
+does anything.
+
+New this pass: res/data/actions.txt. Changed: functions.txt (a name and a
+description per routine, and the corrected question/order split),
+scripts/*.txt (calls named, get and act resolved where the argument is a
+literal), missions.txt and the SCEN*.ini (orders by name), units.txt's
+neighbours.
+
+The rebuild is still byte for byte against the original's SHA-256, and the
+cartridge still reads 14.7% code, 79.8% named data, 5.5% unaccounted for -
+this pass was about what the bytes mean, not about finding more of them.
+
+What is left: the twenty routines that were read and not settled, the
+picture table's extra blocks at $0416DA, bank 04's static data segment,
+and the few-kilobyte stretches in banks 09 and 0C.

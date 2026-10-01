@@ -1,0 +1,33 @@
+continue
+
+****
+
+The game is now playable from power-on: the Mega Drive's front end leads into a battle, a structure's panel starts production, the building goes down from the Yard, and a won or lost mission goes on to the next one or back to the same one. make build and the full verify pass. Nothing is committed.
+
+What verify checks now, all by pressing keys in the emulator:
+- EGA at 14 MHz; Atreides 1 loads; A selects a vehicle, A again gives it Move and it drives off; the credits counter shows the house's credits.
+- A on the Yard twice opens its build panel; the Windtrap is taken, built, and put down below the Yard.
+- From power-on, A on every screen (logos, title, crests, mentat, briefing, campaign map) reaches Atreides 1; a lost mission goes through the Defeat, mentat and score screens and starts again.
+- A battle pass takes 1.8 frames; the sound card loads and the battle music is audible.
+- By hand as well: a won Atreides 2 goes through Victory, the score page and the password for mission 3 (SPICEDANCE) into the Atreides 3 briefing and battle.
+
+Integrated this round
+- The four subsystems' work (movement, combat, structures, houses and AI) assembles and runs together.
+- The front end (another agent, bank FRONT): every screen in the Mega Drive's order, the options with the music, sound and radar switches, the password entry and the cheat words, the ending.
+- The structure panels (the same agent, new bank PANEL on page 122): the build list, the factories' units, the Starport, repair, stop and upgrade. The Palace's weapon is armed and fired from the battlefield (UI).
+- Mission flow in MAIN: front end, briefing, campaign map, battle, result, next mission.
+- The radar (the Outpost-and-power rule, the switching animations), explosions and smoke, the Harvester's dust, corners round a selected building, placing a building with a footprint.
+
+Bugs found and fixed on the way
+- No mission loaded: the loader called another bank with a near call, and its reset wiped the mission number after setting it; every house also got index 0.
+- The side lists were never reset to "none", and linking a slot twice made it its own successor: Atreides 2 hung at its start, and destroying buildings could hang the target search.
+- The renderer: a loop that never stopped at its end (a pass had taken 9 frames), a sprite entry one byte short, and a per-sprite dirty test that cost more than the drawing; the test is per square now, which roughly halves the renderer's cost on a full 64x64 mission.
+- A debug handle came out of it: tests can call any routine inside a running battle (tools/dune_test.py Machine(..., battle=N)).
+
+Still open
+- The Tutorial; the campaign map's zoom (it blinks instead); the title's starfield scroll.
+- The grid cursor while placing, the radar's view marker, screen shake, the low-credits warning, the Starport's lights.
+- The MCV deploys without its animation; B's full behaviour.
+- Two tunes are left out of the 2 MB sound set; the subsystems' test suites are partial.
+
+The docs (tools.md, progress.md, port-code.md, the build and game skills) describe the SPG port. The exchange that started the port is in prompts/18 sega port.txt, taken word for word from the session transcript.

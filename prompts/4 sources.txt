@@ -1,0 +1,31 @@
+whats left?
+
+****
+
+Measured, not remembered — and measuring turned up a gap I'd missed.
+
+1 MB: 14.9% code, 35.7% named data, 49.4% (517 KB) still anonymous dc.b in the listing.
+
+The thing I should have done and didn't
+
+Most of that 517 KB is the compressed art — which I can now decompress but never fed back into the disassembly. lcw() doesn't report how many input bytes it consumed, so sega_extract.py can't mark where a stream starts and ends, and the listing still shows 21 007 tiles' worth of Format80 as anonymous data.
+
+Fix is small: make lcw return (output, consumed), then add every stream extent to NAMED. That alone should take "unexplained" from 49.4% to roughly single digits — it's converting work already done into listing coverage rather than new reverse engineering. Cheapest, highest value item left by a wide margin.
+
+After that
+
+The 104 EMC routines. A script's call resolves to a 68000 address now, but what each routine does needs reading one at a time — 64 for UNIT, 25 BUILD, 15 TEAM. This is the difference between the AI listings showing structure and showing meaning. Ordinary reading work, no search left in it.
+
+The music sequence format. The Z80 driver is disassembled (3uence data and the 68000↔Z80 protocol aren't decoded.
+
+Structure records in mission files. Count and stride measureeld holds only 6 or 7 and another runs past 4095, which noreading of "health" and "position on a 64×64 map" explains — something about them differs from unit records.
+
+Code coverage past 14.9%. Limited by computed dispatch (jmp (a0,d0.w)) the trace can't follow. Diminishing returns.
+
+Small loose ends
+
+- $095CD0 — the shared sprite entry for Saboteur and the nine projectiles doesn't unpack; probably a different layout.
+- Block art is rendered in grey because a block carries no pur it uses is decided by the loading code. Traceable if worth it.
+- The 16 KB exact duplicate at $0001BC == $029C6C, still une
+
+Want me to start with the stream-extent feedback? It's the oy sitting there unused.

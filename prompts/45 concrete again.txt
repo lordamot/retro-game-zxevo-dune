@@ -1,0 +1,14 @@
+once again about concrete slabs. you are wrong.
+let me explain.
+full rock level, yard in the middle
+we build concrete under the yard - it builds all four because it is connected to base, and checks started from top left right? again - all 4 placed because *full concrete slab connected to base*
+and without bug fix we build above the yard - your code before the fix wrongly put only 2 nearby yard itself. simply because check failed for top left and then top right blocks in concrete slab. which is wrong as cursor correctly shows that *place is free and 4-blocks of concrete slab IS connected to base*
+it is not port exception, it is natural bug in porting and needs to be fixed as bug fix not as port specific exception
+
+understood about sound - lets fix concrete placement properly and I'll test
+
+****
+
+Agreed, and the fix is in the build you have: once the footprint has passed, each square is asked only whether it can take concrete, and a 4-Slab two squares above the Yard paves all four. I have rewritten the note and the code comment as the bug it was - the per-square check asked the touching question a second time, per square, after the footprint had already answered it for the whole slab - rather than as a port exception. One thing stays written down for whoever reads the 68000 next: the listing at $00E87E does call the per-square check with nothing set, and its ring for a 1x1 layout is the eight neighbours, so a reader of the listing would put the bug back; the note says not to.
+
+build/dune.trd + build/DUNE.DAT carry it, with the factory's item, the orb and the wider card check. Not committed.
