@@ -219,6 +219,7 @@ def build_evo():
     del fresh
     patch_sdcard(src / "src/libxpeccy/sdcard.c")
     patch_7ffd(src / "src/libxpeccy/hardware/pentevo.c")
+    patch_evo_rzx(src / "src/libxpeccy/hardware/pentevo.c")
     patch_gs_clock(src / "src/libxpeccy/sound")
     inc, lib = fetch_sdl()
     obj = TMP / "evo-build"
@@ -256,6 +257,27 @@ def patch_7ffd(path):
     assert old in s, "libxpeccy pentevo.c: the 7FFD port entry moved"
     path.write_text(s.replace(old, new, 1))
     print("  patched libxpeccy pentevo.c ($7FFD decoded on A15 alone)")
+
+
+def patch_evo_rzx(path):
+    """libxpeccy's Computer has its RZX player only under HAVEZLIB, and
+    zx_irq (hardware/common.c) guards it so; evo_irq reads comp->rzx.play
+    unguarded and does not compile without zlib.  Guard it as zx_irq
+    does: with no RZX player, nothing is ever being played back."""
+    s = path.read_text()
+    new = ("#if HAVEZLIB\t\t\t\t// evo-emu: rzx exists only with zlib\n"
+           "\t\t\tif (!comp->rzx.play) {\n"
+           "#else\n"
+           "\t\t\t{\n"
+           "#endif\n")
+    if new in s:
+        return
+    old = ("\t\tcase IRQ_VID_INT:\n"
+           "\t\t\tif (!comp->rzx.play) {\n")
+    if old not in s:
+        return                  # upstream guarded it (or dropped it) itself
+    path.write_text(s.replace(old, "\t\tcase IRQ_VID_INT:\n" + new, 1))
+    print("  patched libxpeccy pentevo.c (evo_irq builds without zlib)")
 
 
 def patch_gs_clock(d):
