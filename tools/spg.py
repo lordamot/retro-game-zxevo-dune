@@ -33,6 +33,25 @@ The format (as libxpeccy's and ZEsarUX's loaders read it):
 """
 
 import datetime
+import os
+import subprocess
+
+
+def _build_time():
+    # the header's date and time, kept reproducible: SOURCE_DATE_EPOCH if
+    # set, else the last git commit's time, else (no git) the clock
+    ts = os.environ.get("SOURCE_DATE_EPOCH")
+    if not ts:
+        try:
+            ts = subprocess.run(
+                ["git", "log", "-1", "--format=%ct"],
+                cwd=os.path.dirname(os.path.abspath(__file__)),
+                capture_output=True, text=True, check=True).stdout.strip()
+        except (OSError, subprocess.CalledProcessError):
+            ts = ""
+    if not ts:
+        return datetime.datetime.now()
+    return datetime.datetime.fromtimestamp(int(ts), datetime.timezone.utc)
 
 
 def write_spg(path, pages, pc, sp, page3=0, clock=2, ei=False,
@@ -51,7 +70,7 @@ def write_spg(path, pages, pc, sp, page3=0, clock=2, ei=False,
         end = (end + 511) & ~511
         blocks.append((page, data[:end].ljust(end, b"\0")))
     assert 0 < len(blocks) <= 256, f"{len(blocks)} blocks"
-    now = datetime.datetime.now()
+    now = _build_time()
     hd = bytearray(0x100)
     hd[0:32] = name.encode("ascii")[:32].ljust(32, b" ")
     hd[0x20:0x2C] = b"SpectrumProg"
