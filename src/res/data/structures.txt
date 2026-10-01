@@ -1,0 +1,695 @@
+# structures.txt - the 19 structure types, the table at $06AFA6
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source, compiled by tools/dune_data.py.
+# The format is in the header of src/res/data/tables.txt.
+
+table struct_info
+# The 19 structure types (S6).  ROM pointers at $06B94C.
+rom $06AFA6
+count 19
+size $66
+prefix SI_
+idprefix STRUCT_
+field $00 w      f00                    ; PC stringID_abbrev
+field $02 str    name                   ; the name (units.txt, buildings.txt)
+field $06 w      f06                    ; PC stringID_full
+field $08 str    wsa                    ; the PC picture file it was drawn from
+field $0C hw     flags                  ; S6/S3/S5: bit 1 factory, 3 a slab (MD), 4 busyStateIsIncoming, 7 conquerable
+field $0E w      spawnChance            ; S4: chance at +$E that a Soldier is left
+field $10 w      hitpoints              ; S5/S6
+field $12 w      sight                  ; S8
+field $14 w      f14                    ; PC spriteID
+field $16 w      buildCredits           ; S6
+field $18 w      buildTime              ; S6: in build ticks
+field $1A w      availableCampaign      ; S6: offered from campaign n - 1
+field $1C hl     structuresRequired     ; S6: a longword; bit 18 the Outpost
+field $20 b      sortPriority           ; S6
+field $21 b      upgradeLevelRequired   ; S6
+field $22 w      f22                    ; PC actionsPlayer[0]
+field $24 w      f24                    ; PC actionsPlayer[1]
+field $26 w      f26                    ; PC actionsPlayer[2]
+field $28 w      f28                    ; PC actionsPlayer[3]
+field $2A w      f2A
+field $2C w      f2C                    ; PC hintStringID
+field $2E w      priorityBuild          ; S6
+field $30 w      priorityTarget         ; S6
+field $32 hb     availableHouse         ; S6: a bit per house
+field $33 b      f33
+field $34 hl     enterFilter            ; S3: a bit per unit type that may enter
+field $38 w      creditsStorage         ; S5
+field $3A sw     powerUsage             ; S5: negative produces
+field $3C w      layout                 ; S6/S8: index into the tbl_layout_* tables
+field $3E w      f3E                    ; PC iconGroup
+field $40 ref*3  animation:struct_anim  ; S6: three animation scripts, word index into tbl_struct_anim
+field $4C sw*10  buildableUnits         ; S6: -1 unused; read for Barracks and WOR
+field $60 w*3    upgradeCampaign        ; S6
+
+records
+record 0 Slab
+  f00 = 232
+  name = "Concrete"
+  f06 = 233
+  wsa = "slab.wsa"
+  flags = $000C
+  spawnChance = 0
+  hitpoints = 10
+  sight = 1
+  f14 = 65
+  buildCredits = 5
+  buildTime = 4
+  availableCampaign = 1
+  structuresRequired = $00000000
+  sortPriority = 2
+  upgradeLevelRequired = 9
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 2
+  priorityBuild = 0
+  priorityTarget = 5
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 0
+  layout = 0
+  f3E = 8
+  animation = struct_anim[5] struct_anim[5] struct_anim[5]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 1 Slab4
+  f00 = 234
+  name = "Concrete"
+  f06 = 235
+  wsa = "4slab.wsa"
+  flags = $000C
+  spawnChance = 0
+  hitpoints = 40
+  sight = 1
+  f14 = 83
+  buildCredits = 15
+  buildTime = 4
+  availableCampaign = 4
+  structuresRequired = $00000000
+  sortPriority = 4
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 2
+  priorityBuild = 0
+  priorityTarget = 10
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 0
+  layout = 3
+  f3E = 8
+  animation = struct_anim[5] struct_anim[5] struct_anim[5]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 2 Palace
+  f00 = 236
+  name = "Palace"
+  f06 = 237
+  wsa = "palace.wsa"
+  flags = $0000
+  spawnChance = 128
+  hitpoints = 2000
+  sight = 5
+  f14 = 66
+  buildCredits = 999
+  buildTime = 32
+  availableCampaign = 8
+  structuresRequired = $00000A00
+  sortPriority = 33
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 3
+  priorityBuild = 0
+  priorityTarget = 400
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 80
+  layout = 6
+  f3E = 11
+  animation = struct_anim[17] struct_anim[17] struct_anim[17]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 3 LightFactory
+  f00 = 238
+  name = "  Vehicle   "
+  f06 = 239
+  wsa = "liteftry.wsa"
+  flags = $0082
+  spawnChance = 64
+  hitpoints = 800
+  sight = 3
+  f14 = 67
+  buildCredits = 400
+  buildTime = 24
+  availableCampaign = 3
+  structuresRequired = $00001200
+  sortPriority = 14
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 4
+  priorityBuild = 0
+  priorityTarget = 200
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 20
+  layout = 5
+  f3E = 13
+  animation = struct_anim[86] struct_anim[91] struct_anim[96]
+  buildableUnits = 16 13 15 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 3 4 0
+record 4 HeavyFactory
+  f00 = 240
+  name = "  Vehicle   "
+  f06 = 241
+  wsa = "hvyftry.wsa"
+  flags = $0082
+  spawnChance = 64
+  hitpoints = 1200
+  sight = 3
+  f14 = 68
+  buildCredits = 600
+  buildTime = 36
+  availableCampaign = 4
+  structuresRequired = $00040208
+  sortPriority = 14
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 5
+  priorityBuild = 0
+  priorityTarget = 600
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 35
+  layout = 5
+  f3E = 13
+  animation = struct_anim[66] struct_anim[71] struct_anim[76]
+  buildableUnits = 15 13 10 7 16 9 11 8 17 12
+  upgradeCampaign = 4 5 6
+record 5 HiTech
+  f00 = 242
+  name = "Hi-Tech"
+  f06 = 243
+  wsa = "hitcftry.wsa"
+  flags = $0082
+  spawnChance = 64
+  hitpoints = 1000
+  sight = 3
+  f14 = 69
+  buildCredits = 500
+  buildTime = 30
+  availableCampaign = 5
+  structuresRequired = $00040210
+  sortPriority = 30
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 6
+  priorityBuild = 0
+  priorityTarget = 200
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 35
+  layout = 3
+  f3E = 14
+  animation = struct_anim[41] struct_anim[46] struct_anim[56]
+  buildableUnits = 0 1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 7 0 0
+record 6 IX
+  f00 = 244
+  name = "IX"
+  f06 = 245
+  wsa = "ix.wsa"
+  flags = $0000
+  spawnChance = 192
+  hitpoints = 1000
+  sight = 3
+  f14 = 70
+  buildCredits = 500
+  buildTime = 30
+  availableCampaign = 7
+  structuresRequired = $00001A00
+  sortPriority = 34
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 7
+  priorityBuild = 0
+  priorityTarget = 100
+  availableHouse = $00
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 40
+  layout = 3
+  f3E = 15
+  animation = struct_anim[130] struct_anim[130] struct_anim[130]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 7 WOR
+  f00 = 246
+  name = "Barracks"
+  f06 = 247
+  wsa = "wor.wsa"
+  flags = $0002
+  spawnChance = 128
+  hitpoints = 800
+  sight = 3
+  f14 = 71
+  buildCredits = 400
+  buildTime = 26
+  availableCampaign = 5
+  structuresRequired = $00040600
+  sortPriority = 16
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 8
+  priorityBuild = 0
+  priorityTarget = 175
+  availableHouse = $3D
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 20
+  layout = 3
+  f3E = 18
+  animation = struct_anim[135] struct_anim[135] struct_anim[135]
+  buildableUnits = 5 3 2 4 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 6 0 0
+record 8 ConstYard
+  f00 = 248
+  name = "Const Yard"
+  f06 = 249
+  wsa = "construc.wsa"
+  flags = $0082
+  spawnChance = 64
+  hitpoints = 800
+  sight = 3
+  f14 = 72
+  buildCredits = 400
+  buildTime = 20
+  availableCampaign = 99
+  structuresRequired = $0000FFFF
+  sortPriority = 0
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 9
+  priorityBuild = 0
+  priorityTarget = 300
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 0
+  layout = 3
+  f3E = 17
+  animation = struct_anim[140] struct_anim[140] struct_anim[140]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 6 0 0
+record 9 Windtrap
+  f00 = 250
+  name = "Windtrap"
+  f06 = 251
+  wsa = "windtrap.wsa"
+  flags = $0080
+  spawnChance = 64
+  hitpoints = 400
+  sight = 2
+  f14 = 73
+  buildCredits = 300
+  buildTime = 12
+  availableCampaign = 1
+  structuresRequired = $00000000
+  sortPriority = 6
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 10
+  priorityBuild = 0
+  priorityTarget = 300
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = -100
+  layout = 3
+  f3E = 19
+  animation = struct_anim[176] struct_anim[176] struct_anim[176]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 10 Barracks
+  f00 = 252
+  name = "Barracks"
+  f06 = 253
+  wsa = "barrac.wsa"
+  flags = $0002
+  spawnChance = 128
+  hitpoints = 600
+  sight = 2
+  f14 = 74
+  buildCredits = 300
+  buildTime = 18
+  availableCampaign = 2
+  structuresRequired = $00040200
+  sortPriority = 16
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 11
+  priorityBuild = 0
+  priorityTarget = 100
+  availableHouse = $3E
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 10
+  layout = 3
+  f3E = 18
+  animation = struct_anim[186] struct_anim[186] struct_anim[186]
+  buildableUnits = 4 2 5 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 2 4 0
+record 11 Starport
+  f00 = 254
+  name = "Starport"
+  f06 = 255
+  wsa = "starport.wsa"
+  flags = $0092
+  spawnChance = 128
+  hitpoints = 1000
+  sight = 6
+  f14 = 75
+  buildCredits = 500
+  buildTime = 30
+  availableCampaign = 6
+  structuresRequired = $00001200
+  sortPriority = 32
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 12
+  priorityBuild = 0
+  priorityTarget = 250
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 50
+  layout = 6
+  f3E = 20
+  animation = struct_anim[22] struct_anim[27] struct_anim[36]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 12 Refinery
+  f00 = 256
+  name = "Refinery"
+  f06 = 257
+  wsa = "refinery.wsa"
+  flags = $0090
+  spawnChance = 128
+  hitpoints = 900
+  sight = 4
+  f14 = 76
+  buildCredits = 400
+  buildTime = 20
+  availableCampaign = 1
+  structuresRequired = $00000200
+  sortPriority = 8
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 13
+  priorityBuild = 0
+  priorityTarget = 300
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00010000
+  creditsStorage = 1005
+  powerUsage = 30
+  layout = 5
+  f3E = 21
+  animation = struct_anim[111] struct_anim[116] struct_anim[125]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 13 Repair
+  f00 = 258
+  name = "Repair"
+  f06 = 259
+  wsa = "repair.wsa"
+  flags = $0080
+  spawnChance = 128
+  hitpoints = 1800
+  sight = 3
+  f14 = 77
+  buildCredits = 700
+  buildTime = 20
+  availableCampaign = 5
+  structuresRequired = $00040208
+  sortPriority = 28
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 14
+  priorityBuild = 0
+  priorityTarget = 600
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $0003FF80
+  creditsStorage = 0
+  powerUsage = 20
+  layout = 5
+  f3E = 22
+  animation = struct_anim[145] struct_anim[159] struct_anim[164]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 14 Wall
+  f00 = 260
+  name = "Wall"
+  f06 = 261
+  wsa = "wall.wsa"
+  flags = $0004
+  spawnChance = 0
+  hitpoints = 140
+  sight = 1
+  f14 = 78
+  buildCredits = 50
+  buildTime = 10
+  availableCampaign = 4
+  structuresRequired = $00040200
+  sortPriority = 18
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 15
+  priorityBuild = 0
+  priorityTarget = 30
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 0
+  layout = 0
+  f3E = 6
+  animation = none none none
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 15 Turret
+  f00 = 262
+  name = "Turret"
+  f06 = 263
+  wsa = "turret.wsa"
+  flags = $0080
+  spawnChance = 64
+  hitpoints = 250
+  sight = 2
+  f14 = 79
+  buildCredits = 125
+  buildTime = 16
+  availableCampaign = 5
+  structuresRequired = $00040200
+  sortPriority = 22
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 16
+  priorityBuild = 75
+  priorityTarget = 150
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 10
+  layout = 0
+  f3E = 23
+  animation = none none none
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 16 RTurret
+  f00 = 264
+  name = "R-Turret"
+  f06 = 265
+  wsa = "rturret.wsa"
+  flags = $0080
+  spawnChance = 64
+  hitpoints = 500
+  sight = 5
+  f14 = 80
+  buildCredits = 250
+  buildTime = 24
+  availableCampaign = 0
+  structuresRequired = $00040200
+  sortPriority = 26
+  upgradeLevelRequired = 1
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 17
+  priorityBuild = 100
+  priorityTarget = 75
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 20
+  layout = 0
+  f3E = 24
+  animation = none none none
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 17 Silo
+  f00 = 266
+  name = "Spice Silo"
+  f06 = 267
+  wsa = "storage.wsa"
+  flags = $0080
+  spawnChance = 0
+  hitpoints = 300
+  sight = 2
+  f14 = 81
+  buildCredits = 150
+  buildTime = 12
+  availableCampaign = 2
+  structuresRequired = $00001200
+  sortPriority = 12
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 18
+  priorityBuild = 0
+  priorityTarget = 150
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 1000
+  powerUsage = 5
+  layout = 3
+  f3E = 25
+  animation = struct_anim[181] struct_anim[181] struct_anim[181]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+record 18 Outpost
+  f00 = 268
+  name = "Outpost"
+  f06 = 269
+  wsa = "headqrts.wsa"
+  flags = $0000
+  spawnChance = 128
+  hitpoints = 1000
+  sight = 10
+  f14 = 82
+  buildCredits = 400
+  buildTime = 20
+  availableCampaign = 2
+  structuresRequired = $00000200
+  sortPriority = 10
+  upgradeLevelRequired = 0
+  f22 = 0
+  f24 = 0
+  f26 = 0
+  f28 = 0
+  f2A = 0
+  f2C = 19
+  priorityBuild = 0
+  priorityTarget = 275
+  availableHouse = $3F
+  f33 = 0
+  enterFilter = $00000000
+  creditsStorage = 0
+  powerUsage = 30
+  layout = 3
+  f3E = 26
+  animation = struct_anim[8] struct_anim[8] struct_anim[8]
+  buildableUnits = -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  upgradeCampaign = 0 0 0
+end

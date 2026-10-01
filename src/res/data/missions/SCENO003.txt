@@ -1,0 +1,141 @@
+# SCENO003.txt - mission 3 of the Ordos.
+#
+# From orig/dune2.gen $05DEE4, 1152 bytes: SCENO003.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTVEHC.WSA" 14
+BASIC WinPicture   "WIN1.WSA" 10 hex:0057
+BASIC BriefPicture "QUAD.WSA" 10 hex:0057
+BASIC Timeout      0
+BASIC MapScale     0
+BASIC CursorPos    3436   ; x44 y53
+BASIC TacticalPos  3436   ; x44 y53
+BASIC LoseFlags    1
+BASIC WinFlags     19
+MAP   Seed  12
+HOUSE Atreides   Quota    0
+HOUSE Atreides   Credits  800
+HOUSE Atreides   Brain    C
+HOUSE Atreides   MaxUnit  19
+HOUSE Ordos      Quota    0
+HOUSE Ordos      Credits  1500
+HOUSE Ordos      Brain    H
+HOUSE Ordos      MaxUnit  14
+TEAM  1   Atreides   Normal    Foot      3 4
+TEAM  2   Atreides   Normal    Foot      3 5
+TEAM  3   Atreides   Normal    Wheeled   3 5
+TEAM  4   Atreides   Normal    Foot      3 4
+TEAM  5   Atreides   Normal    Wheeled   3 5
+TEAM  6   Atreides   Normal    Wheeled   3 4
+UNIT  1   Atreides   Trike       256 603   S   Ambush    ; x27 y9
+UNIT  2   Atreides   Infantry    256 126   S   Hunt      ; x62 y1
+UNIT  4   Atreides   Trike       256 282   S   Ambush    ; x26 y4
+UNIT  6   Atreides   Infantry    256 461   S   Ambush    ; x13 y7
+UNIT  7   Atreides   Trike       256 474   S   AreaGuard ; x26 y7
+UNIT  8   Atreides   Quad        256 733   S   AreaGuard ; x29 y11
+UNIT  9   Atreides   Quad        256 786   S   AreaGuard ; x18 y12
+UNIT  10  Fremen     Sandworm    256 825   S   AreaGuard ; x57 y12
+UNIT  11  Atreides   Troopers    256 920   S   AreaGuard ; x24 y14
+UNIT  12  Atreides   Trike       256 936   SE  Ambush    ; x40 y14
+UNIT  14  Atreides   Quad        256 986   S   AreaGuard ; x26 y15
+UNIT  15  Atreides   Troopers    256 1109  S   Ambush    ; x21 y17
+UNIT  16  Atreides   Quad        256 1112  S   AreaGuard ; x24 y17
+UNIT  17  Atreides   Quad        256 1236  S   AreaGuard ; x20 y19
+UNIT  19  Fremen     Sandworm    256 2015  SE  AreaGuard ; x31 y31
+UNIT  22  Fremen     Sandworm    256 2836  S   AreaGuard ; x20 y44
+UNIT  24  Ordos      Soldier     256 3307  S   Guard     ; x43 y51
+UNIT  25  Ordos      Infantry    256 3309  S   Guard     ; x45 y51
+UNIT  26  Ordos      RaiderTrike 256 3434  S   Guard     ; x42 y53
+UNIT  27  Ordos      RaiderTrike 256 3439  S   Guard     ; x47 y53
+UNIT  28  Ordos      Soldier     256 3496  S   Guard     ; x40 y54
+UNIT  29  Ordos      RaiderTrike 256 3562  S   Guard     ; x42 y55
+UNIT  30  Ordos      RaiderTrike 256 3567  S   Guard     ; x47 y55
+UNIT  31  Ordos      Trooper     256 3628  S   Guard     ; x44 y56
+GEN   206   Atreides   Slab   ; x14 y3
+STRUCT 32  Atreides   Windtrap     256 207   ; x15 y3
+GEN   209   Atreides   Slab   ; x17 y3
+STRUCT 33  Atreides   Silo         256 212   ; x20 y3
+GEN   214   Atreides   Slab   ; x22 y3
+STRUCT 34  Atreides   Silo         256 215   ; x23 y3
+GEN   270   Atreides   Slab   ; x14 y4
+GEN   273   Atreides   Slab   ; x17 y4
+GEN   274   Atreides   Slab   ; x18 y4
+GEN   275   Atreides   Slab   ; x19 y4
+GEN   278   Atreides   Slab   ; x22 y4
+GEN   334   Atreides   Slab   ; x14 y5
+GEN   335   Atreides   Slab   ; x15 y5
+GEN   336   Atreides   Slab   ; x16 y5
+GEN   337   Atreides   Slab   ; x17 y5
+GEN   338   Atreides   Slab   ; x18 y5
+STRUCT 35  Atreides   Refinery     256 339   ; x19 y5
+GEN   342   Atreides   Slab   ; x22 y5
+STRUCT 36  Atreides   Silo         256 343   ; x23 y5
+GEN   399   Atreides   Slab   ; x15 y6
+STRUCT 37  Atreides   Barracks     256 400   ; x16 y6
+GEN   402   Atreides   Slab   ; x18 y6
+GEN   406   Atreides   Slab   ; x22 y6
+GEN   463   Atreides   Slab   ; x15 y7
+GEN   466   Atreides   Slab   ; x18 y7
+GEN   467   Atreides   Slab   ; x19 y7
+GEN   468   Atreides   Slab   ; x20 y7
+GEN   469   Atreides   Slab   ; x21 y7
+GEN   470   Atreides   Slab   ; x22 y7
+GEN   471   Atreides   Slab   ; x23 y7
+GEN   472   Atreides   Slab   ; x24 y7
+GEN   527   Atreides   Slab   ; x15 y8
+GEN   528   Atreides   Slab   ; x16 y8
+GEN   529   Atreides   Slab   ; x17 y8
+GEN   530   Atreides   Slab   ; x18 y8
+STRUCT 38  Atreides   ConstYard    256 531   ; x19 y8
+GEN   533   Atreides   Slab   ; x21 y8
+STRUCT 39  Atreides   Windtrap     256 534   ; x22 y8
+GEN   536   Atreides   Slab   ; x24 y8
+GEN   591   Atreides   Slab   ; x15 y9
+STRUCT 40  Atreides   LightFactory 256 592   ; x16 y9
+GEN   597   Atreides   Slab   ; x21 y9
+GEN   600   Atreides   Slab   ; x24 y9
+GEN   655   Atreides   Slab   ; x15 y10
+GEN   659   Atreides   Slab   ; x19 y10
+GEN   660   Atreides   Slab   ; x20 y10
+GEN   661   Atreides   Slab   ; x21 y10
+GEN   662   Atreides   Slab   ; x22 y10
+GEN   663   Atreides   Slab   ; x23 y10
+GEN   664   Atreides   Slab   ; x24 y10
+GEN   665   Atreides   Slab   ; x25 y10
+GEN   666   Atreides   Slab   ; x26 y10
+GEN   667   Atreides   Slab   ; x27 y10
+GEN   719   Atreides   Slab   ; x15 y11
+GEN   720   Atreides   Slab   ; x16 y11
+GEN   721   Atreides   Slab   ; x17 y11
+GEN   722   Atreides   Slab   ; x18 y11
+GEN   725   Atreides   Slab   ; x21 y11
+STRUCT 41  Atreides   Windtrap     256 726   ; x22 y11
+GEN   728   Atreides   Slab   ; x24 y11
+STRUCT 42  Atreides   LightFactory 256 729   ; x25 y11
+GEN   789   Atreides   Slab   ; x21 y12
+GEN   792   Atreides   Slab   ; x24 y12
+GEN   852   Atreides   Slab   ; x20 y13
+GEN   853   Atreides   Slab   ; x21 y13
+GEN   854   Atreides   Slab   ; x22 y13
+GEN   855   Atreides   Slab   ; x23 y13
+GEN   916   Atreides   Slab   ; x20 y14
+STRUCT 43  Atreides   Outpost      256 917   ; x21 y14
+GEN   980   Atreides   Slab   ; x20 y15
+GEN   983   Atreides   Slab   ; x23 y15
+GEN   1047  Atreides   Slab   ; x23 y16
+STRUCT 44  Ordos      ConstYard    256 3436  ; x44 y53
+END

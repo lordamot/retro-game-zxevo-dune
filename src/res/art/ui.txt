@@ -1,0 +1,809 @@
+# ui.txt - the Mega Drive Dune II's screens, as the port rebuilds them.
+#
+# Written by tools/sega/port_ui.py (its docstring says how each capture is reached).
+# Pictures are src/res/art/ui/*.png: RGBA in the Mega Drive's own colours (v*255//7),
+# alpha 0 where the VDP draws nothing.  Positions are screen pixels on the Mega Drive's
+# 320x224; 'least' names the 24 lines the port's 320x200 can best do without.
+# Palette lines are the 4 x 16 colours in CRAM at the capture, as RRGGBB; pen 0 is
+# transparent (the backdrop).  Text is printed with a font (== fonts at the end):
+# 'x y line "text"' - the palette line is the line the glyphs are drawn in.
+
+== logos - Virgin and Westwood (the opening)
+   capture logos   size 320x224
+   least   rows 208-223: stars only
+   palette
+     0: 000000 FFDA91 FFB66D DA9148 B66D24 914824 6D2400 482400 240000 000000 000024 4891FF 486DDA 2448B6 002491 000048
+     1: 000000 FF4848 B60000 6D0000 000000 FFB6B6 FFFFFF 919191 FF00FF FF00FF FF00FF FF00FF FF00FF FFFFFF FF00FF 000000
+     2: 000000 FFFFFF FFDADA FFB6B6 FF9191 FF6D6D FF4848 DA2424 B60000 910000 B6B6DA 48486D 000000 B6B6DA 48486D FF00FF
+     3: 000000 24B6FF 0091FF 246DFF 246DDA 0048DA 0048B6 004891 002491 00246D 00006D 000048 24B6FF 91DAFF DADADA 000000
+   pictures (file, x, y, w x h, layer, note)
+     title_virgin.png                    119   13   93 x 83  plane A
+     title_westwood.png                   60  106  200 x 60  plane A   with AND above it
+     title_copyright.png                  48  176  221 x 32  plane A
+     title_star_0.png                      -    -    5 x 5   plane B   a star of the scrolling starfield
+     title_star_1.png                      -    -    8 x 8   plane B   a star of the scrolling starfield
+   notes
+     starfield: plane B is 1024x256 and scrolls; screen x = (plane x + hscroll) mod 1024, hscroll 320 at rest.  Stars (plane x, y, glyph):
+       897,1,0 656,8,1 809,9,0 1009,9,0 25,17,0 225,17,0 345,17,0 545,17,0 729,17,0 873,17,0
+       929,17,0 961,17,0 128,24,1 448,24,1 824,40,1 289,41,0 609,41,0 641,41,0 1016,56,1 16,64,1
+       336,64,1 720,64,1 65,65,0 153,65,0 385,65,0 473,65,0 769,65,0 264,72,1 584,72,1 313,73,0
+       633,73,0 689,81,0 184,96,1 504,96,1 105,105,0 425,105,0 761,105,0 1,113,0 321,113,0 217,121,0
+       305,121,0 537,121,0 625,121,0 1009,121,0 673,137,0 121,145,0 441,145,0 40,152,1 360,152,1 744,152,1
+       1000,160,1 273,161,0 593,161,0 705,161,0 217,169,0 537,169,0 656,176,1 808,184,1 121,185,0 441,185,0
+       41,193,0 361,193,0 745,193,0 273,201,0 593,201,0 977,201,0 152,216,1 472,216,1 856,216,1 785,217,0
+       744,232,1 905,233,0 976,240,1 689,241,0 1009,241,0
+
+== present - PRESENT
+   capture present   size 320x224
+   least   rows 200-223: stars only
+   palette
+     0: 000000 FFDA91 FFB66D DA9148 B66D24 914824 6D2400 482400 240000 000000 000024 4891FF 486DDA 2448B6 002491 000048
+     1: 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000
+     2: 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000
+     3: 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 242424 000000 000000
+   text (x, y, line, font, layer)
+      128  112  3  title   A  "PRESENT"
+   notes
+     the logos fade out, then PRESENT (font title, line 3) fades in and out over the stars; frames ~1100-1250 after power-on
+
+== title - Title and main menu
+   capture title   size 320x224
+   least   rows 208-223: the licence line (keep it at 192) and stars; or drop rows 0-23, stars only
+   palette
+     0: 000000 FFDA91 FFB66D DA9148 B66D24 914824 6D2400 482400 240000 000000 000024 4891FF 486DDA 2448B6 002491 000048
+     1: 000000 FF4848 B60000 6D0000 000000 FFB6B6 FFFFFF 919191 FF00FF FF00FF FF00FF FF00FF FF00FF FFFFFF FF00FF 000000
+     2: 000000 FFFFFF FFDADA FFB6B6 FF9191 FF6D6D FF4848 DA2424 B60000 910000 B6B6DA 48486D 000000 B6B6B6 48486D 6D6D6D
+     3: 000000 24B6FF 0091FF 246DFF 246DDA 0048DA 0048B6 004891 002491 00246D 00006D 000048 24B6FF FFFFFF 6D6D6D 000000
+   pictures (file, x, y, w x h, layer, note)
+     title_planet.png                     81   32  215 x 168 plane B   at rest; its plane x is 785
+     title_logo.png                       39   71  241 x 36  plane A   DUNE
+     title_subtitle.png                   49  125  215 x 15  plane A   The Battle for Arrakis
+     title_licence.png                    96  202  128 x 6   plane A   LICENSED BY SEGA ENTERPRISES, LTD.
+     title_pointer_0.png                 121  161    6 x 6   sprite    the menu pointer, frame 0
+     title_pointer_1.png                 121  161    6 x 6   sprite    the menu pointer, frame 1
+     title_pointer_2.png                 121  161    6 x 6   sprite    the menu pointer, frame 2
+     title_pointer_3.png                 121  161    6 x 6   sprite    the menu pointer, frame 3
+     title_pointer_4.png                 121  161    6 x 6   sprite    the menu pointer, frame 4
+     title_ship_00.png                   247   75    3 x 4   sprites   fly-in frame 0, frame 1560 after power-on
+     title_ship_01.png                    48  187   96 x 44  sprites   fly-in frame 1, frame 1563 after power-on
+     title_ship_02.png                    58  177   89 x 41  sprites   fly-in frame 2, frame 1569 after power-on
+     title_ship_03.png                    74  169   72 x 34  sprites   fly-in frame 3, frame 1575 after power-on
+     title_ship_04.png                    94  162   48 x 22  sprites   fly-in frame 4, frame 1581 after power-on
+     title_ship_05.png                   110  155   31 x 16  sprites   fly-in frame 5, frame 1587 after power-on
+     title_ship_06.png                   122  145   23 x 12  sprites   fly-in frame 6, frame 1593 after power-on
+     title_ship_07.png                   131  134   19 x 10  sprites   fly-in frame 7, frame 1599 after power-on
+     title_ship_08.png                   141  124   15 x 9   sprites   fly-in frame 8, frame 1605 after power-on
+     title_ship_09.png                   150  112   12 x 8   sprites   fly-in frame 9, frame 1611 after power-on
+     title_ship_10.png                   158  103   10 x 6   sprites   fly-in frame 10, frame 1617 after power-on
+     title_ship_11.png                   164   95    8 x 5   sprites   fly-in frame 11, frame 1623 after power-on
+     title_ship_12.png                   170   88    6 x 5   sprites   fly-in frame 12, frame 1629 after power-on
+     title_ship_13.png                   174   83    5 x 5   sprites   fly-in frame 13, frame 1635 after power-on
+     title_ship_14.png                   177   79    4 x 4   sprites   fly-in frame 14, frame 1641 after power-on
+     title_ship_15.png                   179   77    3 x 4   sprites   fly-in frame 15, frame 1647 after power-on
+     title_ship_16.png                   265   -4   63 x 25  sprites   fly-in frame 16, frame 1653 after power-on
+     title_ship_17.png                   261  -16   64 x 44  sprites   fly-in frame 17, frame 1656 after power-on
+     title_ship_18.png                   261  -10   60 x 41  sprites   fly-in frame 18, frame 1659 after power-on
+     title_ship_19.png                   258   -3   89 x 41  sprites   fly-in frame 19, frame 1662 after power-on
+     title_ship_20.png                   265    7   72 x 34  sprites   fly-in frame 20, frame 1665 after power-on
+     title_ship_21.png                   270   26   48 x 22  sprites   fly-in frame 21, frame 1671 after power-on
+     title_ship_22.png                   274   41   31 x 16  sprites   fly-in frame 22, frame 1677 after power-on
+   text (x, y, line, font, layer)
+      128  160  3  title   A  "START GAME"
+      128  168  3  title   A  "OPTIONS"
+      128  176  3  title   A  "TUTORIAL"
+   notes
+     planet slide: plane B's hscroll runs from 999 (planet just off the right) to 320 over ~260 frames, 3 px a frame then easing (measured: 969 at frame 1150, 519 at 1300, 384 at 1350, 321 at 1400, 320 from 1410)
+     the logo, subtitle and licence appear at ~1600, the menu at ~1900; after 900 idle frames the opening runs again
+     menu: up/down move the pointer a row (song 11), A/B/C/Start choose; START GAME -> house choice, OPTIONS -> options, TUTORIAL -> the tutorial
+
+== house - Select your House (screen 0)
+   capture house   size 320x224
+   least   rows 160-223: nothing below the labels (crop 0-199)
+   palette
+     0: 000000 B69100 006D00 00FF00 FFDA6D DAB624 914800 482400 00FFFF 0091DA 004891 000024 FFFFFF B6B6DA 6D6D91 242448
+     1: 000000 B69100 B6B6B6 FF0000 FFDA6D DAB624 914800 482400 91FF00 48B600 004800 002400 FFFFFF B6B6DA 6D6D91 242448
+     2: 000000 B69100 B6B6B6 6D6D6D FFDA6D DAB624 914800 482400 FF6D00 912400 480000 240000 FFFFFF B6B6DA 6D6D91 242448
+     3: 000000 FFFFFF B6B6B6 6D6D6D B6B6B6 FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF
+   pictures (file, x, y, w x h, layer, note)
+     house_title.png                      96   33  131 x 15  window    Select your House
+     crest_atreides.png                   32   64   80 x 64  window    crest in its frame
+     crest_label_atreides.png             32  136   80 x 16  window    name plate
+     crest_ordos.png                     120   64   80 x 64  window    crest in its frame
+     crest_label_ordos.png               120  136   80 x 16  window    name plate
+     crest_harkonnen.png                 208   64   80 x 64  window    crest in its frame
+     crest_label_harkonnen.png           208  136   80 x 16  window    name plate
+     house_highlight_0.png                32  136   80 x 16  sprites   the plate highlight under the choice, frame 0
+     house_highlight_1.png                32  136   80 x 16  sprites   the plate highlight under the choice, frame 1
+     house_highlight_2.png                32  136   80 x 16  sprites   the plate highlight under the choice, frame 2
+   notes
+     the highlight sits on the chosen name plate (x 32, 120 or 208, y 136); left/right move it; A, B, C (or any) choose the house under it - sega_touch walks it with right and C
+     then the mentat of that house describes it and asks YES/NO; NO brings the crests back.  Music track $1C (song 9)
+
+== mentat-atreides - The mentat of house Atreides describes it
+   capture mentat-A   size 320x224
+   least   rows 200-223: the bottom of the mentat's portrait (crop it, or move him up 24)
+   palette
+     0: 000000 6D6D48 6D4824 484824 482400 242400 240000 000000 6D0000 6D0000 480000 480000 240000 240000 000000 000000
+     1: 6D006D 00246D 00246D 002448 002448 000024 000024 000000 006D00 006D00 004800 004800 002400 002400 000000 000000
+     2: 000000 B69100 FFDA6D DAB624 914800 482400 FF00FF FF00FF 6D6D6D B6B6B6 FFFFFF B6B6B6 484848 FFFFFF 6D6D6D 000000
+     3: 000000 FFFFFF 000000 242448 FFFF91 DAB66D 242491 000048 DA916D B66D48 914824 482400 240000 DAB691 B64824 6D0000
+   pictures (file, x, y, w x h, layer, note)
+     mentat_atreides.png                   0   80  144 x 144 sprites   the mentat without his eyes and mouth
+     mentat_atreides_eyes_0.png           32  112   48 x 24  sprites   eyes, frame 0 of the RAM copy ($FF1000)
+     mentat_atreides_eyes_1.png           32  112   48 x 24  sprites   eyes, frame 1 of the RAM copy ($FF1240)
+     mentat_atreides_eyes_2.png           32  112   48 x 24  sprites   eyes, frame 2 of the RAM copy ($FF1480)
+     mentat_atreides_eyes_3.png           32  112   48 x 24  sprites   eyes, frame 3 of the RAM copy ($FF16C0)
+     mentat_atreides_eyes_4.png           32  112   48 x 24  sprites   eyes, frame 4 of the RAM copy ($FF1900)
+     mentat_atreides_mouth_0.png          24  136   56 x 40  sprites   mouth, frame 0 of the RAM copy ($FF1B40)
+     mentat_atreides_mouth_1.png          24  136   56 x 40  sprites   mouth, frame 1 of the RAM copy ($FF1FA0)
+     mentat_atreides_mouth_2.png          24  136   56 x 40  sprites   mouth, frame 2 of the RAM copy ($FF2400)
+     mentat_atreides_mouth_3.png          24  136   56 x 40  sprites   mouth, frame 3 of the RAM copy ($FF2860)
+     mentat_atreides_mouth_4.png          24  136   56 x 40  sprites   mouth, frame 4 of the RAM copy ($FF2CC0)
+   text (x, y, line, font, layer)
+       16   16  2  mentat  A  "Our people are loyal, hard working,"
+       16   24  2  mentat  A  "and peaceable."
+   notes
+     behind him: the campaign map (== campaign) with the ownership before mission 1, in this screen's palette (dimmed; lines 0-2 below)
+
+== mentat-ordos - The mentat of house Ordos describes it
+   capture mentat-O   size 320x224
+   least   rows 200-223: the bottom of the mentat's portrait (crop it, or move him up 24)
+   palette
+     0: 000000 6D6D48 6D4824 484824 482400 242400 240000 000000 6D0000 6D0000 480000 480000 240000 240000 000000 000000
+     1: 6D006D 00246D 00246D 002448 002448 000024 000024 000000 006D00 006D00 004800 004800 002400 002400 000000 000000
+     2: 000000 B69100 FFDA6D DAB624 914800 482400 FF00FF FF00FF 6D6D6D B6B6B6 FFFFFF B6B6B6 484848 FFFFFF 6D6D6D 000000
+     3: 000000 FFFFFF 000000 242448 B69148 916D00 004800 002400 FFB691 DA916D B66D48 914824 482400 240000 B64824 912400
+   pictures (file, x, y, w x h, layer, note)
+     mentat_ordos.png                      0   80  144 x 144 sprites   the mentat without his eyes and mouth
+     mentat_ordos_eyes_0.png               8  112   48 x 24  sprites   eyes, frame 0 of the RAM copy ($FF1000)
+     mentat_ordos_eyes_1.png               8  112   48 x 24  sprites   eyes, frame 1 of the RAM copy ($FF1240)
+     mentat_ordos_eyes_2.png               8  112   48 x 24  sprites   eyes, frame 2 of the RAM copy ($FF1480)
+     mentat_ordos_eyes_3.png               8  112   48 x 24  sprites   eyes, frame 3 of the RAM copy ($FF16C0)
+     mentat_ordos_eyes_4.png               8  112   48 x 24  sprites   eyes, frame 4 of the RAM copy ($FF1900)
+     mentat_ordos_mouth_0.png              8  136   56 x 40  sprites   mouth, frame 0 of the RAM copy ($FF1B40)
+     mentat_ordos_mouth_1.png              8  136   56 x 40  sprites   mouth, frame 1 of the RAM copy ($FF1FA0)
+     mentat_ordos_mouth_2.png              8  136   56 x 40  sprites   mouth, frame 2 of the RAM copy ($FF2400)
+     mentat_ordos_mouth_3.png              8  136   56 x 40  sprites   mouth, frame 3 of the RAM copy ($FF2860)
+   text (x, y, line, font, layer)
+       16   16  2  mentat  A  "We have little conscience and gain"
+       16   24  2  mentat  A  "strength through our use of sabotage"
+       16   32  2  mentat  A  "and terrorism."
+   notes
+     behind him: the campaign map (== campaign) with the ownership before mission 1, in this screen's palette (dimmed; lines 0-2 below)
+
+== mentat-harkonnen - The mentat of house Harkonnen describes it
+   capture mentat-H   size 320x224
+   least   rows 200-223: the bottom of the mentat's portrait (crop it, or move him up 24)
+   palette
+     0: 000000 6D6D48 6D4824 484824 482400 242400 240000 000000 6D0000 6D0000 480000 480000 240000 240000 000000 000000
+     1: 6D006D 00246D 00246D 002448 002448 000024 000024 000000 006D00 006D00 004800 004800 002400 002400 000000 000000
+     2: 000000 B69100 FFDA6D DAB624 914800 482400 FF00FF FF00FF 6D6D6D B6B6B6 FFFFFF B6B6B6 484848 FFFFFF 6D6D6D 000000
+     3: 000000 FFFFFF 000000 242448 48486D 6D6D6D 9191B6 480000 FFB691 DA916D B66D48 914824 482400 240000 000000 240000
+   pictures (file, x, y, w x h, layer, note)
+     mentat_harkonnen.png                  0   87  138 x 137 sprites   the mentat without his eyes and mouth
+     mentat_harkonnen_eyes_0.png          24  128   48 x 24  sprites   eyes, frame 0 of the RAM copy ($FF1000)
+     mentat_harkonnen_eyes_1.png          24  128   48 x 24  sprites   eyes, frame 1 of the RAM copy ($FF1240)
+     mentat_harkonnen_eyes_2.png          24  128   48 x 24  sprites   eyes, frame 2 of the RAM copy ($FF1480)
+     mentat_harkonnen_eyes_3.png          24  128   48 x 24  sprites   eyes, frame 3 of the RAM copy ($FF16C0)
+     mentat_harkonnen_eyes_4.png          24  128   48 x 24  sprites   eyes, frame 4 of the RAM copy ($FF1900)
+     mentat_harkonnen_mouth_0.png         16  152   56 x 40  sprites   mouth, frame 0 of the RAM copy ($FF1B40)
+     mentat_harkonnen_mouth_1.png         16  152   56 x 40  sprites   mouth, frame 1 of the RAM copy ($FF1FA0)
+     mentat_harkonnen_mouth_2.png         16  152   56 x 40  sprites   mouth, frame 2 of the RAM copy ($FF2400)
+     mentat_harkonnen_mouth_3.png         16  152   56 x 40  sprites   mouth, frame 3 of the RAM copy ($FF2860)
+     mentat_harkonnen_mouth_4.png         16  152   56 x 40  sprites   mouth, frame 4 of the RAM copy ($FF2CC0)
+   text (x, y, line, font, layer)
+       16   16  2  mentat  A  "From the dark world of Giedi Prime"
+       16   24  2  mentat  A  "the savage House Harkonnen has"
+       16   32  2  mentat  A  "spread across the universe."
+   notes
+     behind him: the campaign map (== campaign) with the ownership before mission 1, in this screen's palette (dimmed; lines 0-2 below)
+     text box: mentat_speak splits the text at 36 columns and prints a sentence at a time from column 2, row 2 (x 16, y 16), up to four rows, font mentat in line 2; the mouth moves 4 frames a character while talking; A, B or C skips ahead
+     eyes: a random frame at random intervals; mouth: a random frame 0-4 while talking, frame 0 when quiet (mentat_animate_face $01F622)
+     the planes are scrolled down: vscroll 24 on both
+
+== mentat-yesno - The mentat asks: join the house? YES/NO
+   capture mentat-A-yes   size 320x224
+   least   as the mentat
+   palette
+     0: 000000 6D6D48 6D4824 484824 482400 242400 240000 000000 6D0000 6D0000 480000 480000 240000 240000 000000 000000
+     1: 6D006D 00246D 00246D 002448 002448 000024 000024 000000 006D00 006D00 004800 004800 002400 002400 000000 000000
+     2: 000000 B69100 FFDA6D DAB624 914800 482400 FF00FF FF00FF FFFFFF B6B6B6 6D6D6D B6B6B6 484848 FFFFFF 6D6D6D 000000
+     3: 000000 FFFFFF 000000 242448 FFFF91 DAB66D 242491 000048 DA916D B66D48 914824 482400 240000 DAB691 B64824 6D0000
+   pictures (file, x, y, w x h, layer, note)
+     mentat_button_yes.png               193  168   80 x 16  sprites   the YES button
+     mentat_button_no.png                193  192   80 x 16  sprites   the NO button
+     mentat_button_highlight.png         193  168   80 x 16  sprites   the frame over the chosen button
+   text (x, y, line, font, layer)
+       16   16  2  mentat  A  "Do you wish to join House Atreides?"
+   notes
+     left/right move the highlight, A/B/C choose (mentat_choose $025BB4): YES -> mission 1's briefing, NO -> the crests
+
+== briefing-atreides - Briefing (SPICEDANCE): the mentat over the map
+   capture brief-A   size 320x224
+   least   as the mentat
+   palette
+     0: 000000 6D6D48 6D4824 484824 482400 242400 240000 000000 6D0000 6D0000 480000 480000 240000 240000 000000 000000
+     1: 6D006D 00246D 00246D 002448 002448 000024 000024 000000 006D00 006D00 004800 004800 002400 002400 000000 000000
+     2: 000000 B69100 FFDA6D DAB624 914800 482400 FF00FF FF00FF B6B6B6 6D6D6D B6B6B6 FFFFFF 484848 FFFFFF 6D6D6D 000000
+     3: 000000 FFFFFF 000000 242448 FFFF91 DAB66D 242491 000048 DA916D B66D48 914824 482400 240000 DAB691 B64824 6D0000
+   text (x, y, line, font, layer)
+       16   16  2  mentat  A  "The battle with the other Houses has"
+       16   24  2  mentat  A  "intensified, and we are now forced"
+       16   32  2  mentat  A  "to engage in some selected offensive"
+       16   40  2  mentat  A  "maneuvers."
+
+== briefing-ordos - Briefing (ARRAKISSUN): the mentat over the map
+   capture brief-O   size 320x224
+   least   as the mentat
+   palette
+     0: 000000 6D6D48 6D4824 484824 482400 242400 240000 000000 6D0000 6D0000 480000 480000 240000 240000 000000 000000
+     1: 6D006D 00246D 00246D 002448 002448 000024 000024 000000 006D00 006D00 004800 004800 002400 002400 000000 000000
+     2: 000000 B69100 FFDA6D DAB624 914800 482400 FF00FF FF00FF B6B6B6 6D6D6D B6B6B6 FFFFFF 484848 FFFFFF 6D6D6D 000000
+     3: 000000 FFFFFF 000000 242448 B69148 916D00 004800 002400 FFB691 DA916D B66D48 914824 482400 240000 B64824 912400
+   text (x, y, line, font, layer)
+       16   16  2  mentat  A  "The Atreides forces in this area"
+       16   24  2  mentat  A  "must be eliminated."
+
+== briefing-harkonnen - Briefing (DEMOLITION): the mentat over the map
+   capture brief-H   size 320x224
+   least   as the mentat
+   palette
+     0: 000000 6D6D48 6D4824 484824 482400 242400 240000 000000 6D0000 6D0000 480000 480000 240000 240000 000000 000000
+     1: 6D006D 00246D 00246D 002448 002448 000024 000024 000000 006D00 006D00 004800 004800 002400 002400 000000 000000
+     2: 000000 B69100 FFDA6D DAB624 914800 482400 FF00FF FF00FF B6B6B6 6D6D6D B6B6B6 FFFFFF 484848 FFFFFF 6D6D6D 000000
+     3: 000000 FFFFFF 000000 242448 48486D 6D6D6D 9191B6 480000 FFB691 DA916D B66D48 914824 482400 240000 000000 240000
+   text (x, y, line, font, layer)
+       16   16  2  mentat  A  "House Harkonnen will now allow you"
+       16   24  2  mentat  A  "to take command in a more dangerous"
+       16   32  2  mentat  A  "area."
+   notes
+     the mentat says the mission's first string (res/text/briefings.txt), then PROCEED/ADVICE
+
+== briefing-choose - Briefing: PROCEED / ADVICE
+   capture choose   size 320x224
+   least   as the mentat
+   palette
+     0: 000000 6D6D48 6D4824 484824 482400 242400 240000 000000 6D0000 6D0000 480000 480000 240000 240000 000000 000000
+     1: 6D006D 00246D 00246D 002448 002448 000024 000024 000000 006D00 006D00 004800 004800 002400 002400 000000 000000
+     2: 000000 B69100 FFDA6D DAB624 914800 482400 FF00FF FF00FF 6D6D6D B6B6B6 FFFFFF B6B6B6 484848 FFFFFF 6D6D6D 000000
+     3: 000000 FFFFFF 000000 242448 FFFF91 DAB66D 242491 000048 DA916D B66D48 914824 482400 240000 DAB691 B64824 6D0000
+   pictures (file, x, y, w x h, layer, note)
+     mentat_button_proceed.png           193  168   80 x 16  sprites   the PROCEED button
+     mentat_button_advice.png            193  192   80 x 16  sprites   the ADVICE button
+   notes
+     ADVICE repeats the fourth string (the advice) and asks again; PROCEED plays effect 38 and music $1D (song 7) and goes on to the campaign map
+
+== campaign - The campaign map (campaign_briefing $025ECA, campaign_attack $026108)
+   capture campaign #30   size 320x224
+   least   rows 0-23 (black above the map); the map is y 48-157
+   palette
+     0: 000000 FFDA91 DAB66D B69148 916D24 6D4800 482424 240000 FF0000 DA0000 B60000 910000 6D0000 480000 240000 000000
+     1: FF00FF 0048FF 0048DA 0048B6 004891 00246D 002448 000024 00FF00 00DA00 00B600 009100 006D00 004800 002400 000000
+     2: FF0000 DA0000 B60000 910000 6D0000 480000 240000 000000 B6B6B6 6D6D6D B6B6B6 FFFFFF 484848 FFFFFF FF00FF 000000
+     3: 00FF00 00DA00 00B600 009100 006D00 004800 002400 000000 0000B6 0000FF 0000B6 000091 000000 000048 FF00FF 000000
+   pictures (file, x, y, w x h, layer, note)
+     campaign_map.png                     28   48  259 x 109 planes B+A the whole map as shown (Atreides mission 3's owners), for reference
+     campaign_land_0.png                  51   50   65 x 62  ROM $0986DE territory 0's land, owner 0's colours
+     campaign_land_1.png                 107   48   76 x 29  ROM $0986DE territory 1's land, owner 0's colours
+     campaign_land_2.png                 176   48   56 x 21  ROM $0986DE territory 2's land, owner 0's colours
+     campaign_land_3.png                  80   69   80 x 48  ROM $0986DE territory 3's land, owner 0's colours
+     campaign_land_4.png                 152   62   60 x 54  ROM $0986DE territory 4's land, owner 0's colours
+     campaign_land_5.png                 203   50   37 x 45  ROM $0986DE territory 5's land, owner 0's colours
+     campaign_land_6.png                  28  101   83 x 51  ROM $0986DE territory 6's land, owner 0's colours
+     campaign_land_7.png                  99  100  104 x 54  ROM $0986DE territory 7's land, owner 0's colours
+     campaign_land_8.png                 173  108   98 x 46  ROM $0986DE territory 8's land, owner 0's colours
+     campaign_land_9.png                 209   75   78 x 77  ROM $0986DE territory 9's land, owner 0's colours
+     campaign_borders.png                 28   51  259 x 106 ROM $09631C the lines between the territories, drawn over the land
+     campaign_arrow_up.png                 -    -   20 x 18  ROM $09CF20 the arrow, sprite in line 2
+     campaign_arrow_right.png              -    -   23 x 19  ROM $09CF20 the arrow, sprite in line 2
+     campaign_arrow_down.png               -    -   21 x 18  ROM $09CF20 the arrow, sprite in line 2
+     campaign_arrow_left.png               -    -   23 x 18  ROM $09CF20 the arrow, sprite in line 2
+   notes
+     the land and border pieces are the ROM's piece lists ($0962D4, $096150) offset by (0, 0) on the screen; each territory is drawn in its owner's palette line: owner 0 nobody line 0, 1 Harkonnen line 2, 2 Atreides line 1, 3 Ordos line 3 ($095CE8) - the PNGs are in line 0, so swap pens by the lines below; the borders always in line 0
+     owners before each mission (a row of ten territories per mission, the tenth row after the last win; $095D0C):
+       Atreides  1 0 2 0 0 0 0 0 3 0 | 1 1 2 0 0 2 0 0 3 3 | 1 1 2 3 1 2 0 3 3 2 | 1 1 2 1 2 2 0 3 3 2 | 1 2 2 3 2 2 0 1 3 2 | 1 2 2 2 2 2 0 1 3 2 | 2 2 2 2 2 2 0 1 3 2 | 2 2 2 2 2 2 0 1 2 2 | 2 2 2 2 2 2 0 2 2 2 | 2 2 2 2 2 2 2 2 2 2
+       Ordos     0 0 0 2 0 0 1 0 3 0 | 0 0 0 2 2 0 1 3 3 1 | 2 0 1 2 2 1 3 3 3 1 | 2 0 2 3 2 1 3 3 3 1 | 2 0 2 3 3 1 3 3 3 1 | 2 0 2 3 3 1 3 3 3 3 | 3 0 2 3 3 1 3 3 3 3 | 3 0 2 3 3 3 3 3 3 3 | 3 0 3 3 3 3 3 3 3 3 | 3 3 3 3 3 3 3 3 3 3
+       Harkonnen 1 0 2 0 3 0 0 0 0 0 | 1 1 2 3 3 0 2 0 0 0 | 1 1 1 3 3 3 2 2 0 2 | 1 1 1 3 1 3 2 2 0 2 | 1 1 1 1 1 3 2 2 0 3 | 1 1 1 1 1 3 1 2 0 3 | 1 1 1 1 1 1 1 2 0 3 | 1 1 1 1 1 1 1 1 0 3 | 1 1 1 1 1 1 1 1 0 1 | 1 1 1 1 1 1 1 1 1 1
+     the territory attacked next (arrow at -32, -50 from its centre, picture 0; $095F70), missions 1-9:
+       Atreides  5 9 4 1 3 0 8 7 6
+       Ordos     7 6 3 4 9 0 5 2 1
+       Harkonnen 1 2 4 3 6 5 7 9 8
+     sequence: after PROCEED the mentat slides left (24 frames, mentat_leave $025DAE) and the map brightens; the territories then come apart as sprites and drop away while the next one is zoomed into (song 7); nothing here can be chosen
+
+== battle - The battlefield (Atreides mission 1)
+   capture battle   size 320x224
+   least   the map view simply shows 24 lines less; the radar (y 144-207) and credits (y 16-23) move up 24 or stay
+   palette
+     0: 000000 DAB66D B69148 916D24 6D4800 482424 DA6D00 B62400 484848 FFFFFF 9191B6 242448 000000 FFB600 B60000 240000
+     1: 000000 B6B691 484824 242400 FFDAB6 914800 482400 FFDA00 B66D00 FFFFFF 9191B6 242448 000000 00FFFF 0048DA 000024
+     2: 000000 FFFF00 FFB600 DA4800 910000 480000 00B600 0048DA 6D6D91 FFFFFF 9191B6 242448 000000 9100DA 480091 240024
+     3: 000000 B60000 480000 6D6D48 242400 FFDA91 DA9148 6D4824 0048B6 FFFFFF 9191B6 242448 000000 DAFF00 00B600 002400
+   pictures (file, x, y, w x h, layer, note)
+     battle_credits_digits.png             -    -   80 x 8   ROM $050AEC 0-9, 8x8 each, sprite line 1
+     battle_radar_off.png                240  144   64 x 64  sprites   the radar with no Outpost: its frame, dark inside (line 2)
+     battle_radar_static_00.png          240  144   64 x 64  anim 37   radar static, frame 0
+     battle_radar_static_01.png          240  144   64 x 64  anim 38   radar static, frame 1
+     battle_radar_static_02.png          240  144   64 x 64  anim 39   radar static, frame 2
+     battle_radar_static_03.png          240  144   64 x 64  anim 40   radar static, frame 3
+     battle_radar_static_04.png          240  144   64 x 64  anim 41   radar static, frame 4
+     battle_radar_static_05.png          240  144   64 x 64  anim 42   radar static, frame 5
+     battle_radar_static_06.png          240  144   64 x 64  anim 43   radar static, frame 6
+     battle_radar_static_07.png          240  144   64 x 64  anim 44   radar static, frame 7
+     battle_radar_static_08.png          240  144   64 x 64  anim 45   radar static, frame 8
+     battle_radar_static_09.png          240  144   64 x 64  anim 46   radar static, frame 9
+     battle_radar_static_10.png          240  144   64 x 64  anim 47   radar static, frame 10
+     battle_radar_static_11.png          240  144   64 x 64  anim 48   radar static, frame 11
+     battle_low_credits.png                -    -   88 x 8   anim 108  the blinking CREDITS warning, three pieces ($009BDA): on 90 ticks, off 900, on 60... while credits < 50
+     cursor_000.png                      -13  -13   26 x 26  anim 0    the battle cursor: brackets; x, y are its offset from the cursor point
+     cursor_001.png                        0    0   32 x 32  anim 1    placement footprint, 1x1, fits; x, y are its offset from the cursor point
+     cursor_004.png                        0    0   64 x 64  anim 4    placement footprint, 2x2, fits; x, y are its offset from the cursor point
+     cursor_005.png                      -13  -13   26 x 26  anim 5    attack: the target cross; x, y are its offset from the cursor point
+     cursor_006.png                      -13  -13   26 x 26  anim 6    move: four arrows in; x, y are its offset from the cursor point
+     cursor_008.png                        1    0   15 x 16  anim 8    the pointer arrow (menus); x, y are its offset from the cursor point
+     cursor_009.png                        0    0   34 x 34  anim 9    selected structure's corners; x, y are its offset from the cursor point
+     cursor_010.png                        0    0   66 x 66  anim 10   corners (another size); x, y are its offset from the cursor point
+     cursor_011.png                        0    0   98 x 66  anim 11   corners (another size); x, y are its offset from the cursor point
+     cursor_012.png                        0    0   96 x 64  anim 12   placement footprint, 3x2, fits; x, y are its offset from the cursor point
+     cursor_013.png                        0    0   96 x 64  anim 13   placement footprint, 3x2, fits; x, y are its offset from the cursor point
+     cursor_014.png                        0    0   96 x 96  anim 14   placement footprint, 3x3; x, y are its offset from the cursor point
+     cursor_015.png                        0    0   32 x 32  anim 15   placement footprint, 1x1 (red: does not fit); x, y are its offset from the cursor point
+     cursor_018.png                        0    0   64 x 64  anim 18   placement footprint, 2x2, does not fit; x, y are its offset from the cursor point
+     cursor_019.png                        0    0   96 x 64  anim 19   placement footprint, 3x2, does not fit; x, y are its offset from the cursor point
+     cursor_020.png                        0    0   96 x 64  anim 20   placement footprint, 3x2, does not fit; x, y are its offset from the cursor point
+     cursor_021.png                        0    0   96 x 96  anim 21   placement footprint, 3x3, does not fit; x, y are its offset from the cursor point
+     cursor_023.png                        4    0   24 x 24  anim 23   refused (the no sign); x, y are its offset from the cursor point
+     cursor_024.png                       21   21   22 x 22  anim 24   OK; x, y are its offset from the cursor point
+     cursor_026.png                        5    5   22 x 22  anim 26   repair: the hammer; x, y are its offset from the cursor point
+     cursor_029.png                      -13  -13   26 x 26  anim 29   target mode: the red arrows; x, y are its offset from the cursor point
+     cursor_030.png                        0    0   98 x 98  anim 30   corners, small; x, y are its offset from the cursor point
+   notes
+     plane B is the map (32x32 squares of 8x8 tiles), plane A the fog over it; everything below is a sprite in the battle palette (lines 0-3 above, the same for all houses; pens 13-15 of each line are a house's colours: line 0 Harkonnen, 1 Atreides, 3 Ordos, 2 the others)
+     credits: six 8x8 digits, '%6d' right-aligned, sprites at x 256-303, y 16 (build/Starport panels: x 248); the shown number rolls towards the real one, effect 52 up / 53 down every 4th step (ui_draw_credits $011F34)
+     radar: 64x64 at (240,144), four 32x32 sprites; every frame one of its 64 rows is redrawn from the map (radar_frame $005124): a square's landscape colour, or the owner's colour of what stands on it
+     radar switch-on (frame script $068C16): static frame x frames shown - 11x5 10x5 09x5 08x5 07x5 06x5 05x5 04x5 03x5 02x5 01x5 00x5 01x5 00x5 01x5 00x5 01x5 00x5 11x0 - then the map
+     radar switch-off (frame script $068BCA): static frame x frames shown - 00x5 01x5 00x5 01x5 00x5 01x5 00x5 01x5 02x5 03x5 04x5 05x5 06x5 07x5 08x5 09x5 10x5 11x60
+     the static frames are drawn with pens 13-15 of line 0 (Harkonnen red); the game puts them in the player's own line, so swap those three pens for the house
+     view marker: the 1x1 sprite on the radar (tile $7A1, line 2) is the square under the cursor (radar_place_marker $005518)
+
+== sidepanel - Battle side panel: a structure selected
+   capture sel-struct   size 320x224
+   least   the panel is y 48-135: keep it
+   palette
+     0: 000000 DAB66D B69148 916D24 6D4800 482424 DA6D00 B62400 484848 FFFFFF 9191B6 242448 000000 FFB600 B60000 240000
+     1: 000000 B6B691 484824 242400 FFDAB6 914800 482400 FFDA00 B66D00 FFFFFF 9191B6 242448 000000 00FFFF 0048DA 000024
+     2: 000000 FFFF00 FFB600 DA4800 910000 480000 00B600 0048DA 6D6D91 FFFFFF 9191B6 242448 000000 9100DA 480091 240024
+     3: 000000 B60000 480000 6D6D48 242400 FFDA91 DA9148 6D4824 0048B6 FFFFFF 9191B6 242448 000000 DAFF00 00B600 002400
+   pictures (file, x, y, w x h, layer, note)
+     sidepanel_upper_picture_example.png  272   48   32 x 24  sprite    as captured (a Construction Yard, full health)
+     sidepanel_health_bar_example.png    272   74   32 x 6   sprite    as captured (a Construction Yard, full health)
+     sidepanel_lower_picture_example.png  272   88   32 x 24  sprite    as captured (a Construction Yard, full health)
+     battle_selection_corners.png        121   89   66 x 66  sprites   the four corners round a selected structure (line 0)
+     battle_selection_unit.png            92  152   26 x 26  sprites   the marks round a selected unit (line 3)
+     icon_cancel_off_line1.png             -    -   32 x 24  ROM $071320 grid entry -5, cancel_off, line 1
+     icon_repair_off_line1.png             -    -   32 x 24  ROM $0711A0 grid entry -4, repair_off, line 1
+     icon_cancel_line1.png                 -    -   32 x 24  ROM $071020 grid entry -3, cancel, line 1
+     icon_repair_line1.png                 -    -   32 x 24  ROM $070EA0 grid entry -2, repair, line 1
+     icon_exit_line1.png                   -    -   32 x 24  ROM $070D20 grid entry -1, exit, line 1
+     icon_structure_00_concrete_slab.png    -    -   32 x 24  ROM $06E6A4 structure 0, line 1
+     icon_structure_02_palace.png          -    -   32 x 24  ROM $06D1A4 structure 2, line 1
+     icon_structure_03_vehicle_liteftry.png    -    -   32 x 24  ROM $06D324 structure 3, line 1
+     icon_structure_05_hi-tech.png         -    -   32 x 24  ROM $06D4A4 structure 5, line 1
+     icon_structure_06_ix.png              -    -   32 x 24  ROM $06D624 structure 6, line 1
+     icon_structure_07_barracks_wor.png    -    -   32 x 24  ROM $06D924 structure 7, line 1
+     icon_structure_09_windtrap.png        -    -   32 x 24  ROM $06D7A4 structure 9, line 1
+     icon_structure_11_starport.png        -    -   32 x 24  ROM $06DAA4 structure 11, line 1
+     icon_structure_12_refinery.png        -    -   32 x 24  ROM $06DC24 structure 12, line 1
+     icon_structure_13_repair.png          -    -   32 x 24  ROM $06DDA4 structure 13, line 1
+     icon_structure_14_wall.png            -    -   32 x 24  ROM $06DF24 structure 14, line 1
+     icon_structure_15_turret.png          -    -   32 x 24  ROM $06E0A4 structure 15, line 1
+     icon_structure_16_r-turret.png        -    -   32 x 24  ROM $06E224 structure 16, line 1
+     icon_structure_17_spice_silo.png      -    -   32 x 24  ROM $06E3A4 structure 17, line 1
+     icon_structure_18_outpost.png         -    -   32 x 24  ROM $06E524 structure 18, line 1
+     icon_structure_19_x.png               -    -   32 x 24  ROM $06E888 structure 19, line 1
+     icon_cancel_off_line3.png             -    -   32 x 24  ROM $071320 grid entry -5, cancel_off, line 3
+     icon_repair_off_line3.png             -    -   32 x 24  ROM $0711A0 grid entry -4, repair_off, line 3
+     icon_cancel_line3.png                 -    -   32 x 24  ROM $071020 grid entry -3, cancel, line 3
+     icon_repair_line3.png                 -    -   32 x 24  ROM $070EA0 grid entry -2, repair, line 3
+     icon_exit_line3.png                   -    -   32 x 24  ROM $070D20 grid entry -1, exit, line 3
+     icon_unit_00_carryall.png             -    -   32 x 24  ROM $06F008 unit 0, line 3
+     icon_unit_01_thopter.png              -    -   32 x 24  ROM $06FD88 unit 1, line 3
+     icon_unit_02_infantry.png             -    -   32 x 24  ROM $06F788 unit 2, line 3
+     icon_unit_03_troopers.png             -    -   32 x 24  ROM $070508 unit 3, line 3
+     icon_unit_04_soldier.png              -    -   32 x 24  ROM $070388 unit 4, line 3
+     icon_unit_05_trooper.png              -    -   32 x 24  ROM $06EE88 unit 5, line 3
+     icon_unit_06_saboteur.png             -    -   32 x 24  ROM $06FC08 unit 6, line 1
+     icon_unit_07_launcher.png             -    -   32 x 24  ROM $06FF08 unit 7, line 3
+     icon_unit_08_deviator.png             -    -   32 x 24  ROM $070B08 unit 8, line 3
+     icon_unit_09_tank.png                 -    -   32 x 24  ROM $06F188 unit 9, line 3
+     icon_unit_10_siege_tank.png           -    -   32 x 24  ROM $06EA08 unit 10, line 3
+     icon_unit_11_devastator.png           -    -   32 x 24  ROM $070988 unit 11, line 3
+     icon_unit_12_sonic_tank.png           -    -   32 x 24  ROM $06F308 unit 12, line 1
+     icon_unit_13_trike.png                -    -   32 x 24  ROM $06F488 unit 13, line 3
+     icon_unit_14_raider_trike.png         -    -   32 x 24  ROM $06F608 unit 14, line 3
+     icon_unit_15_quad.png                 -    -   32 x 24  ROM $06ED08 unit 15, line 3
+     icon_unit_16_harvester.png            -    -   32 x 24  ROM $070088 unit 16, line 3
+     icon_unit_17_mcv.png                  -    -   32 x 24  ROM $070208 unit 17, line 3
+     icon_unit_18_x.png                    -    -   32 x 24  ROM $06EB88 unit 18, line 3
+     icon_unit_25_x.png                    -    -   32 x 24  ROM $070808 unit 25, line 1
+     icon_unit_27_x.png                    -    -   32 x 24  ROM $06E888 unit 27, line 3
+     icon_fremen_group.png                 -    -   32 x 24  ROM $06F908 anim $5E: a Fremen house's Troopers; the Atreides Palace's lower picture, line 3
+     icon_fremen.png                       -    -   32 x 24  ROM $070688 anim $68: any other Fremen-house unit, line 3
+   notes
+     upper picture: the selection's portrait, 32x24 sprite at (272,48) - structures in line 1, units in line 3 (icon_*.png); health bar: 32x8 at (272,72), filled in proportion, the fill pen by quarter of health 4, 2, 2, 6 of line 2 ($00973E); lower picture 32x24 at (272,88): what is being built, or the Repair Facility's unit
+     second bar (production progress, upgrade countdown, palace charge, windtrap power, spice gauge, starport delivery): 32x8 at (272,112) or (272,80) ($06A7DA/$06A7E0) in pen 7 (or 3) of line 2 (ui_bar2_show_at_colour $009862)
+     for an enemy only the portrait and health bar; for a Harvester also its load (ui_draw_selection_panel $0294BE)
+     icon_structure_01_concrete_4slab: the same picture as icon_structure_00_concrete_slab.png
+     icon_structure_04_vehicle_hvyftry: the same picture as icon_structure_03_vehicle_liteftry.png
+     icon_structure_08_const_yard: the same picture as icon_structure_06_ix.png
+     icon_structure_10_barracks_barrac: the same picture as icon_structure_07_barracks_wor.png
+     icon_unit_19_frigate: the same picture as icon_unit_07_launcher.png
+     icon_unit_20_unit_20: the same picture as icon_unit_07_launcher.png
+     icon_unit_21_x: the same picture as icon_unit_07_launcher.png
+     icon_unit_28_x: the same picture as icon_exit_line3.png
+     icon_unit_29_x: the same picture as icon_repair_line3.png
+     icon_unit_30_x: the same picture as icon_cancel_line3.png
+     icon_unit_31_x: the same picture as icon_repair_off_line3.png
+     icon_unit_32_x: the same picture as icon_cancel_off_line3.png
+
+== build - Build panel (screen 5), Construction Yard
+   capture build-item   size 320x224
+   least   rows 208-223: the panel's bottom edge; or 0-23 above the credits.  Either loses a piece of the frame
+   palette
+     0: 000000 FFFFFF B6B691 91916D 6D6D48 484824 242400 000000 FFDA91 FFDA91 DAB66D B69148 916D24 6D4800 482400 000000
+     1: 000000 B6B691 484824 242400 FFDAB6 914800 482400 FFDA00 B66D00 FFFFFF 9191B6 242448 000000 00FFFF 0048DA 000024
+     2: 000000 240000 FFFFFF DADAFF B6B6DA 9191B6 6D6D91 48486D 242448 000024 000000 FF0000 B60000 00FF00 004800 6D0000
+     3: 000000 B60000 480000 6D6D48 242400 FFDA91 DA9148 6D4824 0048B6 FFFFFF 9191B6 242448 000000 DAFF00 00B600 002400
+   pictures (file, x, y, w x h, layer, note)
+     build_panel.png                       0    0  320 x 224 window    the panel, without the item picture and the words
+     build_marker.png                      -    -   32 x 24  sprite    the frame round the grid cell under the cursor (line 2)
+     build_footprint_example.png         240   80   16 x 16  sprite    a structure's footprint, drawn from its shape by menu_draw_pattern $007E8E
+     build_symbol_cost.png               160  120   16 x 16  sprite    label of an info row
+     build_symbol_power_or_ammo.png      160  152   16 x 16  sprite    label of an info row
+     build_symbol_armour.png             160  184   16 x 16  sprite    label of an info row
+   text (x, y, line, font, layer)
+      176  104  1  menu    W  "Concrete"
+      240  128  1  menu    W  "15"
+      248  160  1  menu    W  "0"
+      240  192  1  menu    W  "40"
+   notes
+     grid: 3 x 6 cells of 32x24 at x 32/64/96, y 48 + 24 n ($04A14A); cell 0-2 EXIT, FIX, STOP (icon_exit/repair/cancel; *_off when disabled), then the buildable types sorted by their +$20; icons of structures in line 1, units in line 3
+     the picture box (160,40)-(255,95): the item's own 96x56 picture (build_item_*.png), its 16 colours sent to line 0; the name centred in 12 columns at (176,104), then three figures '%8.1d' right-aligned to x 255 at y 128, 160, 192: cost, power (structures; units: +$54) and hit points; '* Upgrade *' costs half
+     pad: moves a cell if it holds an item; A takes it (a disabled one buzzes, effect 47); B and C nothing
+
+== starport - Starport panel (screen 6)
+   capture starport-item   size 320x224
+   least   rows 208-223: the panel's bottom edge; or 0-23 above the credits.  Either loses a piece of the frame
+   palette
+     0: 000000 FFFFFF 486D91 DADA6D B6B648 B69148 6D91B6 B64800 DA6D00 FF9100 242448 9191B6 916D24 6D6D91 FFFFFF 48486D
+     1: 000000 B6B691 484824 242400 FFDAB6 914800 482400 FFDA00 B66D00 FFFFFF 9191B6 242448 000000 00FFFF 0048DA 000024
+     2: 000000 B60000 DADADA B6B6B6 919191 6D6D6D 484848 242424 242424 000000 00FF00 00B600 002400 FFFFFF 00FFFF 006D00
+     3: 000000 B60000 480000 6D6D48 242400 FFDA91 DA9148 6D4824 0048B6 FFFFFF 9191B6 242448 000000 DAFF00 00B600 002400
+   pictures (file, x, y, w x h, layer, note)
+     starport_panel.png                    0    0  320 x 224 window    the panel, without the item picture and the words
+     starport_marker.png                   -    -   32 x 24  sprite    the frame round the grid cell under the cursor (line 2)
+     starport_symbol_cost.png            160  120   16 x 16  sprite    label of an info row
+     starport_symbol_power_or_ammo.png   160  152   16 x 16  sprite    label of an info row
+     starport_symbol_armour.png          160  184   16 x 16  sprite    label of an info row
+     starport_lights_0.png               273   47   14 x 18  sprites   the column of lights by the picture box, frame 0 (ui_starport_animate $0088D6)
+     starport_lights_1.png               273   71   14 x 10  sprites   the column of lights by the picture box, frame 1 (ui_starport_animate $0088D6)
+     starport_lights_2.png               273   79   14 x 2   sprites   the column of lights by the picture box, frame 2 (ui_starport_animate $0088D6)
+     starport_lights_3.png               273   39   14 x 10  sprites   the column of lights by the picture box, frame 3 (ui_starport_animate $0088D6)
+     starport_frigate_0.png               93   25    4 x 4   sprites   the dot flying the 179-point path ($008B08), frame 0 (ui_starport_animate $0088D6)
+     starport_frigate_1.png               74   -3    4 x 4   sprites   the dot flying the 179-point path ($008B08), frame 1 (ui_starport_animate $0088D6)
+     build_item_building_00_concrete_slab.png  160   40   96 x 56  ROM $0882E8 its own 16 colours (CRAM line 0)
+     build_item_building_01_concrete_4slab.png  160   40   96 x 56  ROM $0882E8 its own 16 colours (CRAM line 0)
+     build_item_building_02_palace.png   160   40   96 x 56  ROM $08AD1C its own 16 colours (CRAM line 0)
+     build_item_building_03_vehicle_liteftry.png  160   40   96 x 56  ROM $089E9E its own 16 colours (CRAM line 0)
+     build_item_building_04_vehicle_hvyftry.png  160   40   96 x 56  ROM $089E9E its own 16 colours (CRAM line 0)
+     build_item_building_05_hi-tech.png  160   40   96 x 56  ROM $0897E6 its own 16 colours (CRAM line 0)
+     build_item_building_06_ix.png       160   40   96 x 56  ROM $089E9E its own 16 colours (CRAM line 0)
+     build_item_building_07_barracks_wor.png  160   40   96 x 56  ROM $08EA7A its own 16 colours (CRAM line 0)
+     build_item_building_08_const_yard.png  160   40   96 x 56  ROM $089194 its own 16 colours (CRAM line 0)
+     build_item_building_09_windtrap.png  160   40   96 x 56  ROM $08E37A its own 16 colours (CRAM line 0)
+     build_item_building_10_barracks_barrac.png  160   40   96 x 56  ROM $088962 its own 16 colours (CRAM line 0)
+     build_item_building_11_starport.png  160   40   96 x 56  ROM $08D220 its own 16 colours (CRAM line 0)
+     build_item_building_12_refinery.png  160   40   96 x 56  ROM $08B530 its own 16 colours (CRAM line 0)
+     build_item_building_13_repair.png   160   40   96 x 56  ROM $08BD56 its own 16 colours (CRAM line 0)
+     build_item_building_14_wall.png     160   40   96 x 56  ROM $08DE02 its own 16 colours (CRAM line 0)
+     build_item_building_15_turret.png   160   40   96 x 56  ROM $08D876 its own 16 colours (CRAM line 0)
+     build_item_building_16_r-turret.png  160   40   96 x 56  ROM $08C5B4 its own 16 colours (CRAM line 0)
+     build_item_building_17_spice_silo.png  160   40   96 x 56  ROM $08CB96 its own 16 colours (CRAM line 0)
+     build_item_building_18_outpost.png  160   40   96 x 56  ROM $08A6EE its own 16 colours (CRAM line 0)
+     build_item_unit_00_carryall.png     160   40   96 x 56  ROM $08F24C its own 16 colours (CRAM line 0)
+     build_item_unit_01_thopter.png      160   40   96 x 56  ROM $08F8C6 its own 16 colours (CRAM line 0)
+     build_item_unit_02_infantry.png     160   40   96 x 56  ROM $08FDB0 its own 16 colours (CRAM line 0)
+     build_item_unit_03_troopers.png     160   40   96 x 56  ROM $09045C its own 16 colours (CRAM line 0)
+     build_item_unit_04_soldier.png      160   40   96 x 56  ROM $090C2E its own 16 colours (CRAM line 0)
+     build_item_unit_05_trooper.png      160   40   96 x 56  ROM $0912DA its own 16 colours (CRAM line 0)
+     build_item_unit_07_launcher.png     160   40   96 x 56  ROM $091B00 its own 16 colours (CRAM line 0)
+     build_item_unit_08_deviator.png     160   40   96 x 56  ROM $092192 its own 16 colours (CRAM line 0)
+     build_item_unit_09_tank.png         160   40   96 x 56  ROM $0927EA its own 16 colours (CRAM line 0)
+     build_item_unit_10_siege_tank.png   160   40   96 x 56  ROM $092DAE its own 16 colours (CRAM line 0)
+     build_item_unit_11_devastator.png   160   40   96 x 56  ROM $0933A2 its own 16 colours (CRAM line 0)
+     build_item_unit_12_sonic_tank.png   160   40   96 x 56  ROM $093A7C its own 16 colours (CRAM line 0)
+     build_item_unit_13_trike.png        160   40   96 x 56  ROM $09412A its own 16 colours (CRAM line 0)
+     build_item_unit_14_raider_trike.png  160   40   96 x 56  ROM $094644 its own 16 colours (CRAM line 0)
+     build_item_unit_15_quad.png         160   40   96 x 56  ROM $094B48 its own 16 colours (CRAM line 0)
+     build_item_unit_16_harvester.png    160   40   96 x 56  ROM $095108 its own 16 colours (CRAM line 0)
+     build_item_unit_17_mcv.png          160   40   96 x 56  ROM $09577C its own 16 colours (CRAM line 0)
+   text (x, y, line, font, layer)
+      176  104  1  menu    W  "'Thopter"
+      232  128  1  menu    W  "840"
+      240  160  1  menu    W  "75"
+      248  192  1  menu    W  "5"
+   notes
+     grid: 3 wide, 4 rows of 32x24 icons from (32,48); the first row EXIT, FIX, STOP; the offer is the unit types in stock (S6), icons in line 3
+     info box: name centred in 12 columns at row 13, then price, stock ('Out Of Stock' at 0) and 'Send Order' with the total; A buys one if the credits and the stock allow and no Frigate is on its way
+     the picture box (160,40)-(255,95) shows the unit's own picture (build_item_unit_*.png) with its 16 colours in line 0
+
+== options - Options (screen 14; 1-3 are copies)
+   capture options   size 320x224
+   least   rows 168-199 hold only the picture; drop 200-223 (below PRESS START TO EXIT, which is at y 192)
+   palette
+     0: 000000 DAB648 B69124 916D00 6D4800 482400 242400 000000 FFFFFF 000000 6D6D91 FFFF00 6D6D00 48DAFF 4848FF FF00FF
+     1: 000000 B69100 FFDA6D DAB624 914800 482400 FF00FF FF00FF FFFFFF B6B6B6 919191 6D6D6D 919191 B6B6B6 FF00FF 000000
+     2: 000000 000000 000000 000000 000000 000000 000000 000000 48DAFF 000000 000000 000000 000000 48DAFF 000000 000000
+     3: 000000 000000 000000 000000 000000 000000 000000 000000 FFFFFF 000000 000000 000000 000000 FFFFFF 000000 000000
+   pictures (file, x, y, w x h, layer, note)
+     options_screen.png                    0    0  320 x 224 window    the picture with its words (the labels are picture tiles, not the font)
+     options_pointer.png                  13   36   15 x 16  sprite    the row pointer
+     options_pointer_0.png                13   36   15 x 16  sprite    the row pointer, colour-cycle frame 0 of 6
+     options_pointer_1.png                13   36   15 x 16  sprite    the row pointer, colour-cycle frame 1 of 6
+     options_pointer_2.png                13   36   15 x 16  sprite    the row pointer, colour-cycle frame 2 of 6
+     options_pointer_3.png                13   36   15 x 16  sprite    the row pointer, colour-cycle frame 3 of 6
+     options_pointer_4.png                13   36   15 x 16  sprite    the row pointer, colour-cycle frame 4 of 6
+     options_pointer_5.png                13   36   15 x 16  sprite    the row pointer, colour-cycle frame 5 of 6
+   notes
+     labels (baked into options_screen.png) at x 32: MUSIC IS y 40, SOUNDS ARE 56, RADAR IS 72, MUSIC TEST 88, SOUND TEST 104, ENTER PASSWORD 136; in a battle also RESTART MISSION and PICK ANOTHER HOUSE below, each behind ARE YOU SURE? (opt_confirm $021A58)
+     values: sprites in line 2 at x 176, y [40, 56, 72, 88, 104] - the words (ON/OFF, the tune and effect names of $087F3C/$087FD4) are drawn in the menu font (font_menu.png) into tiles $400 on
+     pad: up/down move the pointer (x 16); left/right step a value; A/C on a test plays it; C on ENTER PASSWORD opens the password screen; Start leaves
+
+== password - Enter your password (screen 10)
+   capture password   size 320x224
+   least   rows 200-223 (below PRESS START TO EXIT at y 192)
+   palette
+     0: 000000 DAB648 B69124 916D00 6D4800 482400 242400 000000 FFFFFF 000000 6D6D91 FFFF00 6D6D00 48DAFF 4848FF FF00FF
+     1: 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000 000000
+     2: 000000 000000 000000 000000 000000 000000 000000 000000 48DAFF 000000 000000 000000 000000 48DAFF 000000 000000
+     3: 000000 DADADA 000000 000000 000000 000000 000000 000000 FFFFFF 000000 000000 000000 000000 FFFFFF 000000 000000
+   pictures (file, x, y, w x h, layer, note)
+     password_screen.png                   0    0  320 x 224 window    the picture with the keyboard and its box
+     password_key_cursor.png              84   52   16 x 16  sprites   the frame round the key under the cursor
+     password_entry_example.png          120  117    8 x 3   sprites   the typed word (empty: the underline cursor)
+   notes
+     keyboard: three rows ABCDEFGHIJ / KLMNOPQRST / UVWXYZ<>! and END, keys 16 px apart from (88,56), rows 8 apart (the frame sprite sits at x 84 + 16 col, y 52 + 8 row); < and > move in the word, ! rubs out
+     the word: ten letters, sprites at (120,112) on, drawn in the menu font; refused: song $1A or $4C, accepted: song $43 or $44 (pw_screen $0215BC); the 29 words are res/data/passwords.txt
+
+== victory - Victory (screen 11): the surrender
+   capture victory   size 320x224
+   least   rows 200-223, below the banner (y 176-199)
+   palette
+     0: 000000 B6B691 91916D 6D6D48 484824 242400 FFFFFF FFDADA DAB6B6 6D4848 482424 240000 6D0000 480000 B6FFDA 91DADA
+     1: 000000 FFDA6D DAB648 B69124 916D00 6D4800 FFFFFF FFDADA DAB6B6 B69191 916D6D 6D4848 482424 240000 91916D 242400
+     2: 000000 DADAFF B6B6DA 9191B6 6D6D91 48486D 242448 FFFFFF B6B6FF 6D6DB6 484891 6D0000 480000 FFDA00 FF9100 B6FFDA
+     3: 000000 B69100 006D00 00FF00 FFDA6D DAB624 914800 482400 00FFFF 0091DA 004891 000024 FFFFFF B6B6DA 6D6D91 242448
+   pictures (file, x, y, w x h, layer, note)
+     victory_screen.png                    0    0  320 x 224 window    animation frame 0, the whole picture
+     victory_frame_1.png                 112   40   72 x 80  window    frame 1: the cells that differ from frame 0
+     victory_frame_2.png                 112   40   72 x 80  window    frame 2: the cells that differ from frame 0
+     victory_frame_3.png                 112   40   72 x 80  window    frame 3: the cells that differ from frame 0
+     victory_banner.png                  133  183   64 x 14  sprites   the Victory word, line 3 (it slides up to y 176)
+   notes
+     the four frames are name tables at $0C5DAA (Format80, $700 words each), stepped every eleven frames (screen_anim_*_frame); A, B, C or Start leaves; then the mentat's victory or defeat text and the score
+
+== defeat - Defeat (screen 9): the burning wreck
+   capture defeat   size 320x224
+   least   rows 200-223, below the banner (y 176-199)
+   palette
+     0: 000000 FFDA6D B69124 B6B6DA 48486D 242448 000024 FFDADA DAB6B6 B69191 916D6D 6D4848 482424 240000 000000 6D0000
+     1: 000000 6D0000 480000 FFDA6D 000000 48486D 000024 6D6D91 DAB648 910000 000000 B69124 B60000 240000 916D00 6D4800
+     2: 000000 FFFF91 FFDA6D DAB648 B69124 916D00 6D4800 910000 6D0000 242400 000000 FFDADA 48486D 480000 240000 B6FF91
+     3: 000000 B69100 006D00 00FF00 FFDA6D DAB624 914800 482400 00FFFF 0091DA 004891 000024 FFFFFF B6B6DA 6D6D91 242448
+   pictures (file, x, y, w x h, layer, note)
+     defeat_screen.png                     0    0  320 x 224 window    animation frame 0, the whole picture
+     defeat_frame_1.png                   64   40  248 x 120 window    frame 1: the cells that differ from frame 0
+     defeat_frame_2.png                   64   40  248 x 120 window    frame 2: the cells that differ from frame 0
+     defeat_frame_3.png                   64   40  248 x 120 window    frame 3: the cells that differ from frame 0
+     defeat_banner.png                   132  182   50 x 15  sprites   the Defeat word, line 3 (it slides up to y 176)
+   notes
+     the four frames are name tables at $0C4FF2 (Format80, $700 words each), stepped every eleven frames (screen_anim_*_frame); A, B, C or Start leaves; then the mentat's victory or defeat text and the score
+
+== score - The score page (score_screen $0271DE)
+   capture score   size 320x224
+   least   rows 200-223: picture only
+   palette
+     0: 000000 DAB648 B69124 916D00 6D4800 482400 242400 000000 FF00FF FF00FF FF00FF FF00FF FF00FF FF4800 B60000 000000
+     1: 000000 FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF 006DFF 0000DA 000000
+     2: 000000 FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FFFF00 FF00FF FF00FF FF00FF 000000 FFFF00 009100 000000
+     3: 000000 FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FFFFFF FF00FF FF00FF FF00FF FF00FF FFFFFF 916DDA 000000
+   pictures (file, x, y, w x h, layer, note)
+     score_screen.png                      0    0  320 x 224 plane B   the picture behind
+     score_labels.png                     24   24  256 x 176 plane A   the fixed words (line 3), their own glyph tiles
+   text (x, y, line, font, layer)
+      104   24  2  score   A  "0"
+      248   24  2  score   A  "0"
+      264   24  2  score   A  "00"
+      120   56  2  score   A  "Sand Snake"
+      288  104  2  score   A  "0"
+      288  112  2  score   A  "0"
+      288  144  2  score   A  "0"
+      288  152  2  score   A  "0"
+      288  184  2  score   A  "0"
+      288  192  2  score   A  "0"
+   notes
+     the figures are printed in font_score.png (tile $500 + character): score, 5 digits at (104,24); time h:mm at (248,24); the rank, 17 characters centred at (96,56), line 2; the six bars at x 80 on rows 13/14, 18/19, 23/24 (y 104, 112, 144, 152, 184, 192) in glyphs $18 on, 'you' line 0, 'enemy' line 1, counted up; the numbers right-aligned to x 295
+     after a win short of mission 9 the next password follows with the house name and the mission number
+
+== ending - The end: Arrakis among the stars, the credits (screen 8, campaign_ending $012730)
+   capture ending   size 320x224
+   least   any 24: the credits scroll through
+   palette
+     0: 000000 0000FF 0000DA 0000B6 000091 00006D 000048 000024 000000 000000 000024 4891FF 486DDA 2448B6 002491 000048
+     1: 000000 FF0000 B60000 6D0000 000000 FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF FF00FF
+     2: 000000 FF4848 B60000 6D0000 000000 FFB6B6 FFFFFF 919191 FF00FF FF00FF FF00FF FF00FF FF00FF FFFF00 6D6D00 000000
+     3: FF00FF FF00FF FF00FF FF00FF FF00FF FF0000 FF4848 FFB6B6 FF00FF FF00FF FF00FF FF00FF FF00FF FFFFFF 6D6D6D 000000
+   pictures (file, x, y, w x h, layer, note)
+     ending_planet.png                    81   32  215 x 168 plane B   Arrakis in the house's colour ramp (here Atreides)
+   notes
+     the planet's colours come from a 20-byte ramp per house at $06C70C, faded in; the stars are the title's glyphs
+       ramp 0: 000000 FF0000 DA0000 B60000 910000 6D0000 480000 240000 000000 000000
+       ramp 1: 000000 0000FF 0000DA 0000B6 000091 00006D 000048 000024 000000 000000
+       ramp 2: 000000 00FF00 00DA00 00B600 009100 006D00 004800 002400 000000 000000
+     the credits: plane A scrolls up a pixel every three frames; each line centred, font title (tile $480 + character); $FF n sets the palette line (2 headings, 3 names).  The text ($01192C):
+       [3]The End
+       (4 blank rows)
+       [3]Dune
+       (1 blank rows)
+       The Battle for Arrakis
+       (4 blank rows)
+       [2]Executive producer
+       (1 blank rows)
+       [3]Christopher D. Yates
+       (4 blank rows)
+       [2]Producers
+       (1 blank rows)
+       [3]Aaron E. Powell
+       (1 blank rows)
+       David Pokorny
+       (4 blank rows)
+       [2]Product Coordinators
+       (1 blank rows)
+       [3]Robb Alvey
+       (1 blank rows)
+       Ken Love
+       (1 blank rows)
+       Matthew Spall
+       (4 blank rows)
+       [2]Designers
+       (1 blank rows)
+       [3]Aaron E. Powell
+       (1 blank rows)
+       Joe Bostic
+       (4 blank rows)
+       [2]Programmers
+       (1 blank rows)
+       [3]Leroy Wing
+       (1 blank rows)
+       Denzil E. Long Jr.
+       (1 blank rows)
+       Rob Povey
+       (4 blank rows)
+       [2]Writer
+       (1 blank rows)
+       [3]Rick Gush
+       (4 blank rows)
+       [2]Artists
+       (1 blank rows)
+       [3]Matthew Hansel
+       (1 blank rows)
+       Sandy Dobbs
+       (4 blank rows)
+       [2]Music and Sound
+       (1 blank rows)
+       [3]Paul Mudra
+       (1 blank rows)
+       Frank Klepacki
+       (1 blank rows)
+       Dwight Okahara
+       (4 blank rows)
+       [2]Voices
+       (1 blank rows)
+       [3]Frank Klepacki - House voices
+       (1 blank rows)
+       Glenn Sperry - Units
+       (4 blank rows)
+       [2]Quality Assurance
+       (1 blank rows)
+       [3]Glenn Sperry
+       (1 blank rows)
+       Kenny Dunne
+       (1 blank rows)
+       William Baca
+       (1 blank rows)
+       Jesse Clemit
+       (1 blank rows)
+       Jeff Fillhaber
+       (1 blank rows)
+       Scott Fleming
+       (1 blank rows)
+       Bill Foster
+       (1 blank rows)
+       Mike Lightner
+       (1 blank rows)
+       Tim Fritz
+       (1 blank rows)
+       Ronnie Balducci
+       (1 blank rows)
+       John P Fincher
+       (1 blank rows)
+       Mike McCaa
+       (1 blank rows)
+       Adam Ryan
+       (1 blank rows)
+       Paul Shoener
+       (1 blank rows)
+       Jared Brinkley
+       (1 blank rows)
+       Mitch Feldman
+       (1 blank rows)
+       Chris McFarland
+       (1 blank rows)
+       Scott Manning
+       (1 blank rows)
+       David Fries
+       (1 blank rows)
+       Chris Rausch
+       (1 blank rows)
+       Nick Camerota
+       (1 blank rows)
+       Bijan Shaheer
+       (1 blank rows)
+       Paul Welton
+       (1 blank rows)
+       John Martin
+       (4 blank rows)
+       [2]Special thanks to
+       (1 blank rows)
+       [3]Brett W. Sperry
+       (1 blank rows)
+       Lyle J. Hall, II
+       (7 blank rows)
+       [2]DUNE is a trademark of
+       (1 blank rows)
+       Dino De Laurentiis Corporation
+       (1 blank rows)
+       and licensed by
+       (1 blank rows)
+       MCA/Universal Merchandising, Inc.
+       (1 blank rows)
+       @ 1984 Dino De Laurentiis Corporation.
+       (1 blank rows)
+       All rights reserved.
+       (4 blank rows)
+       @ 1994 Westwood Studios, Inc.
+       (1 blank rows)
+       All rights reserved.
+       (4 blank rows)
+       Virgin is a registered trademark of
+       (1 blank rows)
+       Virgin Enterprises, LTD.
+       (4 blank rows)
+       [3]Thank you for playing
+       (1 blank rows)
+       DUNE - The battle for arrakis
+
+== fonts - The fonts
+   capture -   size -
+   pictures (file, x, y, w x h, layer, note)
+     font8.png                             -    -  128 x 64  ROM $0506C2 font title/mentat: 128 glyphs, in the mentat's line 2
+     font_menu.png                         -    -  128 x 64  ROM $04F6C0 font menu: 128 glyphs, in the build panel's line 1
+     font_score.png                        -    -  128 x 64  VRAM $A000 font score: 128 glyphs, as the score page has them, in its line 2
+   notes
+     every sheet is 16 x 8 glyphs of 8x8: glyph n is at x = n % 16 * 8, y = n // 16 * 8, and glyph n prints character n (ASCII); lower case draws the same small capitals as upper case; pen 0 is transparent, and the glyphs carry their own shadow pens, so a line is recoloured by pen, not by one colour
+     font8.png (font 'title'/'mentat'): Format80 at $0506C2, 128 tiles.  The title menu and PRESENT (tile $480 + c, line 3), the mentat's text box (tile $460 + c, line 2), the end credits (tile $480 + c, lines 2 and 3).  Glyphs $00-$1F are the text box's frame and bar pieces
+     font_menu.png (font 'menu'): raw at $04F6C0 (the screen table's font block $04F6BE: a length word, $1000, then the tiles), VRAM $8000 = tile $400 + c.  The build and Starport info box (line 1), the options' values and the password (drawn into sprite tiles).  $00-$1F are placeholders the panels overwrite
+     font_score.png (font 'score'): tile $500 + c on the score page: the score, time, rank and figures (line 2), the bars (glyphs $18 on, lines 0 and 1)
+     battle_credits_digits.png: the credits counter's own 0-9 ($050ACC is the blank, then 0-9, raw)
+     words that are pictures, not fonts: the options labels, the score page's fixed words (score_labels.png), the house plates, 'Select your House', the Victory/Defeat banners, the title's DUNE and subtitle, PROCEED/ADVICE/YES/NO
+
+== totals: 269 pictures, 1429231 pixels (sum of w x h)

@@ -1,0 +1,29 @@
+# music_test.txt - the options screen's music test ($087F3C): each tune's
+# name and its song number (S10).
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source (tools/dune_data.py -> text.inc).
+# @id "text" [attr=value] is one string; @id [attr=value] then
+# lines then @end is a long one.  Escapes: \n \" \\ \xNN {cN}.
+# The characters are ASCII; charset.txt says which the fonts have.
+
+.join space
+
+@cyrils_council_0       "cyrils council " song=0   ; $020870
+@ammons_advice_1        "ammons advice  " song=8   ; $020880
+@radnors_scheme_2       "radnors scheme " song=6   ; $020890
+@the_lego_tune_3        "the lego tune  " song=4   ; $0208A0
+@turbulence_4           "turbulence     " song=10   ; $0208B0
+@spice_trip_5           "spice trip     " song=1   ; $0208C0
+@command_post_6         "command post   " song=3   ; $0208D0
+@trenching_7            "trenching      " song=2   ; $0208E0
+@starport_8             "starport       " song=5   ; $0208F0
+@evasive_action_9       "evasive action " song=7   ; $020900
+@chosen_destiny_10      "chosen destiny " song=9   ; $020910
+@conquest_11            "conquest       " song=11   ; $020920
+@slitherin_12           "slitherin      " song=13   ; $020930
+@harkonnen_rules_13     "harkonnen rules" song=12   ; $020940
+@atredies_dirge_14      "atredies dirge " song=14   ; $020950
+@ordos_dirge_15         "ordos dirge    " song=16   ; $020960
+@harkonnen_dirge_16     "harkonnen dirge" song=15   ; $020970
+@finale_17              "finale         " song=17   ; $020980

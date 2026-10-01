@@ -1,0 +1,226 @@
+; team.emc - TEAM.EMC, the 153 words of its
+; DATA chunk (6 entry points), from orig/dune2.gen $04E022.
+;
+; Written once by tools/sega/port_data.py; this text is now the source.
+; tools/dune_data.py assembles it back to the cartridge's bytecode
+; exactly (port_data.py check proves it) and writes scripts.inc.
+; S7 is the reference for the machine and for every routine.
+;
+; .functions N         the size of the script's call table
+; .func I NAME         call index I, the 68000 routine it reaches
+; .entry I LABEL       ORDR entry I (a unit, a building, a behaviour)
+; LABEL:               a word offset; wNNN labels keep the offsets of
+;                      orig/sega/res/data/scripts/*.txt
+;
+; One instruction a line; the encoding is fixed per instruction:
+;   goto L        $8000 | L                  (1 word)
+;   goto-if L     $2F00, $8000 | L: pops, jumps if it was zero (2 words)
+;   push.w n      $2300, n                   (2 words)
+;   everything else $4000 | op << 8 | byte   (1 word):
+;   setret push.ret push.pc push.b push.var push.loc push.arg
+;   pop.ret ret pop.var pop.loc pop.arg drop reserve call unary
+;   binary return;   .word $XXXX is a raw word.
+
+.script team
+.functions 15
+.func 0   delay         ; $01108A wait n/5 ticks - writes the countdown the tick loop at $043BCC decrements
+.func 1   fn1           ; $02E504 compares the team's house with the player's and then throws the answer away; never called
+.func 2   members       ; $02E520 how many units the team has ($4)
+.func 3   recruit       ; $02E544 take the nearest suitable unit of the house into the team, if it is under strength
+.func 4   spread        ; $02E67C the members' average distance from their centre, which is put in $14 on the way
+.func 5   gather        ; $02E7C0 members further than n from the centre are ordered to Move near it, the rest to Guard; answers how many were moved
+.func 6   find.target   ; $02E906 look for something to attack and put it in $1A
+.func 7   attack        ; $02E9C4 send every member at $1A, spread out around it
+.func 8   behave        ; $02EB66 restart the team's own script at entry n
+.func 9   behave.orig   ; $02EBB2 restart it at the entry it was declared with ($E)
+.func 10  delay.rnd     ; $0110A6 the same, but a random fraction of n
+.func 11  zero11        ; $011106 returns 0 and nothing else
+.func 12  min           ; $02E52C the fewest members the team may have ($6; recruit fills it up to $8)
+.func 13  target        ; $02E538 the team's $1A
+.func 14  zero14        ; $02E500 returns 0 and nothing else
+
+.entry 0   team_normal
+.entry 1   team_staging
+.entry 2   team_flee
+.entry 3   team_kamikaze
+.entry 4   team_guard
+.entry 5   team_entry5
+
+team_normal:
+team_guard:
+w0:
+    push.b   1                  ; 0
+    goto-if  w39                ; 1
+    call     members            ; 3
+    push.ret                    ; 4
+    call     min                ; 5
+    push.ret                    ; 6
+    binary   <                  ; 7
+    goto-if  w13                ; 8
+    push.b   1                  ; 10
+    call     behave             ; 11
+    drop     1                  ; 12
+
+w13:
+    call     spread             ; 13
+    push.ret                    ; 14
+    call     min                ; 15
+    push.ret                    ; 16
+    binary   >                  ; 17
+    goto-if  w23                ; 18
+    push.b   1                  ; 20
+    call     behave             ; 21
+    drop     1                  ; 22
+
+w23:
+    call     recruit            ; 23
+    call     target             ; 24
+    push.ret                    ; 25
+    unary    !                  ; 26
+    goto-if  w30                ; 27
+    call     find.target        ; 29
+
+w30:
+    call     attack             ; 30
+    push.b   20                 ; 31
+    call     delay.rnd          ; 32
+    drop     1                  ; 33
+    push.w   600                ; 34
+    call     delay              ; 36
+    drop     1                  ; 37
+    goto     w0                 ; 38
+
+w39:
+    ret                         ; 39
+    ret                         ; 40
+
+team_staging:
+w41:
+    push.b   1                  ; 41
+    goto-if  w67                ; 42
+    call     spread             ; 44
+    push.ret                    ; 45
+    push.b   3                  ; 46
+    binary   >                  ; 47
+    goto-if  w53                ; 48
+    push.b   3                  ; 50
+    call     gather             ; 51
+    drop     1                  ; 52
+
+w53:
+    call     recruit            ; 53
+    call     members            ; 54
+    push.ret                    ; 55
+    call     min                ; 56
+    push.ret                    ; 57
+    binary   >=                 ; 58
+    goto-if  w62                ; 59
+    call     behave.orig        ; 61
+
+w62:
+    push.w   600                ; 62
+    call     delay              ; 64
+    drop     1                  ; 65
+    goto     w41                ; 66
+
+w67:
+    ret                         ; 67
+    ret                         ; 68
+
+team_flee:
+    ret                         ; 69
+    ret                         ; 70
+
+team_kamikaze:
+w71:
+    push.b   1                  ; 71
+    goto-if  w110               ; 72
+    call     members            ; 74
+    push.ret                    ; 75
+    call     min                ; 76
+    push.ret                    ; 77
+    binary   <                  ; 78
+    goto-if  w84                ; 79
+    push.b   1                  ; 81
+    call     behave             ; 82
+    drop     1                  ; 83
+
+w84:
+    call     spread             ; 84
+    push.ret                    ; 85
+    call     min                ; 86
+    push.ret                    ; 87
+    binary   >                  ; 88
+    goto-if  w94                ; 89
+    push.b   1                  ; 91
+    call     behave             ; 92
+    drop     1                  ; 93
+
+w94:
+    call     recruit            ; 94
+    call     target             ; 95
+    push.ret                    ; 96
+    unary    !                  ; 97
+    goto-if  w101               ; 98
+    call     find.target        ; 100
+
+w101:
+    call     attack             ; 101
+    push.b   20                 ; 102
+    call     delay.rnd          ; 103
+    drop     1                  ; 104
+    push.w   600                ; 105
+    call     delay              ; 107
+    drop     1                  ; 108
+    goto     w71                ; 109
+
+w110:
+    ret                         ; 110
+    ret                         ; 111
+
+team_entry5:
+w112:
+    push.b   1                  ; 112
+    goto-if  w151               ; 113
+    call     members            ; 115
+    push.ret                    ; 116
+    call     min                ; 117
+    push.ret                    ; 118
+    binary   <                  ; 119
+    goto-if  w125               ; 120
+    push.b   1                  ; 122
+    call     behave             ; 123
+    drop     1                  ; 124
+
+w125:
+    call     spread             ; 125
+    push.ret                    ; 126
+    call     min                ; 127
+    push.ret                    ; 128
+    binary   >                  ; 129
+    goto-if  w135               ; 130
+    push.b   1                  ; 132
+    call     behave             ; 133
+    drop     1                  ; 134
+
+w135:
+    call     recruit            ; 135
+    call     target             ; 136
+    push.ret                    ; 137
+    unary    !                  ; 138
+    goto-if  w142               ; 139
+    call     find.target        ; 141
+
+w142:
+    call     attack             ; 142
+    push.b   20                 ; 143
+    call     delay.rnd          ; 144
+    drop     1                  ; 145
+    push.w   600                ; 146
+    call     delay              ; 148
+    drop     1                  ; 149
+    goto     w112               ; 150
+
+w151:
+    ret                         ; 151
+    ret                         ; 152

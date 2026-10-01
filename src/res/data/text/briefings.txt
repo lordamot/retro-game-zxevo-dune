@@ -1,0 +1,636 @@
+# briefings.txt - the mentat's 111 texts (S9): the three houses' descriptions,
+# then for each mission a briefing, a victory, a defeat and
+# advice - Atreides (from index 3), Ordos (39), Harkonnen (75),
+# missions 1-9 (tbl_briefing_first).  The table is $087D74.
+# The prose has no line breaks: a block's lines join with a
+# space.  ` is the cartridge's apostrophe.
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source (tools/dune_data.py -> text.inc).
+# @id "text" [attr=value] is one string; @id [attr=value] then
+# lines then @end is a long one.  Escapes: \n \" \\ \xNN {cN}.
+# The characters are ASCII; charset.txt says which the fonts have.
+
+.join space
+
+@house_H   ; $01B2E4
+From the dark world of Giedi Prime the savage House Harkonnen has spread
+across the universe.A cruel people, we Harkonnen are ruthless towards
+both friend and foe in our fanatical pursuit of power.Do you wish to
+join House Harkonnen?
+@end
+
+@house_A   ; $01B3CE
+House Atreides has a long tradition of being fair and just
+administrators.Our people are loyal, hard working, and peaceable.Do you
+wish to join House Atreides?
+@end
+
+@house_O   ; $01B46E
+House Ordos represents a cartel of wealthy families.We have little
+conscience and gain strength through our use of sabotage and
+terrorism.Do you wish to join House Ordos?
+@end
+
+@A1_brief   ; $01B519
+Greetings, I am your Mentat Cyril.Together we will purge this planet of
+the foulness of the other Houses.The High Command wishes you to produce
+1000 credits.You may earn credits by building a refinery and harvesting
+spice.
+@end
+
+@A1_win   ; $01B5F8
+Congratulations!I knew that you would achieve your goal with very little
+trouble.I look forward to assisting you in future missions.
+@end
+
+@A1_lose   ; $01B67D
+This is very disappointing.We had such high hopes for you.We must insist
+that you try again.
+@end
+
+@A1_advice   ; $01B6DA
+First build concrete slabs, and then build a Windtrap and place it upon
+the concrete.Do the same for a refinery so that you can reach your quota
+of 1000 credits.
+@end
+
+@A2_brief   ; $01B77C
+Greetings, I am honored to see you again.You are now required to either
+produce 2700 credits in a new harvesting area or remove the Ordos base
+in this region.Good luck!
+@end
+
+@A2_win   ; $01B825
+Well done!Our effort to maintain fair play on this planet is opposed by
+both the Ordos and the Harkonnen.This region will help us greatly in our
+efforts.
+@end
+
+@A2_lose   ; $01B8BF
+The loss of this region to the Ordos will hurt House Atreides
+greatly.Please try harder next time.The seriousness of your mission
+cannot be overemphasized!
+@end
+
+@A2_advice   ; $01B95B
+If you have an Outpost, build a Barracks in order to produce soldiers.I
+would do so to provide a greater defense for your harvesting operation.
+@end
+
+@A3_brief   ; $01B9EB
+The battle with the other Houses has intensified, and we are now forced
+to engage in some selected offensive maneuvers.The Harkonnen are being
+extremely troublesome in your next region, and we must ask that you
+remove their presence from the area.
+@end
+
+@A3_win   ; $01BAE3
+Hurrah!Although I prefer defense, a fine offensive against such a
+deserving foe as the Harkonnen is a joy to behold.House Atreides thanks
+you for your efforts!
+@end
+
+@A3_lose   ; $01BB83
+It is a cruel world, is it not?I`m not sure if I was expecting divine
+intervention, but as I watched your defeat I could not help thinking how
+unfair it was!
+@end
+
+@A3_advice   ; $01BC21
+You need to build a Vehicle Factory to produce the weapons necessary to
+complete your mission.
+@end
+
+@A4_brief   ; $01BC80
+Your demonstration of military skills now forces us to assign you to
+another offensive campaign against House Harkonnen.They have continued
+to attack our peaceful harvesters, and must be removed from the area!
+@end
+
+@A4_win   ; $01BD52
+Well done!No task seems too difficult for you.The Harkonnen will think
+twice before attacking our harvesters again!
+@end
+
+@A4_lose   ; $01BDC6
+Although I understand the problems confronting you, I will confess that
+I am disappointed by your defeat.I am not sure what went wrong, but
+please do not let it happen again!
+@end
+
+@A4_advice   ; $01BE75
+The addition of tanks in your forces is essential to your victory in
+this region.
+@end
+
+@A5_brief   ; $01BEC7
+The rules seem to have changed.The Emperor himself has been aiding the
+efforts of our competitors!As a part of our new strategy, we must ask
+that you eliminate the treacherous Ordos forces that presently control
+this region.
+@end
+
+@A5_win   ; $01BFA8
+Congratulations again!There seems to be no limit to your talents.I have
+to think that some divine force motivated your decision to serve within
+House Atreides.
+@end
+
+@A5_lose   ; $01C048
+This defeat of yours will not look good in my reports.I am not sure how
+much longer we can afford to support you.
+@end
+
+@A5_advice   ; $01C0BA
+The production of Carryalls will greatly speed up your harvesting
+operations.
+@end
+
+@A6_brief   ; $01C108
+As the battle for this planet intensifies, all efforts must be taken to
+ensure our success.Once again, we must call upon you to destroy our
+enemies in a troubled sector.House Harkonnen must be taught a lesson.
+@end
+
+@A6_win   ; $01C1DA
+Hurrah!We have them on the run now, and it`s all because of you.Your
+successes have been remarkable!Are you sure you didn`t graduate from one
+of the intergalactic military academies?
+@end
+
+@A6_lose   ; $01C291
+There is a time for excuses, but this is not it!You have no choice but
+to apply yourself more diligently during your next assignment.
+@end
+
+@A6_advice   ; $01C317
+I advise you to produce and then place Rocket Turrets at strategic
+defensive positions around your installation.
+@end
+
+@A7_brief   ; $01C388
+The battle goes well, but there is no time to relax.We have an urgent
+need for you to subdue all Ordos forces in this region promptly.We are
+counting on you.
+@end
+
+@A7_win   ; $01C426
+Excellent!Your skill seems to improve with each assignment, and your
+exploits give great confidence to those on the home front.Keep up the
+good work!
+@end
+
+@A7_lose   ; $01C4BC
+My goodness, what an awful defeat!If you fail at your next assignment we
+will have to seriously consider sending you home!
+@end
+
+@A7_advice   ; $01C537
+The Sonic Tank is a powerful ally against enemy troops and structures.
+@end
+
+@A8_brief   ; $01C57E
+Although you have earned a well deserved rest, I`m afraid we need to
+send you back into the field immediately.Both Ordos and Harkonnen forces
+have been spotted in this region, and now must be removed completely.
+@end
+
+@A8_win   ; $01C652
+A masterful victory!Frankly, we would not be able to remain on Dune
+without your military guidance.We have come to rely completely on you
+sir, and cannot imagine further success without you!
+@end
+
+@A8_lose   ; $01C711
+A defeat is never welcome, but this loss is particularly devastating!All
+of our efforts may soon prove futile unless you can provide a victory in
+your next campaign!
+@end
+
+@A8_advice   ; $01C7B7
+Utilize Rocket turrets as a defense against Ornithopters.
+@end
+
+@A9_brief   ; $01C7F1
+Your next assignment will determine the entire outcome of our efforts
+here on Dune.You are instructed to subdue Emperor Frederick`s forces.All
+of our hopes and dreams are riding with you, and we humbly beg of you to
+provide one final victory for our noble House Atreides.
+@end
+
+@A9_win   ; $01C901
+Good Morning, your lordship, and congratulations!You showed great
+compassion in dealing with a distasteful task.Together we have succeeded
+in purging this planet of the foulness of the other Houses.
+@end
+
+@A9_lose   ; $01C9C8
+Your defects must have been inherited.Nobody could possibly learn the
+colossal stupidity that you have displayed.
+@end
+
+@A9_advice   ; $01CA3A
+Utilize your Palace`s special option whenever possible, for it costs
+nothing and it will recharge.
+@end
+
+@O1_brief   ; $01CA9D
+I am your Mentat, and you may call me Ammon.To be of any value to the
+Cartel, you must provide us with a quota of 1000 credits.Build a
+refinery to harvest the spice in the area to achieve your quota.
+@end
+
+@O1_win   ; $01CB65
+You show potential.If you continue to display good management skills we
+may find a permanent position for you in our organization.
+@end
+
+@O1_lose   ; $01CBE8
+It is beyond me how you were able to fail such an easy task.Because you
+come so highly recommended, we may be able to overlook this episode if
+you are successful with your next assignment.
+@end
+
+@O1_advice   ; $01CCA5
+First build concrete slabs, and then build a Windtrap and place it upon
+the concrete.Do the same for a refinery so that you can reach your quota
+of 1000 credits.
+@end
+
+@O2_brief   ; $01CD47
+Your quota is now 2700 credits, or you may decide to destroy the
+Harkonnen forces in the area.Which ever task you choose, remember that
+we do not like competition, especially from the Harkonnens.
+@end
+
+@O2_win   ; $01CE0B
+Congratulations.The Cartel is beginning to notice you.I think you will
+definitely have a future with us if you can continue on this track.
+@end
+
+@O2_lose   ; $01CE96
+Apparently, I was mistaken about your potential.It will cost us a great
+deal to retake this region.Only complete success with your next
+assignment could possibly resurrect your career.
+@end
+
+@O2_advice   ; $01CF4F
+If you have an Outpost, build a Barracks in order to produce soldiers.I
+would do so to provide a greater defense for your harvesting operation.
+@end
+
+@O3_brief   ; $01CFDF
+We find the activities of Atreides troops in this region
+inconvenient.Please remove this obstacle.We cannot allow the mythical
+value of fair play to impede our progress.
+@end
+
+@O3_win   ; $01D089
+Excellent!There were rumors that some sort of moral objections would
+hinder your effectiveness.I am glad to see that you have risen above
+these petty sensitivities.
+@end
+
+@O3_lose   ; $01D12E
+Your clumsy management has cost us dearly!I suggest you rid yourself of
+all outside interests and devote yourself completely to your next
+assignment!
+@end
+
+@O3_advice   ; $01D1C4
+You need to build a Vehicle Factory to produce the weapons necessary to
+complete your mission.
+@end
+
+@O4_brief   ; $01D223
+The Atreides forces in this area must be eliminated.As always, we
+appreciate your capture of any enemy silos or other structures that
+might be salvageable.
+@end
+
+@O4_win   ; $01D2BF
+A masterful victory, but be cautious!Your reputation will now precede
+you in future engagements, and you may find your foes better prepared
+for your tactics.
+@end
+
+@O4_lose   ; $01D35D
+How could you possibly fail so quickly?My grandmother could command more
+efficiently than you!Get back out there and show some initiative, or
+stop wasting my time!
+@end
+
+@O4_advice   ; $01D401
+The addition of tanks to your forces is essential to your victory in
+this region.
+@end
+
+@O5_brief   ; $01D453
+What?The Sarduakar were aiding our enemies during your last mission?I
+will need to look into this.Although the Harkonnen commanders are
+laughably stupid, their military strength is a threat to us in this
+area.They must be eliminated as soon as possible.
+@end
+
+@O5_win   ; $01D551
+Congratulations would be in order, but we expect these results when you
+are in charge.Your continued success brings honor to your family, and
+all of us in House Ordos.
+@end
+
+@O5_lose   ; $01D5F9
+You bungling fool!Did you expect your enemies to run away at the mere
+sight of you?Remember: your brain will win the war, not your bullets!
+@end
+
+@O5_advice   ; $01D685
+The production of Carryalls will greatly speed up your harvesting
+operations.
+@end
+
+@O6_brief   ; $01D6D3
+The Atreides have become far too vocal in this sector, and whine
+constantly about their rights.We Ordos do not have the leisure of
+pointless conversation, and must ask that you eliminate this
+distraction.
+@end
+
+@O6_win   ; $01D7A0
+Well done!Your successful military campaigns have created a political
+atmosphere well suited to our particular bargaining skills.Keep up the
+good work!
+@end
+
+@O6_lose   ; $01D838
+Do you instruct your troops to fire randomly into the air?Is there any
+plan to your idiotic maneuvers?I suggest that you no longer allow your
+dog to assist in managing your assignments!
+@end
+
+@O6_advice   ; $01D8F2
+I advise you to produce and then place Rocket Turrets at strategic
+defensive positions around your installation.
+@end
+
+@O7_brief   ; $01D963
+Harkonnen forces continue to thwart our efforts in this region, and must
+be removed completely.Crush their beloved troopers and they will run
+crying back to their ugly mothers!
+@end
+
+@O7_win   ; $01DA14
+Excellent!You have won a great victory for House Ordos.Doesn`t
+inflicting such a humiliating defeat make your breakfast taste better?
+@end
+
+@O7_lose   ; $01DA9A
+Your failure could not have been timed more poorly!What status and
+bargaining power can we maintain when you display such ineptitude in the
+field?
+@end
+
+@O7_advice   ; $01DB2D
+The Deviator is a powerful ally against enemy forces.
+@end
+
+@O8_brief   ; $01DB63
+Both Atreides and Harkonnen forces oppose our control of this area and
+must therefore be destroyed.The time for cooperation and compromise has
+past, and all enemies of House Ordos must be eliminated!
+@end
+
+@O8_win   ; $01DC2B
+I just received the wonderful news of your stunning victory!I am very
+pleased, and look forward to telling my grandchildren that it was I who
+served as Mentat to such a brilliant Ordos commander.
+@end
+
+@O8_lose   ; $01DCEF
+You do not exist in a vacuum!Your ineptitude has endangered everything
+House Ordos has worked to create here on Arrakis!
+@end
+
+@O8_advice   ; $01DD68
+Utilize Rocket turrets as a defense against Ornithopters.
+@end
+
+@O9_brief   ; $01DDA2
+Emperor Frederick has joined the list of Ordos enemies, and must be
+punished.We expect you to destroy all of what remains of his forces.We
+have risked everything on this final battle, and cannot tolerate less
+than your best effort.
+@end
+
+@O9_win   ; $01DE8A
+You have served House Ordos well.The cartel is pleased that you have
+kept our casualties at an acceptable, efficient level.Our business is so
+much more efficient when we have no competition left on the planet.
+@end
+
+@O9_lose   ; $01DF5C
+Your defects must have been inherited.Nobody could possibly learn the
+colossal stupidity that you have displayed.
+@end
+
+@O9_advice   ; $01DFCE
+Utilize your Palace`s special option whenever possible, for it costs
+nothing and it will recharge.
+@end
+
+@H1_brief   ; $01E031
+I am the Mentat, Radnor.For your first test you will be expected to
+produce 1000 credits, and not a granule less.You may earn credits by
+harvesting spice, and will need to build a refinery to convert spice to
+credits.
+@end
+
+@H1_win   ; $01E10B
+You have pleased me.Continue to serve me well, and I will see to it that
+you are rewarded.
+@end
+
+@H1_lose   ; $01E166
+You are beneath my contempt.Do you know what happens to those who have
+failed House Harkonnen?
+@end
+
+@H1_advice   ; $01E1C5
+First build concrete slabs, and then build a Windtrap and place it upon
+the concrete.Do the same for a refinery so that you can reach your quota
+of 1000 credits.
+@end
+
+@H2_brief   ; $01E267
+House Harkonnen will now allow you to take command in a more dangerous
+area.You will encounter the worthless Atreides in this region.Whether
+you eliminate them or accumulate 2700 credits in spice, that is up to
+you.
+@end
+
+@H2_win   ; $01E33F
+Again you have pleased me.You remind me of myself in my youth.You may
+indeed have true Harkonnen blood coursing through your veins!
+@end
+
+@H2_lose   ; $01E3C3
+I cannot believe that you were incapable of accumulating your quota.It
+was a simple task.I suggest you do not try my patience further.
+@end
+
+@H2_advice   ; $01E44A
+Once you have an Outpost, you will be able to build a Barracks which
+produces our elite Troopers.I would do so to provide a greater defense
+for your harvesting operation.
+@end
+
+@H3_brief   ; $01E4F5
+The despised Ordos in this region are harvesting spice that rightfully
+belongs to the House Harkonnen.Destroy the Ordos installations in this
+area and assert control in the name of House Harkonnen.
+@end
+
+@H3_win   ; $01E5BB
+Congratulations.You are making progress.Several of my associates have
+expressed pessimism concerning your abilities.I am glad that you have
+proved them wrong.
+@end
+
+@H3_lose   ; $01E65A
+I knew it!Several of my associates had expressed confidence, but I knew
+that you were too weak to be a Harkonnen commander!
+@end
+
+@H3_advice   ; $01E6D6
+You need to build a Vehicle Factory to produce the weapons necessary to
+complete your mission.
+@end
+
+@H4_brief   ; $01E735
+One small victory does not win the war.Another region has the misfortune
+to be infested with vermin from House Ordos, and now you must face the
+disgusting Ordos again.
+@end
+
+@H4_win   ; $01E7DD
+Well done.The Ordos dogs make amusing noises when they die, do they
+not?Indeed, what good is our life if we cannot enjoy the simple
+pleasures?
+@end
+
+@H4_lose   ; $01E86C
+Is this the way you repay my faith in you?Such a serious loss could only
+have been deliberate!You are unfit to clean our latrines, much less
+command our glorious Troopers!
+@end
+
+@H4_advice   ; $01E918
+The addition of tanks to your forces is essential to your victory in
+this region.
+@end
+
+@H5_brief   ; $01E96A
+So, the Emperor was helping the Ordos in your last mission.Nevertheless,
+House Atreides has grown stronger due to our negligence, and must now be
+taught a lesson.You will remove all the Atreides from this region.
+@end
+
+@H5_win   ; $01EA3F
+In appreciation for your recent performance, I will now allow you to
+resume the struggle with the Ordos.At least they will put up a fight
+worthy of our Troopers.
+@end
+
+@H5_lose   ; $01EAE1
+Perhaps you miss your mother?I am worried about you and cannot let you
+progress further until you have proved yourself against the Atreides.
+@end
+
+@H5_advice   ; $01EB6E
+The production of Carryalls will greatly speed up your harvesting
+operations.
+@end
+
+@H6_brief   ; $01EBBC
+You are to proceed into yet another region dominated by those pesky
+Ordos.I expect you to overcome this troublesome group.We have
+established a good reputation on this planet.Do not embarrass me now!
+@end
+
+@H6_win   ; $01EC84
+The victor`s laurels fit you well my son!I may even refer other
+aspirants to study your tactics.
+@end
+
+@H6_lose   ; $01ECE5
+How could you manage such a defeat?I may have to slit your throat myself
+just to calm down!
+@end
+
+@H6_advice   ; $01ED41
+I advise you to produce and then place Rocket Turrets at strategic
+defensive positions around your installation.
+@end
+
+@H7_brief   ; $01EDB2
+Reports of new Atreides activity require that I send you immediately
+back to the front line.You do not seem to enjoy rest and relaxation
+anyway.I think you would prefer to crush the Atreides.
+@end
+
+@H7_win   ; $01EE72
+Congratulations.It is a pleasure to see the weak Atreides dealt with so
+severely!
+@end
+
+@H7_lose   ; $01EEC4
+Your failure has caused me no end of embarrassment.It will not happen
+again!
+@end
+
+@H7_advice   ; $01EF11
+The Devastator is a powerful ally against enemy forces.
+@end
+
+@H8_brief   ; $01EF49
+A commander of your status may require relaxation occasionally, but I
+expect an even greater efficiency on your part.Both Atreides and Ordos
+forces exist in this region, and all must be eliminated!
+@end
+
+@H8_win   ; $01F00F
+Although praise may be due, serving House Harkonnen is reward enough!We
+will speak fondly of you forever!
+@end
+
+@H8_lose   ; $01F079
+Guards!How did this weakling get in here?If this happens again, I will
+personally dissect several of you!
+@end
+
+@H8_advice   ; $01F0E3
+Utilize Rocket turrets as a defense against Ornithopters.
+@end
+
+@H9_brief   ; $01F11D
+We have been deceived!All have conspired against us, and so all must
+die!Destroy all of the Emperor`s forces.He has treated us poorly, and
+must not live another day!
+@end
+
+@H9_win   ; $01F1C3
+You have served me, I mean House Harkonnen, well.Not only have you won a
+great victory, but you have made our enemies suffer!Rejoice, for Dune is
+finally ours forever!
+@end
+
+@H9_lose   ; $01F26B
+Your defects must have been inherited.Nobody could possibly learn the
+colossal stupidity that you have displayed.
+@end
+
+@H9_advice   ; $01F2DD
+Utilize your Palace`s special option whenever possible, for it costs
+nothing and it will recharge.
+@end
+

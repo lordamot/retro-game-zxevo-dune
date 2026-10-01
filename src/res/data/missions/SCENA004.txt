@@ -1,0 +1,147 @@
+# SCENA004.txt - mission 4 of the Atreides.
+#
+# From orig/dune2.gen $0575DC, 1202 bytes: SCENA004.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTBILD.WSA" 14
+BASIC WinPicture   "WIN2.WSA" 10 hex:0057
+BASIC BriefPicture "LTANK.WSA" 10
+BASIC Timeout      0
+BASIC MapScale     0
+BASIC CursorPos    733   ; x29 y11
+BASIC TacticalPos  733   ; x29 y11
+BASIC LoseFlags    1
+BASIC WinFlags     19
+MAP   Bloom 2307 3447   ; x3 y36, x55 y53
+MAP   Seed  4
+HOUSE Harkonnen  Quota    0
+HOUSE Harkonnen  Credits  800
+HOUSE Harkonnen  Brain    C
+HOUSE Harkonnen  MaxUnit  20
+HOUSE Atreides   Quota    0
+HOUSE Atreides   Credits  1500
+HOUSE Atreides   Brain    H
+HOUSE Atreides   MaxUnit  16
+TEAM  1   Harkonnen  Normal    Foot      3 4
+TEAM  2   Harkonnen  Normal    Tracked   4 5
+TEAM  3   Harkonnen  Normal    Wheeled   3 5
+TEAM  4   Harkonnen  Normal    Wheeled   4 6
+TEAM  5   Harkonnen  Normal    Tracked   3 4
+REINF 1   Sardaukar  Troopers    Enemybase 6+
+REINF 2   Sardaukar  Troopers    Enemybase 6+
+REINF 3   Sardaukar  Troopers    Enemybase 6+
+UNIT  1   Fremen     Sandworm    256 309   S   AreaGuard ; x53 y4
+UNIT  2   Atreides   Quad        256 605   S   Guard     ; x29 y9
+UNIT  3   Atreides   Infantry    256 668   S   Guard     ; x28 y10
+UNIT  4   Atreides   Trike       256 672   S   Guard     ; x32 y10
+UNIT  5   Atreides   Infantry    256 731   S   Guard     ; x27 y11
+UNIT  6   Atreides   Quad        256 735   S   Guard     ; x31 y11
+UNIT  7   Atreides   Quad        256 796   S   Guard     ; x28 y12
+UNIT  8   Atreides   Trike       256 800   S   Guard     ; x32 y12
+UNIT  9   Atreides   Infantry    256 861   S   Guard     ; x29 y13
+UNIT  10  Atreides   Quad        256 926   S   Guard     ; x30 y14
+UNIT  13  Fremen     Sandworm    256 1866  S   AreaGuard ; x10 y29
+UNIT  14  Fremen     Sandworm    256 2141  S   AreaGuard ; x29 y33
+UNIT  15  Harkonnen  Troopers    256 2293  S   Ambush    ; x53 y35
+UNIT  16  Harkonnen  Quad        256 2349  S   Ambush    ; x45 y36
+UNIT  17  Harkonnen  Troopers    256 2288  S   Guard     ; x48 y35
+UNIT  18  Harkonnen  Quad        256 2407  S   Ambush    ; x39 y37
+UNIT  19  Harkonnen  Tank        256 2410  S   AreaGuard ; x42 y37
+UNIT  20  Harkonnen  Tank        256 2424  S   Ambush    ; x56 y37
+UNIT  21  Harkonnen  Troopers    256 2534  S   AreaGuard ; x38 y39
+UNIT  22  Harkonnen  Tank        256 2725  S   Ambush    ; x37 y42
+UNIT  24  Harkonnen  Tank        256 2921  S   AreaGuard ; x41 y45
+UNIT  26  Harkonnen  Troopers    256 3053  S   Guard     ; x45 y47
+UNIT  28  Harkonnen  Troopers    256 4030  S   Hunt      ; x62 y62
+UNIT  39  Harkonnen  Tank        256 2344  S   AreaGuard ; x40 y36
+UNIT  40  Harkonnen  Tank        256 2347  S   AreaGuard ; x43 y36
+UNIT  41  Harkonnen  Tank        256 2416  S   AreaGuard ; x48 y37
+STRUCT 29  Atreides   ConstYard    256 733   ; x29 y11
+GEN   2472  Harkonnen  Wall   ; x40 y38
+GEN   2473  Harkonnen  Wall   ; x41 y38
+GEN   2474  Harkonnen  Wall   ; x42 y38
+GEN   2475  Harkonnen  Wall   ; x43 y38
+GEN   2476  Harkonnen  Wall   ; x44 y38
+GEN   2477  Harkonnen  Wall   ; x45 y38
+GEN   2478  Harkonnen  Wall   ; x46 y38
+GEN   2479  Harkonnen  Wall   ; x47 y38
+GEN   2480  Harkonnen  Wall   ; x48 y38
+GEN   2481  Harkonnen  Wall   ; x49 y38
+GEN   2483  Harkonnen  Wall   ; x51 y38
+GEN   2484  Harkonnen  Wall   ; x52 y38
+GEN   2485  Harkonnen  Wall   ; x53 y38
+GEN   2486  Harkonnen  Wall   ; x54 y38
+GEN   2487  Harkonnen  Wall   ; x55 y38
+GEN   2536  Harkonnen  Wall   ; x40 y39
+STRUCT 30  Harkonnen  WOR          256 2537  ; x41 y39
+STRUCT 31  Harkonnen  ConstYard    256 2539  ; x43 y39
+STRUCT 32  Harkonnen  Outpost      256 2541  ; x45 y39
+GEN   2543  Harkonnen  Wall   ; x47 y39
+STRUCT 33  Harkonnen  Refinery     256 2544  ; x48 y39
+STRUCT 34  Harkonnen  Windtrap     256 2547  ; x51 y39
+STRUCT 35  Harkonnen  Windtrap     256 2549  ; x53 y39
+GEN   2551  Harkonnen  Wall   ; x55 y39
+GEN   2600  Harkonnen  Wall   ; x40 y40
+GEN   2607  Harkonnen  Wall   ; x47 y40
+GEN   2615  Harkonnen  Wall   ; x55 y40
+GEN   2664  Harkonnen  Wall   ; x40 y41
+GEN   2665  Harkonnen  Slab   ; x41 y41
+GEN   2666  Harkonnen  Slab   ; x42 y41
+GEN   2667  Harkonnen  Slab   ; x43 y41
+GEN   2668  Harkonnen  Slab   ; x44 y41
+GEN   2669  Harkonnen  Slab   ; x45 y41
+GEN   2670  Harkonnen  Slab   ; x46 y41
+GEN   2671  Harkonnen  Wall   ; x47 y41
+STRUCT 36  Harkonnen  Silo         256 2672  ; x48 y41
+GEN   2674  Harkonnen  Wall   ; x50 y41
+GEN   2675  Harkonnen  Wall   ; x51 y41
+GEN   2676  Harkonnen  Wall   ; x52 y41
+GEN   2677  Harkonnen  Wall   ; x53 y41
+GEN   2678  Harkonnen  Wall   ; x54 y41
+GEN   2679  Harkonnen  Wall   ; x55 y41
+GEN   2728  Harkonnen  Slab   ; x40 y42
+GEN   2729  Harkonnen  Slab   ; x41 y42
+GEN   2730  Harkonnen  Slab   ; x42 y42
+STRUCT 37  Harkonnen  HeavyFactory 256 2731  ; x43 y42
+GEN   2734  Harkonnen  Slab   ; x46 y42
+GEN   2735  Harkonnen  Wall   ; x47 y42
+GEN   2738  Harkonnen  Wall   ; x50 y42
+GEN   2792  Harkonnen  Wall   ; x40 y43
+GEN   2793  Harkonnen  Wall   ; x41 y43
+GEN   2794  Harkonnen  Wall   ; x42 y43
+GEN   2798  Harkonnen  Slab   ; x46 y43
+GEN   2799  Harkonnen  Wall   ; x47 y43
+GEN   2800  Harkonnen  Wall   ; x48 y43
+GEN   2801  Harkonnen  Wall   ; x49 y43
+GEN   2802  Harkonnen  Wall   ; x50 y43
+GEN   2803  Harkonnen  Wall   ; x51 y43
+GEN   2858  Harkonnen  Wall   ; x42 y44
+GEN   2859  Harkonnen  Wall   ; x43 y44
+GEN   2860  Harkonnen  Wall   ; x44 y44
+GEN   2861  Harkonnen  Wall   ; x45 y44
+GEN   2862  Harkonnen  Wall   ; x46 y44
+GEN   2863  Harkonnen  Wall   ; x47 y44
+STRUCT 38  Harkonnen  HeavyFactory 256 2864  ; x48 y44
+GEN   2867  Harkonnen  Slab   ; x51 y44
+GEN   2927  Harkonnen  Wall   ; x47 y45
+GEN   2931  Harkonnen  Slab   ; x51 y45
+GEN   2991  Harkonnen  Wall   ; x47 y46
+GEN   2992  Harkonnen  Wall   ; x48 y46
+GEN   2993  Harkonnen  Wall   ; x49 y46
+GEN   2994  Harkonnen  Wall   ; x50 y46
+GEN   2995  Harkonnen  Wall   ; x51 y46
+END

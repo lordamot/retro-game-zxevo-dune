@@ -1,0 +1,44 @@
+# Reach the first Atreides mission and stop on the battlefield.
+# Written by hand; tools/gen_ref.py replays it.
+run 900
+press start 8
+run 240
+press start 8
+run 240
+press mdc 8
+run 300
+press mdc 8
+run 300
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+press mdc 8
+run 260
+run 300
+shot tmp/md/battle.bmp
+vram tmp/md/vram.bin
+cram tmp/md/cram.bin
+vsram tmp/md/vsram.bin
+vdpreg tmp/md/vdpreg.bin
+ram tmp/md/ram.bin

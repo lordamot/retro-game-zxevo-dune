@@ -1,0 +1,96 @@
+# SCENH003.txt - mission 3 of the Harkonnen.
+#
+# From orig/dune2.gen $05A742, 766 bytes: SCENH003.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTBILD.WSA" 14
+BASIC WinPicture   "WIN2.WSA" 10 hex:0057
+BASIC BriefPicture "QUAD.WSA" 10 hex:0057
+BASIC Timeout      0
+BASIC MapScale     0
+BASIC CursorPos    817   ; x49 y12
+BASIC TacticalPos  817   ; x49 y12
+BASIC LoseFlags    1
+BASIC WinFlags     19
+MAP   Seed  21
+HOUSE Harkonnen  Quota    0
+HOUSE Harkonnen  Credits  1500
+HOUSE Harkonnen  Brain    H
+HOUSE Harkonnen  MaxUnit  14
+HOUSE Ordos      Quota    0
+HOUSE Ordos      Credits  1500
+HOUSE Ordos      Brain    C
+HOUSE Ordos      MaxUnit  19
+TEAM  1   Ordos      Normal    Foot      3 4
+TEAM  2   Ordos      Normal    Foot      3 5
+TEAM  3   Ordos      Normal    Wheeled   3 5
+TEAM  4   Ordos      Normal    Wheeled   3 5
+TEAM  5   Ordos      Normal    Wheeled   4 6
+UNIT  1   Harkonnen  Trooper     256 687   S   Guard     ; x47 y10
+UNIT  2   Harkonnen  Quad        256 749   S   Guard     ; x45 y11
+UNIT  3   Harkonnen  Quad        256 752   S   Guard     ; x48 y11
+UNIT  5   Harkonnen  Trooper     256 819   S   Guard     ; x51 y12
+UNIT  6   Harkonnen  Quad        256 878   S   Guard     ; x46 y13
+UNIT  7   Harkonnen  Quad        256 945   S   Guard     ; x49 y14
+UNIT  8   Harkonnen  Trooper     256 1006  S   Guard     ; x46 y15
+UNIT  9   Fremen     Sandworm    256 1054  S   AreaGuard ; x30 y16
+UNIT  10  Fremen     Sandworm    256 2015  S   AreaGuard ; x31 y31
+UNIT  11  Fremen     Sandworm    256 2194  S   AreaGuard ; x18 y34
+UNIT  16  Ordos      Troopers    256 3970  S   Hunt      ; x2 y62
+UNIT  17  Ordos      Quad        256 3305  S   Ambush    ; x41 y51
+UNIT  18  Ordos      Quad        256 3419  S   Ambush    ; x27 y53
+UNIT  19  Ordos      RaiderTrike 256 3539  S   AreaGuard ; x19 y55
+UNIT  20  Ordos      Quad        256 3550  S   Ambush    ; x30 y55
+UNIT  21  Ordos      Troopers    256 3608  S   Guard     ; x24 y56
+UNIT  22  Ordos      Quad        256 3664  S   AreaGuard ; x16 y57
+UNIT  23  Ordos      Troopers    256 3669  S   Guard     ; x21 y57
+UNIT  24  Ordos      Quad        256 3679  S   Ambush    ; x31 y57
+UNIT  25  Ordos      Quad        256 3871  S   AreaGuard ; x31 y60
+UNIT  26  Ordos      Quad        256 3920  S   AreaGuard ; x16 y61
+UNIT  27  Ordos      Quad        256 3929  S   Ambush    ; x25 y61
+UNIT  28  Ordos      RaiderTrike 256 3671  S   AreaGuard ; x23 y57
+STRUCT 29  Harkonnen  ConstYard    256 817   ; x49 y12
+GEN   3546  Ordos      Slab   ; x26 y55
+GEN   3547  Ordos      Slab   ; x27 y55
+GEN   3548  Ordos      Slab   ; x28 y55
+STRUCT 30  Ordos      Outpost      256 3610  ; x26 y56
+GEN   3612  Ordos      Slab   ; x28 y56
+STRUCT 31  Ordos      Windtrap     256 3665  ; x17 y57
+GEN   3667  Ordos      Slab   ; x19 y57
+GEN   3676  Ordos      Slab   ; x28 y57
+GEN   3731  Ordos      Slab   ; x19 y58
+STRUCT 32  Ordos      ConstYard    256 3924  ; x20 y61
+GEN   3737  Ordos      Slab   ; x25 y58
+GEN   3738  Ordos      Slab   ; x26 y58
+GEN   3739  Ordos      Slab   ; x27 y58
+GEN   3740  Ordos      Slab   ; x28 y58
+GEN   3741  Ordos      Slab   ; x29 y58
+GEN   3742  Ordos      Slab   ; x30 y58
+STRUCT 33  Ordos      Refinery     256 3793  ; x17 y59
+STRUCT 34  Ordos      Silo         256 3796  ; x20 y59
+GEN   3798  Ordos      Slab   ; x22 y59
+GEN   3801  Ordos      Slab   ; x25 y59
+STRUCT 35  Ordos      LightFactory 256 3802  ; x26 y59
+STRUCT 36  Ordos      Windtrap     256 3805  ; x29 y59
+GEN   3862  Ordos      Slab   ; x22 y60
+GEN   3863  Ordos      Slab   ; x23 y60
+GEN   3864  Ordos      Slab   ; x24 y60
+GEN   3865  Ordos      Slab   ; x25 y60
+STRUCT 37  Ordos      Barracks     256 3735  ; x23 y58
+GEN   3926  Ordos      Slab   ; x22 y61
+GEN   3990  Ordos      Slab   ; x22 y62
+END

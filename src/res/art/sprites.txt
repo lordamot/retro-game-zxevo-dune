@@ -1,0 +1,1207 @@
+# sprites.txt - every sprite a Mega Drive Dune II battle draws, for the port.
+#
+# Written by tools/sega/port_sprites.py from orig/dune2.gen; its docstring
+# has the method and `port_sprites.py --check` compares it with the running
+# cartridge.  Pictures are in sprites/: RGBA, the battlefield's own colours
+# (the 64 at $0A6C90, v*255//7), alpha 0 where nothing is drawn.  Flips are
+# baked in and multi-piece sprites flattened: one frame, one picture.
+#
+# Coordinates: an object's position is its record's y/x words (1/256 of a
+# square, so pixel = word >> 3).  A frame's top-left pixel goes at
+# position + (dx, dy); dx, dy are pixels and usually negative.
+
+== palette lines
+# house-p{L}.png is the same layout drawn in palette line L.  A unit, its
+# projectiles and its death animation use its house's line:
+house 0 Harkonnen  line 0
+house 1 Atreides   line 1
+house 2 Ordos      line 3
+house 3 Fremen     line 1
+house 4 Sardaukar  line 2
+house 5 Mercenary  line 0
+# ($009584 / $02EC56 / $00B52C; Fremen share Atreides' line, Mercenaries
+# Harkonnen's.  The CRAM is the same in every battle.)  The 64 colours,
+# nine bits BBBGGGRRR as $0A6C90 gives them, then as RGB:
+line 0 000 0EE 0A5 05C 013 04A 01E 00D 092 1FF 164 089 000 02F 005 001
+line 1 000 12D 052 009 177 014 00A 037 01D 1FF 164 089 000 1F8 190 040
+line 2 000 03F 02F 016 004 002 028 190 11B 1FF 164 089 000 184 102 041
+line 3 000 005 002 09B 009 137 0A6 053 150 1FF 164 089 000 03E 028 008
+line 0 000000 DAB66D B69148 916D24 6D4800 482424 DA6D00 B62400 484848 FFFFFF 9191B6 242448 000000 FFB600 B60000 240000
+line 1 000000 B6B691 484824 242400 FFDAB6 914800 482400 FFDA00 B66D00 FFFFFF 9191B6 242448 000000 00FFFF 0048DA 000024
+line 2 000000 FFFF00 FFB600 DA4800 910000 480000 00B600 0048DA 6D6D91 FFFFFF 9191B6 242448 000000 9100DA 480091 240024
+line 3 000000 B60000 480000 6D6D48 242400 FFDA91 DA9148 6D4824 0048B6 FFFFFF 9191B6 242448 000000 DAFF00 00B600 002400
+# House-coloured pixels use the indices 1,2,3,8,9,10,11,12,13,14,15; 0,9,10,11,12
+# are the same colour in every line, so the four house sheets differ
+# only where a pixel is 1,2,3,8,13,14,15: one master and a recolouring at start-up is enough.
+
+== frames
+# id  sheet        x    y   w   h   dx  dy  names
+   0  house-p{L}  131   52  28  32  -14  -16  a283
+   1  house-p{L}   38   94  31  30  -15  -14  a284
+   2  house-p{L}   32  157  32  28  -16  -14  a285
+   3  house-p{L}   70   94  31  30  -15  -16  a284.v
+   4  house-p{L}  160   52  28  32  -14  -16  a283.v
+   5  house-p{L}  102   94  31  30  -16  -16  a284.hv
+   6  house-p{L}   65  157  32  28  -16  -14  a285.h
+   7  house-p{L}  134   94  31  30  -16  -14  a284.h
+   8  house-p{L}  189   52  28  32  -14  -16  a286
+   9  house-p{L}  166   94  31  30  -15  -14  a287
+  10  house-p{L}   98  157  32  28  -16  -14  a288
+  11  house-p{L}  198   94  31  30  -15  -16  a287.v
+  12  house-p{L}  218   52  28  32  -14  -16  a286.v
+  13  house-p{L}    0  126  31  30  -16  -16  a287.hv
+  14  house-p{L}  131  157  32  28  -16  -14  a288.h
+  15  house-p{L}   32  126  31  30  -16  -14  a287.h
+  16  house-p{L}  226  266  24  21  -12  -11  thopter.d0.r0
+  17  house-p{L}    0  289  18  21   -9  -11  thopter.d0.r1
+  18  house-p{L}   19  289  12  21   -6  -11  thopter.d0.r2
+  19  house-p{L}  210  311  19  18  -10  -10  thopter.d1.r0
+  20  house-p{L}  174  351  18  17  -10   -9  thopter.d1.r1
+  21  house-p{L}    0  370  17  16  -10   -8  thopter.d1.r2
+  22  house-p{L}    0  216  21  24  -10  -12  thopter.d2.r0
+  23  house-p{L}  230  311  21  18  -10   -9  thopter.d2.r1
+  24  house-p{L}  115  451  21  12  -10   -6  thopter.d2.r2
+  25  house-p{L}    0  332  19  18  -10   -8  thopter.d3.r0
+  26  house-p{L}  193  351  18  17  -10   -8  thopter.d3.r1
+  27  house-p{L}   18  370  17  16  -10   -8  thopter.d3.r2
+  28  house-p{L}   32  289  24  21  -12  -10  thopter.d4.r0
+  29  house-p{L}   57  289  18  21   -9  -10  thopter.d4.r1
+  30  house-p{L}   76  289  12  21   -6  -10  thopter.d4.r2
+  31  house-p{L}   20  332  19  18   -9   -8  thopter.d5.r0
+  32  house-p{L}  212  351  18  17   -8   -8  thopter.d5.r1
+  33  house-p{L}   36  370  17  16   -7   -8  thopter.d5.r2
+  34  house-p{L}   22  216  21  24  -11  -12  thopter.d6.r0
+  35  house-p{L}   40  332  21  18  -11   -9  thopter.d6.r1
+  36  house-p{L}  137  451  21  12  -11   -6  thopter.d6.r2
+  37  house-p{L}   62  332  19  18   -9  -10  thopter.d7.r0
+  38  house-p{L}  231  351  18  17   -8   -9  thopter.d7.r1
+  39  house-p{L}   54  370  17  16   -7   -8  thopter.d7.r2
+  40  house-p{L}  168  387  16  15   -8   -8  a329
+  41  house-p{L}   72  370  16  16   -8   -8  a330
+  42  house-p{L}   89  370  16  16   -8   -8  a331
+  43  house-p{L}  106  370  13  16   -6   -8  a332
+  44  house-p{L}  185  387  16  15   -8   -7  a333
+  45  house-p{L}  202  387  14  15   -7   -7  a334
+  46  house-p{L}  217  387  16  15   -8   -8  a335
+  47  house-p{L}  120  370  16  16   -8   -8  a336
+  48  house-p{L}  137  370  16  16   -8   -8  a337
+  49  house-p{L}  154  370  13  16   -7   -8  a332.h
+  50  house-p{L}  234  387  16  15   -8   -7  a333.h
+  51  house-p{L}    0  404  14  15   -7   -7  a334.h
+  52  house-p{L}   15  404  16  15   -8   -8  a341
+  53  house-p{L}   32  404  16  15   -8   -7  a342
+  54  house-p{L}  168  370  16  16   -8   -8  a343
+  55  house-p{L}  185  370  15  16   -7   -8  a344
+  56  house-p{L}   49  404  15  15   -7   -7  a345
+  57  house-p{L}   65  404  15  15   -7   -7  a346
+  58  house-p{L}   81  404  16  15   -8   -8  a347
+  59  house-p{L}  201  370  16  16   -8   -8  a348
+  60  house-p{L}   98  404  16  15   -8   -7  a349
+  61  house-p{L}  218  370  15  16   -8   -8  a344.h
+  62  house-p{L}  115  404  15  15   -8   -7  a345.h
+  63  house-p{L}  131  404  15  15   -8   -7  a346.h
+  64  house-p{L}  175  466   8   7   -4   -4  a311
+  65  house-p{L}   84  466   8   8   -4   -4  a312
+  66  house-p{L}   93  466   8   8   -4   -4  a313
+  67  house-p{L}  102  466   5   8   -2   -4  a314
+  68  house-p{L}  184  466   8   7   -4   -3  a315
+  69  house-p{L}  193  466   6   7   -3   -3  a316
+  70  house-p{L}  200  466   8   7   -4   -4  a317
+  71  house-p{L}  108  466   8   8   -4   -4  a318
+  72  house-p{L}  117  466   8   8   -4   -4  a319
+  73  house-p{L}  126  466   5   8   -3   -4  a314.h
+  74  house-p{L}  209  466   8   7   -4   -3  a315.h
+  75  house-p{L}  218  466   6   7   -3   -3  a316.h
+  76  house-p{L}  225  466   8   7   -4   -4  a320
+  77  house-p{L}  234  466   8   7   -4   -3  a321
+  78  house-p{L}  132  466   8   8   -4   -4  a322
+  79  house-p{L}  141  466   7   8   -3   -4  a323
+  80  house-p{L}  243  466   7   7   -3   -3  a324
+  81  house-p{L}    0  479   7   7   -3   -3  a325
+  82  house-p{L}    8  479   8   7   -4   -4  a326
+  83  house-p{L}  149  466   8   8   -4   -4  a327
+  84  house-p{L}   17  479   8   7   -4   -3  a328
+  85  house-p{L}  158  466   7   8   -4   -4  a323.h
+  86  house-p{L}   26  479   7   7   -4   -3  a324.h
+  87  house-p{L}   34  479   7   7   -4   -3  a325.h
+  88  fixed       227  100   8   7   -4   -4  a301
+  89  fixed       158  100   8   8   -4   -4  a302
+  90  fixed       167  100   8   8   -4   -4  a303
+  91  fixed       176  100   5   8   -2   -4  a304
+  92  fixed       236  100   8   7   -4   -3  a305
+  93  fixed       245  100   6   7   -3   -3  a306
+  94  fixed         0  114   8   7   -4   -4  a307
+  95  fixed       182  100   8   8   -4   -4  a308
+  96  fixed       191  100   8   8   -4   -4  a309
+  97  fixed       200  100   5   8   -3   -4  a304.h
+  98  fixed         9  114   8   7   -4   -3  a305.h
+  99  fixed        18  114   6   7   -3   -3  a306.h
+ 100  house-p{L}   82  332  15  18   -8   -9  a146
+ 101  house-p{L}  149  289  21  20  -11  -10  a147
+ 102  house-p{L}  147  404  18  15   -9   -8  a148
+ 103  house-p{L}  171  289  21  20  -11  -10  a147.v
+ 104  house-p{L}   98  332  15  18   -8   -9  a146.v
+ 105  house-p{L}  193  289  21  20  -10  -10  a147.hv
+ 106  house-p{L}  166  404  18  15   -9   -8  a148.h
+ 107  house-p{L}  215  289  21  20  -10  -10  a147.h
+ 108  house-p{L}  228  241  19  22  -10  -12  a131
+ 109  house-p{L}   44  216  24  24  -12  -12  a132
+ 110  house-p{L}  134  311  22  19  -10  -10  a133
+ 111  house-p{L}   69  216  24  24  -12  -12  a132.v
+ 112  house-p{L}    0  266  19  22  -10  -10  a131.v
+ 113  house-p{L}   94  216  24  24  -12  -12  a132.hv
+ 114  house-p{L}  157  311  22  19  -12  -10  a133.h
+ 115  house-p{L}  119  216  24  24  -12  -12  a132.h
+ 116  house-p{L}  114  332  15  18   -8   -9  a141
+ 117  house-p{L}    0  311  21  20  -11  -10  a142
+ 118  house-p{L}  185  404  18  15   -9   -8  a143
+ 119  house-p{L}   22  311  21  20  -11  -10  a142.v
+ 120  house-p{L}  130  332  15  18   -8   -9  a141.v
+ 121  house-p{L}   44  311  21  20  -10  -10  a142.hv
+ 122  house-p{L}  204  404  18  15   -9   -8  a143.h
+ 123  house-p{L}   66  311  21  20  -10  -10  a142.h
+ 124  house-p{L}  223  404  13  15   -7   -8  a243
+ 125  house-p{L}  237  404  13  15   -7   -8  a244
+ 126  house-p{L}  170  420  14  14   -8   -6  a245
+ 127  house-p{L}   15  451  16  13   -8   -6  a246
+ 128  house-p{L}   32  451  15  13   -7   -7  a247
+ 129  house-p{L}   48  451  16  13   -8   -7  a246.v
+ 130  house-p{L}  185  420  14  14   -8   -8  a245.v
+ 131  house-p{L}    0  420  13  15   -7   -7  a244.v
+ 132  house-p{L}   14  420  13  15   -7   -7  a243.v
+ 133  house-p{L}   28  420  13  15   -6   -7  a244.hv
+ 134  house-p{L}  200  420  14  14   -6   -8  a245.hv
+ 135  house-p{L}   65  451  16  13   -8   -7  a246.hv
+ 136  house-p{L}   82  451  15  13   -8   -7  a247.h
+ 137  house-p{L}   98  451  16  13   -8   -6  a246.h
+ 138  house-p{L}  215  420  14  14   -6   -6  a245.h
+ 139  house-p{L}   42  420  13  15   -6   -8  a244.h
+ 140  house-p{L}  230  420  14  14   -7   -7  a238
+ 141  house-p{L}    0  436  15  14   -7   -7  a239
+ 142  house-p{L}  234  370  16  16   -8   -8  a240
+ 143  house-p{L}    0  387  15  16   -8   -8  a241
+ 144  house-p{L}   16  436  14  14   -7   -7  a242
+ 145  house-p{L}   16  387  15  16   -8   -8  a241.v
+ 146  house-p{L}   32  387  16  16   -8   -8  a240.v
+ 147  house-p{L}   31  436  15  14   -7   -7  a239.v
+ 148  house-p{L}   47  436  14  14   -7   -7  a238.v
+ 149  house-p{L}   62  436  15  14   -8   -7  a239.hv
+ 150  house-p{L}   49  387  16  16   -8   -8  a240.hv
+ 151  house-p{L}   66  387  15  16   -7   -8  a241.hv
+ 152  house-p{L}   78  436  14  14   -7   -7  a242.h
+ 153  house-p{L}   82  387  15  16   -7   -8  a241.h
+ 154  house-p{L}   98  387  16  16   -8   -8  a240.h
+ 155  house-p{L}   93  436  15  14   -8   -7  a239.h
+ 156  house-p{L}    0   94  18  31   -9  -15  a248
+ 157  house-p{L}   87  187  28  27  -15  -12  a249
+ 158  house-p{L}  146  332  31  18  -16   -9  a250
+ 159  house-p{L}  116  187  28  27  -15  -15  a249.v
+ 160  house-p{L}   19   94  18  31   -9  -16  a248.v
+ 161  house-p{L}  145  187  28  27  -13  -15  a249.hv
+ 162  house-p{L}  178  332  31  18  -15   -9  a250.h
+ 163  house-p{L}  174  187  28  27  -13  -12  a249.h
+ 164  house-p{L}  144  216  15  24   -8  -12  a253
+ 165  house-p{L}  160  216  24  24  -12  -12  a254
+ 166  house-p{L}   56  420  24  15  -12   -8  a255
+ 167  house-p{L}  185  216  24  24  -12  -12  a254.v
+ 168  house-p{L}  210  216  15  24   -8  -12  a253.v
+ 169  house-p{L}  226  216  24  24  -12  -12  a254.hv
+ 170  house-p{L}   81  420  24  15  -12   -8  a255.h
+ 171  house-p{L}    0  241  24  24  -12  -12  a254.h
+ 172  house-p{L}   20  266   9  22   -5  -12  a278
+ 173  house-p{L}   30  266  12  22   -6  -12  a279
+ 174  house-p{L}  210  332  18  18   -8  -10  a280
+ 175  house-p{L}  159  451  22  12  -10   -6  a281
+ 176  house-p{L}   38  466  22   9  -10   -5  a282
+ 177  house-p{L}  182  451  22  12  -10   -6  a281.v
+ 178  house-p{L}  229  332  18  18   -8   -8  a280.v
+ 179  house-p{L}   43  266  12  22   -6  -10  a279.v
+ 180  house-p{L}   56  266   9  22   -5  -10  a278.v
+ 181  house-p{L}   66  266  12  22   -6  -10  a279.hv
+ 182  house-p{L}    0  351  18  18  -10   -8  a280.hv
+ 183  house-p{L}  205  451  22  12  -12   -6  a281.hv
+ 184  house-p{L}   61  466  22   9  -12   -5  a282.h
+ 185  house-p{L}  228  451  22  12  -12   -6  a281.h
+ 186  house-p{L}   19  351  18  18  -10  -10  a280.h
+ 187  house-p{L}   79  266  12  22   -6  -12  a279.h
+ 188  fixed       106   83   5  15   -3   -7  a263
+ 189  fixed       112   83   9  15   -4   -7  a264
+ 190  fixed        42  100  12  12   -5   -7  a265
+ 191  fixed        94  100  15   9   -8   -5  a266
+ 192  fixed        96  114  16   5   -8   -2  a267
+ 193  fixed       110  100  15   9   -8   -4  a266.v
+ 194  fixed        55  100  12  12   -5   -5  a265.v
+ 195  fixed       122   83   9  15   -4   -8  a264.v
+ 196  fixed       132   83   5  15   -3   -8  a263.v
+ 197  fixed       138   83   9  15   -5   -8  a264.hv
+ 198  fixed        68  100  12  12   -7   -5  a265.hv
+ 199  fixed       126  100  15   9   -7   -4  a266.hv
+ 200  fixed       113  114  16   5   -8   -2  a267.h
+ 201  fixed       142  100  15   9   -7   -5  a266.h
+ 202  fixed        81  100  12  12   -7   -7  a265.h
+ 203  fixed       148   83   9  15   -5   -7  a264.h
+ 204  fixed       206  100   5   8   -3   -4  a273
+ 205  fixed        25  114   5   7   -2   -4  a274
+ 206  fixed        31  114   7   7   -3   -4  a275
+ 207  fixed       130  114   7   5   -3   -2  a276
+ 208  fixed       138  114   8   5   -4   -2  a277
+ 209  fixed       147  114   7   5   -3   -3  a276.v
+ 210  fixed        39  114   7   7   -3   -3  a275.v
+ 211  fixed        47  114   5   7   -2   -3  a274.v
+ 212  fixed       212  100   5   8   -3   -4  a273.v
+ 213  fixed        53  114   5   7   -3   -3  a274.hv
+ 214  fixed        59  114   7   7   -4   -3  a275.hv
+ 215  fixed       155  114   7   5   -4   -3  a276.hv
+ 216  fixed       163  114   8   5   -4   -2  a277.h
+ 217  fixed       172  114   7   5   -4   -2  a276.h
+ 218  fixed        67  114   7   7   -4   -4  a275.h
+ 219  fixed        75  114   5   7   -3   -4  a274.h
+ 220  fixed       189  114   4   4   -1   -1  a174
+ 221  house-p{L}   25    0  24  50  -12  -12  a159
+ 222  house-p{L}  135    0  31  45  -19  -12  a160
+ 223  house-p{L}   42   52  41  40  -29  -12  a161
+ 224  house-p{L}   84   52  46  34  -34  -12  a49
+ 225  house-p{L}   25  241  51  24  -39  -12  a50
+ 226  house-p{L}  164  157  48  28  -36  -16  a51
+ 227  house-p{L}  167    0  41  41  -29  -29  a52
+ 228  house-p{L}   77    0  26  48  -14  -36  a53
+ 229  house-p{L}    0    0  24  51  -12  -39  a54
+ 230  house-p{L}  104    0  30  48  -12  -36  a55
+ 231  house-p{L}  209    0  40  41  -12  -29  a56
+ 232  house-p{L}  203  187  48  27  -12  -15  a57
+ 233  house-p{L}   77  241  50  24  -12  -12  a58
+ 234  house-p{L}   64  126  48  30  -12  -12  a59
+ 235  house-p{L}    0   52  41  41  -12  -12  a60
+ 236  house-p{L}   50    0  26  49  -12  -12  a61
+ 237  house-p{L}  113  126  21  29  -10  -14  frigate.f0.x0
+ 238  house-p{L}  135  126  31  29  -15  -14  frigate.f3.x0
+ 239  house-p{L}  213  157  28  28  -14  -14  frigate.f1.x0
+ 240  house-p{L}   89  289  29  21  -15  -11  frigate.f2.x0
+ 241  house-p{L}    0  187  28  28  -14  -14  frigate.f1.x2
+ 242  house-p{L}  167  126  31  29  -15  -15  frigate.f3.x2
+ 243  house-p{L}  199  126  21  29  -10  -15  frigate.f0.x2
+ 244  house-p{L}   29  187  28  28  -14  -14  frigate.f1.x3
+ 245  house-p{L}  221  126  31  29  -16  -15  frigate.f3.x3
+ 246  house-p{L}  119  289  29  21  -14  -11  frigate.f2.x1
+ 247  house-p{L}    0  157  31  29  -16  -14  frigate.f3.x1
+ 248  house-p{L}   58  187  28  28  -14  -14  frigate.f1.x1
+ 249  house-p{L}   38  351  16  18   -8   -9  tank.hull.o0
+ 250  house-p{L}   55  351  12  18   -6  -12  tank.turret.o0
+ 251  house-p{L}  106  420  15  15   -6   -9  tank.turret.o1
+ 252  house-p{L}    0  466  18  12   -6   -6  tank.turret.o2
+ 253  house-p{L}  122  420  15  15   -6   -6  tank.turret.o3
+ 254  house-p{L}   68  351  12  18   -6   -6  tank.turret.o4
+ 255  house-p{L}  138  420  15  15   -9   -6  tank.turret.o5
+ 256  house-p{L}   19  466  18  12  -12   -6  tank.turret.o6
+ 257  house-p{L}  154  420  15  15   -9   -9  tank.turret.o7
+ 258  house-p{L}   92  266  22  22  -11  -11  tank.hull.o1
+ 259  house-p{L}  115  387  18  16   -9   -8  tank.hull.o2
+ 260  house-p{L}  115  266  22  22  -11  -11  tank.hull.o3
+ 261  house-p{L}   81  351  16  18   -8   -9  tank.hull.o4
+ 262  house-p{L}  138  266  22  22  -11  -11  tank.hull.o5
+ 263  house-p{L}  134  387  18  16   -9   -8  tank.hull.o6
+ 264  house-p{L}  161  266  22  22  -11  -11  tank.hull.o7
+ 265  house-p{L}   88  311  22  20  -11  -10  siege.hull.o0
+ 266  house-p{L}  180  311  14  19   -7  -12  siege.turret.o0
+ 267  house-p{L}   98  351  18  18   -7  -11  siege.turret.o1
+ 268  house-p{L}  109  436  19  14   -7   -7  siege.turret.o2
+ 269  house-p{L}  117  351  18  18   -7   -7  siege.turret.o3
+ 270  house-p{L}  195  311  14  19   -7   -7  siege.turret.o4
+ 271  house-p{L}  136  351  18  18  -11   -7  siege.turret.o5
+ 272  house-p{L}  129  436  19  14  -12   -7  siege.turret.o6
+ 273  house-p{L}  155  351  18  18  -11  -11  siege.turret.o7
+ 274  house-p{L}  128  241  24  24  -12  -12  siege.hull.o1
+ 275  house-p{L}  184  266  20  22  -10  -11  siege.hull.o2
+ 276  house-p{L}  153  241  24  24  -12  -12  siege.hull.o3
+ 277  house-p{L}  111  311  22  20  -11  -10  siege.hull.o4
+ 278  house-p{L}  178  241  24  24  -12  -12  siege.hull.o5
+ 279  house-p{L}  205  266  20  22  -10  -11  siege.hull.o6
+ 280  house-p{L}  203  241  24  24  -12  -12  siege.hull.o7
+ 281  fixed        66    0  31  31  -15  -15  sandworm
+ 282  fixed       191   83  15  14    1    1  harvest.f0
+ 283  fixed       235   60  15  16    1    0  harvest.f1
+ 284  fixed         0   83  16  16    0    0  harvest.f2
+ 285  fixed       207   60  13  20  -10   -6  smoke.p2
+ 286  fixed       221   60  13  19  -10   -5  smoke.p1
+ 287  fixed        17   83  12  16   -9   -2  smoke.p0
+ 288  fixed       218  100   8   8   -4   -5  a153
+ 289  fixed       158   83  16  15   -8   -8  a154
+ 290  fixed       175   83  15  15   -8   -8  a155
+ 291  fixed        81  114   8   7   -5   -4  a183
+ 292  fixed        30   83  18  16   -9   -9  a184
+ 293  fixed       158   33  22  22  -11  -12  a185
+ 294  fixed       184   60  22  21  -11  -10  a186
+ 295  fixed       207   83  15  13   -4   -2  a187
+ 296  fixed        49   83  16  16   -8   -8  a203
+ 297  fixed       108   33  24  24  -12  -12  a204
+ 298  fixed       133   33  24  24  -12  -12  a205
+ 299  fixed       181   33  22  22  -11  -12  a206
+ 300  fixed       204   33  22  22  -11  -12  a207
+ 301  fixed       180  114   8   5   -4   -2  a208
+ 302  fixed        66   83  19  16   -9   -8  a209
+ 303  fixed       227   33  22  22  -11  -11  a210
+ 304  fixed         0   60  22  22  -11  -11  a211
+ 305  fixed        23   60  22  22  -11  -11  a212
+ 306  fixed        98    0  31  29  -15  -13  a218.l1
+ 307  fixed       130    0  31  29  -15  -14  a219.l0
+ 308  fixed       162    0  31  29  -15  -15  a220.l0
+ 309  fixed       222    0  31  27  -16  -14  a221.l0
+ 310  fixed       194    0  27  28  -14  -13  a222.l0
+ 311  fixed        86   83  19  16   -9   -8  a199.l0
+ 312  fixed        46   60  22  22  -11  -11  a200.l0
+ 313  fixed        69   60  22  22  -11  -11  a201.l0
+ 314  fixed        92   60  22  22  -11  -11  a202.l0
+ 315  house-p{L}  166  466   8   8   -4   -4  a31
+ 316  house-p{L}  153  387  14  16   -8   -8  a32
+ 317  fixed        90  114   5   7   -2   -3  a35.l0
+ 318  fixed       223   83  13  13   -7   -7  a36.l0
+ 319  house-p{L}  149  436  14  14    1    1  house_marker.f0
+ 320  house-p{L}  164  436  14  14    1    1  house_marker.f1
+ 321  house-p{L}  179  436  14  14    1    1  house_marker.f2
+ 322  house-p{L}  194  436  14  14    1    1  house_marker.f3
+ 323  house-p{L}  209  436  14  14    1    1  house_marker.f4
+ 324  house-p{L}  224  436  14  14    1    1  house_marker.f5
+ 325  house-p{L}  239  436  14  14    1    1  house_marker.f6
+ 326  house-p{L}    0  451  14  14    1    1  house_marker.f7
+ 327  fixed       115   60  22  22    1    1  marker.ready
+ 328  fixed       138   60  22  22    1    1  marker.repair
+ 329  fixed       161   60  22  22    1    1  marker.power
+ 330  fixed         0   33  26  26  -13  -13  cursor.a0
+ 331  fixed        27   33  26  26  -13  -13  cursor.a5
+ 332  fixed        54   33  26  26  -13  -13  cursor.a6
+ 333  fixed        81   33  26  26  -13  -13  cursor.a29
+ 334  fixed       237   83  13  13    3    3  cursor.corner
+ 335  fixed         0  100  13  13    0    3  cursor.corner
+ 336  fixed        14  100  13  13    3    0  cursor.corner
+ 337  fixed        28  100  13  13    0    0  cursor.corner
+ 338  fixed         0    0  32  32    0    0  cursor.a1 cursor.square
+ 339  fixed        33    0  32  32    0    0  cursor.a15 cursor.square
+
+== draw order
+# The chain is kept in descending order of layer << 16 | (y + the first
+# piece's y), and the VDP draws the first on top: a higher layer covers a
+# lower, and within a layer the object further down the screen covers the
+# one above it.  (The key adds the object's y in 1/8 pixels to the piece's
+# y in pixels, and the chain is only re-sorted when a sprite is made or
+# an explosion steps, so a moving unit keeps the place it was made in;
+# the port can simply sort by layer, then y.)  The layer is the tag of
+# the animation the sprite was made from:
+layer $FD  the cursor; $FA the bracket (the pointer is in screen pixels)
+layer $14  explosions 0-11, 14, 18, 19; the Sonic Blast
+layer $10  Carryall, 'Thopter
+layer $0F  Frigate
+layer $0C  rockets, Death Hand
+layer $0B  bullet, Saboteur, smoke (explosions 9, 10, 15) - also: no house palette
+layer $09  the Harvester's dust
+layer $08  vehicles: Tank, Siege Tank, Devastator, Sonic Tank, Launcher,
+           Deviator, Trike, Raider Trike, Quad, Harvester, MCV
+layer $04  foot soldiers
+layer $03  explosion 13 (the Sandworm)
+layer $02  Sandworm
+layer $00  structure markers; corpses (explosions 20-23)
+# Within a band of 32 lines the Mega Drive drops pieces of flagged
+# sprites when more than 16 sprites or 256 pixels share it ($0011E8);
+# the port need not.
+
+== units
+# unit <type> <name>: group <g>, base animation <n>
+#   dir <d> [walk <w>] -> <frame id(s)>   (d: facing>>5 after +16 for 8
+#   directions, facing>>4 after +8 for 16; walk: +$73 & 3)
+unit 0 Carryall: group 1, base animation 283
+  # carrying: +3 (linkedID) is not $FF
+  dir 0 -> 0
+  dir 1 -> 1
+  dir 2 -> 2
+  dir 3 -> 3
+  dir 4 -> 4
+  dir 5 -> 5
+  dir 6 -> 6
+  dir 7 -> 7
+  dir 0 carrying -> 8
+  dir 1 carrying -> 9
+  dir 2 carrying -> 10
+  dir 3 carrying -> 11
+  dir 4 carrying -> 12
+  dir 5 carrying -> 13
+  dir 6 carrying -> 14
+  dir 7 carrying -> 15
+unit 1 'Thopter: group 5, base animation 289
+  # three rotor phases each, shown by the global counter $FFD304
+  # (2, 1, 0, 2 ... one step every 10 ticks): frames for 2 1 0
+  dir 0 -> 18 17 16
+  dir 1 -> 21 20 19
+  dir 2 -> 24 23 22
+  dir 3 -> 27 26 25
+  dir 4 -> 30 29 28
+  dir 5 -> 33 32 31
+  dir 6 -> 36 35 34
+  dir 7 -> 39 38 37
+unit 2 Infantry: group 4, base animation 329
+  dir 0 walk 0 -> 40
+  dir 0 walk 1 -> 41
+  dir 0 walk 2 -> 40
+  dir 0 walk 3 -> 42
+  dir 1 walk 0 -> 43
+  dir 1 walk 1 -> 44
+  dir 1 walk 2 -> 43
+  dir 1 walk 3 -> 45
+  dir 2 walk 0 -> 43
+  dir 2 walk 1 -> 44
+  dir 2 walk 2 -> 43
+  dir 2 walk 3 -> 45
+  dir 3 walk 0 -> 43
+  dir 3 walk 1 -> 44
+  dir 3 walk 2 -> 43
+  dir 3 walk 3 -> 45
+  dir 4 walk 0 -> 46
+  dir 4 walk 1 -> 47
+  dir 4 walk 2 -> 46
+  dir 4 walk 3 -> 48
+  dir 5 walk 0 -> 49
+  dir 5 walk 1 -> 50
+  dir 5 walk 2 -> 49
+  dir 5 walk 3 -> 51
+  dir 6 walk 0 -> 49
+  dir 6 walk 1 -> 50
+  dir 6 walk 2 -> 49
+  dir 6 walk 3 -> 51
+  dir 7 walk 0 -> 49
+  dir 7 walk 1 -> 50
+  dir 7 walk 2 -> 49
+  dir 7 walk 3 -> 51
+unit 3 Troopers: group 4, base animation 341
+  dir 0 walk 0 -> 52
+  dir 0 walk 1 -> 53
+  dir 0 walk 2 -> 52
+  dir 0 walk 3 -> 54
+  dir 1 walk 0 -> 55
+  dir 1 walk 1 -> 56
+  dir 1 walk 2 -> 55
+  dir 1 walk 3 -> 57
+  dir 2 walk 0 -> 55
+  dir 2 walk 1 -> 56
+  dir 2 walk 2 -> 55
+  dir 2 walk 3 -> 57
+  dir 3 walk 0 -> 55
+  dir 3 walk 1 -> 56
+  dir 3 walk 2 -> 55
+  dir 3 walk 3 -> 57
+  dir 4 walk 0 -> 58
+  dir 4 walk 1 -> 59
+  dir 4 walk 2 -> 58
+  dir 4 walk 3 -> 60
+  dir 5 walk 0 -> 61
+  dir 5 walk 1 -> 62
+  dir 5 walk 2 -> 61
+  dir 5 walk 3 -> 63
+  dir 6 walk 0 -> 61
+  dir 6 walk 1 -> 62
+  dir 6 walk 2 -> 61
+  dir 6 walk 3 -> 63
+  dir 7 walk 0 -> 61
+  dir 7 walk 1 -> 62
+  dir 7 walk 2 -> 61
+  dir 7 walk 3 -> 63
+unit 4 Soldier: group 3, base animation 311
+  dir 0 walk 0 -> 64
+  dir 0 walk 1 -> 65
+  dir 0 walk 2 -> 64
+  dir 0 walk 3 -> 66
+  dir 1 walk 0 -> 67
+  dir 1 walk 1 -> 68
+  dir 1 walk 2 -> 67
+  dir 1 walk 3 -> 69
+  dir 2 walk 0 -> 67
+  dir 2 walk 1 -> 68
+  dir 2 walk 2 -> 67
+  dir 2 walk 3 -> 69
+  dir 3 walk 0 -> 67
+  dir 3 walk 1 -> 68
+  dir 3 walk 2 -> 67
+  dir 3 walk 3 -> 69
+  dir 4 walk 0 -> 70
+  dir 4 walk 1 -> 71
+  dir 4 walk 2 -> 70
+  dir 4 walk 3 -> 72
+  dir 5 walk 0 -> 73
+  dir 5 walk 1 -> 74
+  dir 5 walk 2 -> 73
+  dir 5 walk 3 -> 75
+  dir 6 walk 0 -> 73
+  dir 6 walk 1 -> 74
+  dir 6 walk 2 -> 73
+  dir 6 walk 3 -> 75
+  dir 7 walk 0 -> 73
+  dir 7 walk 1 -> 74
+  dir 7 walk 2 -> 73
+  dir 7 walk 3 -> 75
+unit 5 Trooper: group 3, base animation 320
+  dir 0 walk 0 -> 76
+  dir 0 walk 1 -> 77
+  dir 0 walk 2 -> 76
+  dir 0 walk 3 -> 78
+  dir 1 walk 0 -> 79
+  dir 1 walk 1 -> 80
+  dir 1 walk 2 -> 79
+  dir 1 walk 3 -> 81
+  dir 2 walk 0 -> 79
+  dir 2 walk 1 -> 80
+  dir 2 walk 2 -> 79
+  dir 2 walk 3 -> 81
+  dir 3 walk 0 -> 79
+  dir 3 walk 1 -> 80
+  dir 3 walk 2 -> 79
+  dir 3 walk 3 -> 81
+  dir 4 walk 0 -> 82
+  dir 4 walk 1 -> 83
+  dir 4 walk 2 -> 82
+  dir 4 walk 3 -> 84
+  dir 5 walk 0 -> 85
+  dir 5 walk 1 -> 86
+  dir 5 walk 2 -> 85
+  dir 5 walk 3 -> 87
+  dir 6 walk 0 -> 85
+  dir 6 walk 1 -> 86
+  dir 6 walk 2 -> 85
+  dir 6 walk 3 -> 87
+  dir 7 walk 0 -> 85
+  dir 7 walk 1 -> 86
+  dir 7 walk 2 -> 85
+  dir 7 walk 3 -> 87
+unit 6 Saboteur: group 3, base animation 301
+  dir 0 walk 0 -> 88
+  dir 0 walk 1 -> 89
+  dir 0 walk 2 -> 88
+  dir 0 walk 3 -> 90
+  dir 1 walk 0 -> 91
+  dir 1 walk 1 -> 92
+  dir 1 walk 2 -> 91
+  dir 1 walk 3 -> 93
+  dir 2 walk 0 -> 91
+  dir 2 walk 1 -> 92
+  dir 2 walk 2 -> 91
+  dir 2 walk 3 -> 93
+  dir 3 walk 0 -> 91
+  dir 3 walk 1 -> 92
+  dir 3 walk 2 -> 91
+  dir 3 walk 3 -> 93
+  dir 4 walk 0 -> 94
+  dir 4 walk 1 -> 95
+  dir 4 walk 2 -> 94
+  dir 4 walk 3 -> 96
+  dir 5 walk 0 -> 97
+  dir 5 walk 1 -> 98
+  dir 5 walk 2 -> 97
+  dir 5 walk 3 -> 99
+  dir 6 walk 0 -> 97
+  dir 6 walk 1 -> 98
+  dir 6 walk 2 -> 97
+  dir 6 walk 3 -> 99
+  dir 7 walk 0 -> 97
+  dir 7 walk 1 -> 98
+  dir 7 walk 2 -> 97
+  dir 7 walk 3 -> 99
+unit 7 Launcher: group 1, base animation 146
+  dir 0 -> 100
+  dir 1 -> 101
+  dir 2 -> 102
+  dir 3 -> 103
+  dir 4 -> 104
+  dir 5 -> 105
+  dir 6 -> 106
+  dir 7 -> 107
+unit 8 Deviator: group 1, base animation 146
+  dir 0 -> 100
+  dir 1 -> 101
+  dir 2 -> 102
+  dir 3 -> 103
+  dir 4 -> 104
+  dir 5 -> 105
+  dir 6 -> 106
+  dir 7 -> 107
+unit 11 Devastator: group 1, base animation 131
+  dir 0 -> 108
+  dir 1 -> 109
+  dir 2 -> 110
+  dir 3 -> 111
+  dir 4 -> 112
+  dir 5 -> 113
+  dir 6 -> 114
+  dir 7 -> 115
+unit 12 Sonic Tank: group 1, base animation 141
+  dir 0 -> 116
+  dir 1 -> 117
+  dir 2 -> 118
+  dir 3 -> 119
+  dir 4 -> 120
+  dir 5 -> 121
+  dir 6 -> 122
+  dir 7 -> 123
+unit 13 Trike: group 2, base animation 243
+  dir 0 -> 124
+  dir 1 -> 125
+  dir 2 -> 126
+  dir 3 -> 127
+  dir 4 -> 128
+  dir 5 -> 129
+  dir 6 -> 130
+  dir 7 -> 131
+  dir 8 -> 132
+  dir 9 -> 133
+  dir 10 -> 134
+  dir 11 -> 135
+  dir 12 -> 136
+  dir 13 -> 137
+  dir 14 -> 138
+  dir 15 -> 139
+unit 14 Raider Trike: group 2, base animation 243
+  dir 0 -> 124
+  dir 1 -> 125
+  dir 2 -> 126
+  dir 3 -> 127
+  dir 4 -> 128
+  dir 5 -> 129
+  dir 6 -> 130
+  dir 7 -> 131
+  dir 8 -> 132
+  dir 9 -> 133
+  dir 10 -> 134
+  dir 11 -> 135
+  dir 12 -> 136
+  dir 13 -> 137
+  dir 14 -> 138
+  dir 15 -> 139
+unit 15 Quad: group 2, base animation 238
+  dir 0 -> 140
+  dir 1 -> 141
+  dir 2 -> 142
+  dir 3 -> 143
+  dir 4 -> 144
+  dir 5 -> 145
+  dir 6 -> 146
+  dir 7 -> 147
+  dir 8 -> 148
+  dir 9 -> 149
+  dir 10 -> 150
+  dir 11 -> 151
+  dir 12 -> 152
+  dir 13 -> 153
+  dir 14 -> 154
+  dir 15 -> 155
+unit 16 Harvester: group 1, base animation 248
+  dir 0 -> 156
+  dir 1 -> 157
+  dir 2 -> 158
+  dir 3 -> 159
+  dir 4 -> 160
+  dir 5 -> 161
+  dir 6 -> 162
+  dir 7 -> 163
+unit 17 MCV: group 1, base animation 253
+  dir 0 -> 164
+  dir 1 -> 165
+  dir 2 -> 166
+  dir 3 -> 167
+  dir 4 -> 168
+  dir 5 -> 169
+  dir 6 -> 170
+  dir 7 -> 171
+unit 18 Death Hand: group 2, base animation 278
+  dir 0 -> 172
+  dir 1 -> 173
+  dir 2 -> 174
+  dir 3 -> 175
+  dir 4 -> 176
+  dir 5 -> 177
+  dir 6 -> 178
+  dir 7 -> 179
+  dir 8 -> 180
+  dir 9 -> 181
+  dir 10 -> 182
+  dir 11 -> 183
+  dir 12 -> 184
+  dir 13 -> 185
+  dir 14 -> 186
+  dir 15 -> 187
+unit 19 Rocket: group 2, base animation 263
+  dir 0 -> 188
+  dir 1 -> 189
+  dir 2 -> 190
+  dir 3 -> 191
+  dir 4 -> 192
+  dir 5 -> 193
+  dir 6 -> 194
+  dir 7 -> 195
+  dir 8 -> 196
+  dir 9 -> 197
+  dir 10 -> 198
+  dir 11 -> 199
+  dir 12 -> 200
+  dir 13 -> 201
+  dir 14 -> 202
+  dir 15 -> 203
+unit 20 ARocket: group 2, base animation 263
+  dir 0 -> 188
+  dir 1 -> 189
+  dir 2 -> 190
+  dir 3 -> 191
+  dir 4 -> 192
+  dir 5 -> 193
+  dir 6 -> 194
+  dir 7 -> 195
+  dir 8 -> 196
+  dir 9 -> 197
+  dir 10 -> 198
+  dir 11 -> 199
+  dir 12 -> 200
+  dir 13 -> 201
+  dir 14 -> 202
+  dir 15 -> 203
+unit 21 GRocket: group 2, base animation 263
+  dir 0 -> 188
+  dir 1 -> 189
+  dir 2 -> 190
+  dir 3 -> 191
+  dir 4 -> 192
+  dir 5 -> 193
+  dir 6 -> 194
+  dir 7 -> 195
+  dir 8 -> 196
+  dir 9 -> 197
+  dir 10 -> 198
+  dir 11 -> 199
+  dir 12 -> 200
+  dir 13 -> 201
+  dir 14 -> 202
+  dir 15 -> 203
+unit 22 MiniRocket: group 2, base animation 273
+  dir 0 -> 204
+  dir 1 -> 205
+  dir 2 -> 206
+  dir 3 -> 207
+  dir 4 -> 208
+  dir 5 -> 209
+  dir 6 -> 210
+  dir 7 -> 211
+  dir 8 -> 212
+  dir 9 -> 213
+  dir 10 -> 214
+  dir 11 -> 215
+  dir 12 -> 216
+  dir 13 -> 217
+  dir 14 -> 218
+  dir 15 -> 219
+unit 23 Bullet: group 0, base animation 174
+  dir 0 -> 220
+  dir 1 -> 220
+  dir 2 -> 220
+  dir 3 -> 220
+  dir 4 -> 220
+  dir 5 -> 220
+  dir 6 -> 220
+  dir 7 -> 220
+unit 24 Sonic Blast: group 0, base animation 160
+  dir 0 -> 221
+  dir 1 -> 222
+  dir 2 -> 223
+  dir 3 -> 224
+  dir 4 -> 225
+  dir 5 -> 226
+  dir 6 -> 227
+  dir 7 -> 228
+  dir 8 -> 229
+  dir 9 -> 230
+  dir 10 -> 231
+  dir 11 -> 232
+  dir 12 -> 233
+  dir 13 -> 234
+  dir 14 -> 235
+  dir 15 -> 236
+unit 26 Frigate: group 1, base animation 298
+  # second id: flags2 bit 9 (Starport cargo not yet delivered)
+  dir 0 walk 0 -> 237 238
+  dir 1 walk 0 -> 239 238
+  dir 2 walk 0 -> 240 238
+  dir 3 walk 0 -> 241 242
+  dir 4 walk 0 -> 243 242
+  dir 5 walk 0 -> 244 245
+  dir 6 walk 0 -> 246 247
+  dir 7 walk 0 -> 248 247
+
+== tank
+# Tank (9) and Siege Tank (10): hull and turret are two frames drawn at the
+# unit's position, turret on top.  <table> 0 Tank, 1 Siege Tank, 2 Tank
+# firing, 3 Siege Tank firing (the turret recoils a pixel; shown from the
+# shot until the next turn or aim redraw).  hull octant = (+$6A+16)>>5,
+# turret octant = (+$6D+16)>>5.  The ids already include the -12,-12;
+# 'turret +x +y' is an extra shift of the turret picture.
+# table hull turret -> hull_id turret_id turret_shift
+tank 0 0 0 -> 249 250 +0 +0
+tank 0 0 1 -> 249 251 +0 +0
+tank 0 0 2 -> 249 252 +0 +0
+tank 0 0 3 -> 249 253 +0 +0
+tank 0 0 4 -> 249 254 +0 +0
+tank 0 0 5 -> 249 255 +0 +0
+tank 0 0 6 -> 249 256 +0 +0
+tank 0 0 7 -> 249 257 +0 +0
+tank 0 1 0 -> 258 250 +0 +0
+tank 0 1 1 -> 258 251 +0 +0
+tank 0 1 2 -> 258 252 +0 +0
+tank 0 1 3 -> 258 253 +0 +0
+tank 0 1 4 -> 258 254 +0 +0
+tank 0 1 5 -> 258 255 +0 +0
+tank 0 1 6 -> 258 256 +0 +0
+tank 0 1 7 -> 258 257 +0 +0
+tank 0 2 0 -> 259 250 +0 +0
+tank 0 2 1 -> 259 251 +0 +0
+tank 0 2 2 -> 259 252 +0 +0
+tank 0 2 3 -> 259 253 +0 +0
+tank 0 2 4 -> 259 254 +0 +0
+tank 0 2 5 -> 259 255 +0 +0
+tank 0 2 6 -> 259 256 +0 +0
+tank 0 2 7 -> 259 257 +0 +0
+tank 0 3 0 -> 260 250 +0 +0
+tank 0 3 1 -> 260 251 +0 +0
+tank 0 3 2 -> 260 252 +0 +0
+tank 0 3 3 -> 260 253 +0 +0
+tank 0 3 4 -> 260 254 +0 +0
+tank 0 3 5 -> 260 255 +0 +0
+tank 0 3 6 -> 260 256 +0 +0
+tank 0 3 7 -> 260 257 +0 +0
+tank 0 4 0 -> 261 250 +0 +0
+tank 0 4 1 -> 261 251 +0 +0
+tank 0 4 2 -> 261 252 +0 +0
+tank 0 4 3 -> 261 253 +0 +0
+tank 0 4 4 -> 261 254 +0 +0
+tank 0 4 5 -> 261 255 +0 +0
+tank 0 4 6 -> 261 256 +0 +0
+tank 0 4 7 -> 261 257 +0 +0
+tank 0 5 0 -> 262 250 +0 +0
+tank 0 5 1 -> 262 251 +0 +0
+tank 0 5 2 -> 262 252 +0 +0
+tank 0 5 3 -> 262 253 +0 +0
+tank 0 5 4 -> 262 254 +0 +0
+tank 0 5 5 -> 262 255 +0 +0
+tank 0 5 6 -> 262 256 +0 +0
+tank 0 5 7 -> 262 257 +0 +0
+tank 0 6 0 -> 263 250 +0 +0
+tank 0 6 1 -> 263 251 +0 +0
+tank 0 6 2 -> 263 252 +0 +0
+tank 0 6 3 -> 263 253 +0 +0
+tank 0 6 4 -> 263 254 +0 +0
+tank 0 6 5 -> 263 255 +0 +0
+tank 0 6 6 -> 263 256 +0 +0
+tank 0 6 7 -> 263 257 +0 +0
+tank 0 7 0 -> 264 250 +0 +0
+tank 0 7 1 -> 264 251 +0 +0
+tank 0 7 2 -> 264 252 +0 +0
+tank 0 7 3 -> 264 253 +0 +0
+tank 0 7 4 -> 264 254 +0 +0
+tank 0 7 5 -> 264 255 +0 +0
+tank 0 7 6 -> 264 256 +0 +0
+tank 0 7 7 -> 264 257 +0 +0
+tank 1 0 0 -> 265 266 +0 +0
+tank 1 0 1 -> 265 267 +0 +0
+tank 1 0 2 -> 265 268 +0 +0
+tank 1 0 3 -> 265 269 +0 +0
+tank 1 0 4 -> 265 270 +0 +0
+tank 1 0 5 -> 265 271 +0 +0
+tank 1 0 6 -> 265 272 +0 +0
+tank 1 0 7 -> 265 273 +0 +0
+tank 1 1 0 -> 274 266 +0 +0
+tank 1 1 1 -> 274 267 +0 +0
+tank 1 1 2 -> 274 268 +0 +0
+tank 1 1 3 -> 274 269 +0 +0
+tank 1 1 4 -> 274 270 +0 +0
+tank 1 1 5 -> 274 271 +0 +0
+tank 1 1 6 -> 274 272 +0 +0
+tank 1 1 7 -> 274 273 +0 +0
+tank 1 2 0 -> 275 266 +0 +0
+tank 1 2 1 -> 275 267 +0 +0
+tank 1 2 2 -> 275 268 +0 +0
+tank 1 2 3 -> 275 269 +0 +0
+tank 1 2 4 -> 275 270 +0 +0
+tank 1 2 5 -> 275 271 +0 +0
+tank 1 2 6 -> 275 272 +0 +0
+tank 1 2 7 -> 275 273 +0 +0
+tank 1 3 0 -> 276 266 +0 +0
+tank 1 3 1 -> 276 267 +0 +0
+tank 1 3 2 -> 276 268 +0 +0
+tank 1 3 3 -> 276 269 +0 +0
+tank 1 3 4 -> 276 270 +0 +0
+tank 1 3 5 -> 276 271 +0 +0
+tank 1 3 6 -> 276 272 +0 +0
+tank 1 3 7 -> 276 273 +0 +0
+tank 1 4 0 -> 277 266 +0 +0
+tank 1 4 1 -> 277 267 +0 +0
+tank 1 4 2 -> 277 268 +0 +0
+tank 1 4 3 -> 277 269 +0 +0
+tank 1 4 4 -> 277 270 +0 +0
+tank 1 4 5 -> 277 271 +0 +0
+tank 1 4 6 -> 277 272 +0 +0
+tank 1 4 7 -> 277 273 +0 +0
+tank 1 5 0 -> 278 266 +0 +0
+tank 1 5 1 -> 278 267 +0 +0
+tank 1 5 2 -> 278 268 +0 +0
+tank 1 5 3 -> 278 269 +0 +0
+tank 1 5 4 -> 278 270 +0 +0
+tank 1 5 5 -> 278 271 +0 +0
+tank 1 5 6 -> 278 272 +0 +0
+tank 1 5 7 -> 278 273 +0 +0
+tank 1 6 0 -> 279 266 +0 +0
+tank 1 6 1 -> 279 267 +0 +0
+tank 1 6 2 -> 279 268 +0 +0
+tank 1 6 3 -> 279 269 +0 +0
+tank 1 6 4 -> 279 270 +0 +0
+tank 1 6 5 -> 279 271 +0 +0
+tank 1 6 6 -> 279 272 +0 +0
+tank 1 6 7 -> 279 273 +0 +0
+tank 1 7 0 -> 280 266 +0 +0
+tank 1 7 1 -> 280 267 +0 +0
+tank 1 7 2 -> 280 268 +0 +0
+tank 1 7 3 -> 280 269 +0 +0
+tank 1 7 4 -> 280 270 +0 +0
+tank 1 7 5 -> 280 271 +0 +0
+tank 1 7 6 -> 280 272 +0 +0
+tank 1 7 7 -> 280 273 +0 +0
+tank 2 0 0 -> 249 250 +0 +1
+tank 2 0 1 -> 249 251 -1 +1
+tank 2 0 2 -> 249 252 -1 +0
+tank 2 0 3 -> 249 253 -1 -1
+tank 2 0 4 -> 249 254 +0 -1
+tank 2 0 5 -> 249 255 +1 -1
+tank 2 0 6 -> 249 256 +1 +0
+tank 2 0 7 -> 249 257 +1 +1
+tank 2 1 0 -> 258 250 +0 +1
+tank 2 1 1 -> 258 251 -1 +1
+tank 2 1 2 -> 258 252 -1 +0
+tank 2 1 3 -> 258 253 -1 -1
+tank 2 1 4 -> 258 254 +0 -1
+tank 2 1 5 -> 258 255 +1 -1
+tank 2 1 6 -> 258 256 +1 +0
+tank 2 1 7 -> 258 257 +1 +1
+tank 2 2 0 -> 259 250 +0 +1
+tank 2 2 1 -> 259 251 -1 +1
+tank 2 2 2 -> 259 252 -1 +0
+tank 2 2 3 -> 259 253 -1 -1
+tank 2 2 4 -> 259 254 +0 -1
+tank 2 2 5 -> 259 255 +1 -1
+tank 2 2 6 -> 259 256 +1 +0
+tank 2 2 7 -> 259 257 +1 +1
+tank 2 3 0 -> 260 250 +0 +1
+tank 2 3 1 -> 260 251 -1 +1
+tank 2 3 2 -> 260 252 -1 +0
+tank 2 3 3 -> 260 253 -1 -1
+tank 2 3 4 -> 260 254 +0 -1
+tank 2 3 5 -> 260 255 +1 -1
+tank 2 3 6 -> 260 256 +1 +0
+tank 2 3 7 -> 260 257 +1 +1
+tank 2 4 0 -> 261 250 +0 +1
+tank 2 4 1 -> 261 251 -1 +1
+tank 2 4 2 -> 261 252 -1 +0
+tank 2 4 3 -> 261 253 -1 -1
+tank 2 4 4 -> 261 254 +0 -1
+tank 2 4 5 -> 261 255 +1 -1
+tank 2 4 6 -> 261 256 +1 +0
+tank 2 4 7 -> 261 257 +1 +1
+tank 2 5 0 -> 262 250 +0 +1
+tank 2 5 1 -> 262 251 -1 +1
+tank 2 5 2 -> 262 252 -1 +0
+tank 2 5 3 -> 262 253 -1 -1
+tank 2 5 4 -> 262 254 +0 -1
+tank 2 5 5 -> 262 255 +1 -1
+tank 2 5 6 -> 262 256 +1 +0
+tank 2 5 7 -> 262 257 +1 +1
+tank 2 6 0 -> 263 250 +0 +1
+tank 2 6 1 -> 263 251 -1 +1
+tank 2 6 2 -> 263 252 -1 +0
+tank 2 6 3 -> 263 253 -1 -1
+tank 2 6 4 -> 263 254 +0 -1
+tank 2 6 5 -> 263 255 +1 -1
+tank 2 6 6 -> 263 256 +1 +0
+tank 2 6 7 -> 263 257 +1 +1
+tank 2 7 0 -> 264 250 +0 +1
+tank 2 7 1 -> 264 251 -1 +1
+tank 2 7 2 -> 264 252 -1 +0
+tank 2 7 3 -> 264 253 -1 -1
+tank 2 7 4 -> 264 254 +0 -1
+tank 2 7 5 -> 264 255 +1 -1
+tank 2 7 6 -> 264 256 +1 +0
+tank 2 7 7 -> 264 257 +1 +1
+tank 3 0 0 -> 265 266 +0 +1
+tank 3 0 1 -> 265 267 -1 +1
+tank 3 0 2 -> 265 268 -1 +1
+tank 3 0 3 -> 265 269 -1 +1
+tank 3 0 4 -> 265 270 +0 +1
+tank 3 0 5 -> 265 271 +1 +1
+tank 3 0 6 -> 265 272 +1 +1
+tank 3 0 7 -> 265 273 +1 +1
+tank 3 1 0 -> 274 266 +0 +1
+tank 3 1 1 -> 274 267 -1 +1
+tank 3 1 2 -> 274 268 -1 +0
+tank 3 1 3 -> 274 269 -1 -1
+tank 3 1 4 -> 274 270 +0 -1
+tank 3 1 5 -> 274 271 +1 -1
+tank 3 1 6 -> 274 272 +1 +0
+tank 3 1 7 -> 274 273 +1 +1
+tank 3 2 0 -> 275 266 +0 +1
+tank 3 2 1 -> 275 267 -1 +1
+tank 3 2 2 -> 275 268 -1 +0
+tank 3 2 3 -> 275 269 -1 -1
+tank 3 2 4 -> 275 270 +0 -1
+tank 3 2 5 -> 275 271 +1 -1
+tank 3 2 6 -> 275 272 +1 +0
+tank 3 2 7 -> 275 273 +1 +1
+tank 3 3 0 -> 276 266 +0 +1
+tank 3 3 1 -> 276 267 -1 +1
+tank 3 3 2 -> 276 268 -1 +0
+tank 3 3 3 -> 276 269 -1 -1
+tank 3 3 4 -> 276 270 +0 -1
+tank 3 3 5 -> 276 271 +1 -1
+tank 3 3 6 -> 276 272 +1 +0
+tank 3 3 7 -> 276 273 +1 +1
+tank 3 4 0 -> 277 266 +0 +1
+tank 3 4 1 -> 277 267 -1 +1
+tank 3 4 2 -> 277 268 -1 +0
+tank 3 4 3 -> 277 269 -1 -1
+tank 3 4 4 -> 277 270 +0 -1
+tank 3 4 5 -> 277 271 +1 -1
+tank 3 4 6 -> 277 272 +1 +0
+tank 3 4 7 -> 277 273 +1 +1
+tank 3 5 0 -> 278 266 +0 +1
+tank 3 5 1 -> 278 267 -1 +1
+tank 3 5 2 -> 278 268 -1 +0
+tank 3 5 3 -> 278 269 -1 -1
+tank 3 5 4 -> 278 270 +0 -1
+tank 3 5 5 -> 278 271 +1 -1
+tank 3 5 6 -> 278 272 +1 +0
+tank 3 5 7 -> 278 273 +1 +1
+tank 3 6 0 -> 279 266 +0 +1
+tank 3 6 1 -> 279 267 -1 +1
+tank 3 6 2 -> 279 268 -1 +0
+tank 3 6 3 -> 279 269 -1 -1
+tank 3 6 4 -> 279 270 +0 -1
+tank 3 6 5 -> 279 271 +1 -1
+tank 3 6 6 -> 279 272 +1 +0
+tank 3 6 7 -> 279 273 +1 +1
+tank 3 7 0 -> 280 266 +0 +1
+tank 3 7 1 -> 280 267 -1 +1
+tank 3 7 2 -> 280 268 -1 +0
+tank 3 7 3 -> 280 269 -1 -1
+tank 3 7 4 -> 280 270 +0 -1
+tank 3 7 5 -> 280 271 +1 -1
+tank 3 7 6 -> 280 272 +1 +0
+tank 3 7 7 -> 280 273 +1 +1
+
+== sandworm
+sandworm -> 281   # never redrawn: no facing, line 0
+
+== harvester dust
+# shown while a Harvester on the map harvests (+$54 = 5) on spice
+# (landscape 8 or 9); frame = +$73 (0,1,2 stepping every animation tick),
+# dir = (+$6A+16)>>5; the offset is added to the frame's dx dy.
+harvest frame 0 dir 0 -> 282 -8 +8
+harvest frame 0 dir 1 -> 282 -20 +4
+harvest frame 0 dir 2 -> 282 -24 -8
+harvest frame 0 dir 3 -> 282 -20 -20
+harvest frame 0 dir 4 -> 282 -8 -24
+harvest frame 0 dir 5 -> 282 +4 -20
+harvest frame 0 dir 6 -> 282 +8 -8
+harvest frame 0 dir 7 -> 282 +4 +4
+harvest frame 1 dir 0 -> 283 -8 +8
+harvest frame 1 dir 1 -> 283 -20 +4
+harvest frame 1 dir 2 -> 283 -24 -8
+harvest frame 1 dir 3 -> 283 -20 -20
+harvest frame 1 dir 4 -> 283 -8 -24
+harvest frame 1 dir 5 -> 283 +4 -20
+harvest frame 1 dir 6 -> 283 +8 -8
+harvest frame 1 dir 7 -> 283 +4 +4
+harvest frame 2 dir 0 -> 284 -8 +8
+harvest frame 2 dir 1 -> 284 -20 +4
+harvest frame 2 dir 2 -> 284 -24 -8
+harvest frame 2 dir 3 -> 284 -20 -20
+harvest frame 2 dir 4 -> 284 -8 -24
+harvest frame 2 dir 5 -> 284 +4 -20
+harvest frame 2 dir 6 -> 284 +8 -8
+harvest frame 2 dir 7 -> 284 +4 +4
+
+== smoke
+# animation 180, whose six tiles $00B028 overwrites every 10 ticks,
+# counting $FFD300 2,1,0,2,...  Shown by explosions 9, 10 and 15.
+smoke phase 2 -> 285
+smoke phase 1 -> 286
+smoke phase 0 -> 287
+
+== house marker
+# 16x16, written into the plane in the house's line: its top-left is at
+# the structure's position (the top-left corner of its top-left square)
+# + (0, drop[layout]) - the bottom-left quarter of its bottom-left
+# square.  8 frames, one step every 8 video frames ($FFBF68, $00608E).
+drop 16 16 48 48 80 48 80 0
+house_marker -> 319 320 321 322 323 324 325 326
+
+== structure markers
+# sprites owned by the structure's position (+$A), line 0.  The offset
+# is by layout (the building table's +$3C) and added to the frame's dx dy.
+# ready  'OK', $009A62: a Construction Yard with a building ready to
+#        place (flags2 bit 13), the Palace's weapon ready ($00DC98, $00DCFA)
+# repair a hammer, $009B26: +4 bit 13 (repairing)
+# power  a lightning bolt, $009AD6: on a Windtrap while its house uses
+#        more power than it makes (house +$1C > +$1A, $00DD66)
+# Only the one marker a structure has shows (one sprite, +$10).
+marker ready -> 327   offsets by layout: +20,+20 +20,+20 +20,+20 +20,+20 +20,+20 +20,+20 +36,+36 +36,+36
+marker repair -> 328   offsets by layout: +4,+4 +4,+4 +4,+4 +20,+20 +36,+20 +36,+20 +36,+36
+marker power -> 329   offsets by layout: +20,+20
+
+== cursors
+# The pointer is in screen coordinates; the bracket follows the selected
+# object's position and blinks (period 10 frames).
+# 'pieces' are (frame@dx,dy) drawn together; the placement squares are
+# green (line 3) where the square fits and red (line 0) where it is blocked.
+cursor anim 0 -> 330   # the square cursor: nothing of the player's selected
+cursor anim 5 -> 331   # the crosshair: one of the player's units selected, where to send it
+cursor anim 6 -> 332   # bracket round the selected unit, the player's
+cursor anim 29 -> 333   # bracket round a selected unit of another house, or the player's Saboteur
+cursor anim 9 -> pieces 334@-3,-3 335@+21,-3 336@-3,+21 337@+21,+21   # bracket round a 1x1, 2x1 or 1x2 structure ($0C7EFE by layout 0-2)
+cursor anim 10 -> pieces 334@-3,-3 335@+53,-3 336@-3,+53 337@+53,+53   # bracket round a 2x2 structure (layout 3, 9)
+cursor anim 11 -> pieces 334@-3,-3 335@+85,-3 336@-3,+53 337@+85,+53   # bracket round a 2x3 or 3x2 structure (layout 4, 5)
+cursor anim 30 -> pieces 334@-3,-3 335@+85,-3 336@-3,+85 337@+85,+85   # bracket round a 3x3 structure (layout 6, 7)
+cursor anim 1 -> 338   # placement, fits, layout 0 ($0C7EE2)
+cursor anim 4 -> pieces 338@+0,+0 338@+32,+0 338@+0,+32 338@+32,+32   # placement, fits, layout 3
+cursor anim 12 -> pieces 338@+0,+0 338@+32,+0 338@+64,+0 338@+0,+32 338@+32,+32 338@+64,+32   # placement, fits, layout 4
+cursor anim 13 -> pieces 338@+0,+0 338@+32,+0 338@+64,+0 338@+0,+32 338@+32,+32 338@+64,+32   # placement, fits, layout 5
+cursor anim 14 -> pieces 338@+0,+0 338@+32,+0 338@+64,+0 338@+0,+32 338@+32,+32 338@+64,+32 338@+0,+64 338@+32,+64 338@+64,+64   # placement, fits, layout 6
+cursor anim 15 -> 339   # placement, blocked, layout 0
+cursor anim 18 -> pieces 339@+0,+0 339@+32,+0 339@+0,+32 339@+32,+32   # placement, blocked, layout 3
+cursor anim 19 -> pieces 339@+0,+0 339@+32,+0 339@+64,+0 339@+0,+32 339@+32,+32 339@+64,+32   # placement, blocked, layout 4
+cursor anim 20 -> pieces 339@+0,+0 339@+32,+0 339@+64,+0 339@+0,+32 339@+32,+32 339@+64,+32   # placement, blocked, layout 5
+cursor anim 21 -> pieces 339@+0,+0 339@+32,+0 339@+64,+0 339@+0,+32 339@+32,+32 339@+64,+32 339@+0,+64 339@+32,+64 339@+64,+64   # placement, blocked, layout 6
+# building placement ($004BF2): -1..-16, a 2x2 grid whose quarters fit or
+# are blocked, one bit each
+cursor place -1 -> pieces 338@+0,+0 338@+32,+0 338@+0,+32 338@+32,+32
+cursor place -2 -> pieces 339@+0,+0 338@+32,+0 338@+0,+32 338@+32,+32
+cursor place -3 -> pieces 338@+0,+0 339@+32,+0 338@+0,+32 338@+32,+32
+cursor place -4 -> pieces 339@+0,+0 339@+32,+0 338@+0,+32 338@+32,+32
+cursor place -5 -> pieces 338@+0,+0 338@+32,+0 339@+0,+32 338@+32,+32
+cursor place -6 -> pieces 339@+0,+0 338@+32,+0 339@+0,+32 338@+32,+32
+cursor place -7 -> pieces 338@+0,+0 339@+32,+0 339@+0,+32 338@+32,+32
+cursor place -8 -> pieces 339@+0,+0 339@+32,+0 339@+0,+32 338@+32,+32
+cursor place -9 -> pieces 338@+0,+0 338@+32,+0 338@+0,+32 339@+32,+32
+cursor place -10 -> pieces 339@+0,+0 338@+32,+0 338@+0,+32 339@+32,+32
+cursor place -11 -> pieces 338@+0,+0 339@+32,+0 338@+0,+32 339@+32,+32
+cursor place -12 -> pieces 339@+0,+0 339@+32,+0 338@+0,+32 339@+32,+32
+cursor place -13 -> pieces 338@+0,+0 338@+32,+0 339@+0,+32 339@+32,+32
+cursor place -14 -> pieces 339@+0,+0 338@+32,+0 339@+0,+32 339@+32,+32
+cursor place -15 -> pieces 338@+0,+0 339@+32,+0 339@+0,+32 339@+32,+32
+cursor place -16 -> pieces 339@+0,+0 339@+32,+0 339@+0,+32 339@+32,+32
+
+== shake
+# Soldier, Trooper, Trike, Raider Trike and Quad ($00B3B0) are drawn
+# shifted by this (dx, dy), picked by the unit's +$72 & 7 (wobbleIndex):
+shake +0,+0 +0,-1 +1,+0 +0,-1 +1,+0 +0,+0 +1,+0 +0,+0
+
+== frames never shown
+# The turret animations 116 and 126 in units.txt (the type table's +$48):
+# unit_draw uses the 256-frame table instead.  Animations 111-113 and
+# 121-123 (the Tank's and Siege Tank's own) only make the sprite; the
+# first redraw points it into the 256-frame table.

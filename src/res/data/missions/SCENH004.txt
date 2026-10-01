@@ -1,0 +1,152 @@
+# SCENH004.txt - mission 4 of the Harkonnen.
+#
+# From orig/dune2.gen $05AA40, 1230 bytes: SCENH004.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTBILD.WSA" 14
+BASIC WinPicture   "WIN2.WSA" 10 hex:0057
+BASIC BriefPicture "LTANK.WSA" 10
+BASIC Timeout      0
+BASIC MapScale     0
+BASIC CursorPos    2123   ; x11 y33
+BASIC TacticalPos  2123   ; x11 y33
+BASIC LoseFlags    1
+BASIC WinFlags     19
+MAP   Seed  22
+HOUSE Harkonnen  Quota    0
+HOUSE Harkonnen  Credits  1500
+HOUSE Harkonnen  Brain    H
+HOUSE Harkonnen  MaxUnit  16
+HOUSE Ordos      Quota    0
+HOUSE Ordos      Credits  2500
+HOUSE Ordos      Brain    C
+HOUSE Ordos      MaxUnit  21
+TEAM  1   Ordos      Normal    Foot      3 4
+TEAM  2   Ordos      Kamikaze  Tracked   4 5
+TEAM  3   Ordos      Normal    Wheeled   4 6
+TEAM  4   Ordos      Normal    Wheeled   4 6
+TEAM  5   Ordos      Normal    Tracked   4 4
+REINF 1   Sardaukar  Troopers    Enemybase 6+
+REINF 2   Sardaukar  Troopers    Enemybase 6+
+REINF 3   Sardaukar  Troopers    Enemybase 6+
+REINF 4   Sardaukar  Troopers    Enemybase 6+
+UNIT  1   Fremen     Sandworm    256 523   S   AreaGuard ; x11 y8
+UNIT  3   Ordos      Tank        256 618   S   AreaGuard ; x42 y9
+UNIT  5   Ordos      Troopers    256 754   S   AreaGuard ; x50 y11
+UNIT  7   Ordos      RaiderTrike 256 889   S   AreaGuard ; x57 y13
+UNIT  8   Ordos      Tank        256 1126  S   AreaGuard ; x38 y17
+UNIT  9   Ordos      RaiderTrike 256 1143  S   Ambush    ; x55 y17
+UNIT  10  Ordos      Troopers    256 1198  S   Guard     ; x46 y18
+UNIT  11  Ordos      Quad        256 1256  S   AreaGuard ; x40 y19
+UNIT  12  Ordos      Tank        256 1259  S   AreaGuard ; x43 y19
+UNIT  13  Ordos      Infantry    256 1268  S   Ambush    ; x52 y19
+UNIT  14  Ordos      RaiderTrike 256 1321  S   Ambush    ; x41 y20
+UNIT  15  Ordos      Tank        256 1326  S   AreaGuard ; x46 y20
+UNIT  16  Ordos      Troopers    256 1329  S   Ambush    ; x49 y20
+UNIT  17  Ordos      Quad        256 1395  S   AreaGuard ; x51 y21
+UNIT  18  Fremen     Sandworm    256 1948  S   AreaGuard ; x28 y30
+UNIT  19  Harkonnen  Quad        256 2058  S   Guard     ; x10 y32
+UNIT  20  Harkonnen  Quad        256 2061  S   Guard     ; x13 y32
+UNIT  21  Harkonnen  Trooper     256 2121  S   Guard     ; x9 y33
+UNIT  22  Harkonnen  Quad        256 2186  S   Guard     ; x10 y34
+UNIT  23  Harkonnen  Trooper     256 2190  S   Guard     ; x14 y34
+UNIT  24  Harkonnen  Trooper     256 2252  S   Guard     ; x12 y35
+UNIT  25  Harkonnen  Quad        256 2313  S   Guard     ; x9 y36
+UNIT  29  Fremen     Sandworm    256 2794  S   AreaGuard ; x42 y43
+GEN   621   Ordos      Wall   ; x45 y9
+GEN   622   Ordos      Wall   ; x46 y9
+GEN   623   Ordos      Wall   ; x47 y9
+GEN   624   Ordos      Wall   ; x48 y9
+GEN   625   Ordos      Wall   ; x49 y9
+GEN   685   Ordos      Slab   ; x45 y10
+GEN   686   Ordos      Slab   ; x46 y10
+STRUCT 30  Ordos      Windtrap     256 687   ; x47 y10
+GEN   689   Ordos      Wall   ; x49 y10
+GEN   745   Ordos      Wall   ; x41 y11
+GEN   746   Ordos      Wall   ; x42 y11
+GEN   747   Ordos      Wall   ; x43 y11
+GEN   748   Ordos      Wall   ; x44 y11
+GEN   749   Ordos      Wall   ; x45 y11
+GEN   750   Ordos      Slab   ; x46 y11
+GEN   753   Ordos      Wall   ; x49 y11
+GEN   809   Ordos      Wall   ; x41 y12
+STRUCT 31  Ordos      Silo         256 810   ; x42 y12
+GEN   812   Ordos      Slab   ; x44 y12
+GEN   813   Ordos      Slab   ; x45 y12
+GEN   814   Ordos      Slab   ; x46 y12
+STRUCT 32  Ordos      Windtrap     256 815   ; x47 y12
+GEN   817   Ordos      Wall   ; x49 y12
+GEN   818   Ordos      Wall   ; x50 y12
+GEN   819   Ordos      Wall   ; x51 y12
+GEN   820   Ordos      Wall   ; x52 y12
+GEN   821   Ordos      Wall   ; x53 y12
+GEN   822   Ordos      Wall   ; x54 y12
+GEN   823   Ordos      Wall   ; x55 y12
+GEN   871   Ordos      Wall   ; x39 y13
+GEN   872   Ordos      Wall   ; x40 y13
+GEN   873   Ordos      Wall   ; x41 y13
+GEN   876   Ordos      Slab   ; x44 y13
+GEN   877   Ordos      Slab   ; x45 y13
+GEN   878   Ordos      Slab   ; x46 y13
+GEN   881   Ordos      Slab   ; x49 y13
+STRUCT 33  Ordos      ConstYard    256 882   ; x50 y13
+STRUCT 34  Ordos      HeavyFactory 256 884   ; x52 y13
+GEN   887   Ordos      Slab   ; x55 y13
+GEN   935   Ordos      Wall   ; x39 y14
+STRUCT 35  Ordos      Silo         256 936   ; x40 y14
+STRUCT 36  Ordos      Refinery     256 938   ; x42 y14
+GEN   941   Ordos      Slab   ; x45 y14
+STRUCT 37  Ordos      HeavyFactory 256 942   ; x46 y14
+GEN   945   Ordos      Slab   ; x49 y14
+GEN   951   Ordos      Wall   ; x55 y14
+GEN   999   Ordos      Wall   ; x39 y15
+GEN   1005  Ordos      Slab   ; x45 y15
+GEN   1009  Ordos      Slab   ; x49 y15
+GEN   1010  Ordos      Slab   ; x50 y15
+GEN   1011  Ordos      Slab   ; x51 y15
+GEN   1012  Ordos      Slab   ; x52 y15
+GEN   1013  Ordos      Slab   ; x53 y15
+GEN   1014  Ordos      Wall   ; x54 y15
+GEN   1015  Ordos      Wall   ; x55 y15
+GEN   1063  Ordos      Wall   ; x39 y16
+GEN   1064  Ordos      Wall   ; x40 y16
+GEN   1065  Ordos      Wall   ; x41 y16
+STRUCT 38  Ordos      WOR          256 1066  ; x42 y16
+GEN   1068  Ordos      Slab   ; x44 y16
+GEN   1069  Ordos      Wall   ; x45 y16
+GEN   1070  Ordos      Wall   ; x46 y16
+GEN   1071  Ordos      Wall   ; x47 y16
+GEN   1072  Ordos      Wall   ; x48 y16
+GEN   1073  Ordos      Slab   ; x49 y16
+STRUCT 39  Ordos      Outpost      256 1074  ; x50 y16
+GEN   1076  Ordos      Wall   ; x52 y16
+GEN   1077  Ordos      Wall   ; x53 y16
+GEN   1078  Ordos      Wall   ; x54 y16
+GEN   1129  Ordos      Wall   ; x41 y17
+GEN   1132  Ordos      Slab   ; x44 y17
+GEN   1136  Ordos      Wall   ; x48 y17
+GEN   1137  Ordos      Slab   ; x49 y17
+GEN   1140  Ordos      Wall   ; x52 y17
+GEN   1193  Ordos      Wall   ; x41 y18
+GEN   1194  Ordos      Wall   ; x42 y18
+GEN   1195  Ordos      Wall   ; x43 y18
+GEN   1196  Ordos      Wall   ; x44 y18
+GEN   1200  Ordos      Wall   ; x48 y18
+GEN   1201  Ordos      Slab   ; x49 y18
+GEN   1202  Ordos      Wall   ; x50 y18
+STRUCT 40  Harkonnen  ConstYard    256 2123  ; x11 y33
+END

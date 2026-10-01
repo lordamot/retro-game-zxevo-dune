@@ -1,0 +1,229 @@
+# landscape.txt - the 15 landscape types, the table at $06CCAA
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source, compiled by tools/dune_data.py.
+# The format is in the header of src/res/data/tables.txt.
+
+table landscape
+# The 15 landscape types, 28 bytes each (S3, S6, S8).
+# The record starts at $06CCAA, not $06CCAE: the region is
+# $06CCAA-$06CE4D, 15 x 28 exactly, ending where the movement-letter
+# pointers begin; $06CCAE is the movementSpeed array at +4, which is
+# why S3 and S8 count their offsets from there (S3's +$06 is +$0A
+# here) and S6 counts from $06CCAA.  +0 and +2 are read by nothing
+# the specs name.
+rom $06CCAA
+count 15
+size $1C
+prefix LS_
+idprefix LST_
+field $00 hw     f00
+field $02 hw     f02
+field $04 b*6    movementSpeed          ; S3: by movementType; 0 impassable
+field $0A w      letUnitWobble          ; S3
+field $0C w      isValidForStructure    ; S3/S6/S8: a building may stand here
+field $0E w      isSand                 ; S3/S8
+field $10 w      isValidForStructure2   ; S3/S6/S8: a slab may go here
+field $12 sw     spice                  ; S3/S5: -1 sand, dunes and bloom, 0 rock, 25 spice, 100 thick
+field $14 w      craterType             ; S8: 0 none, 1 sand, 2 rock (through tbl_crater)
+field $16 sw     radarColour            ; S3/S8: the PC's; unused on the Mega Drive
+field $18 w      spriteID               ; S3/S8: the PC's; unused on the Mega Drive
+field $1A w      f1A
+
+records
+record 0 Sand
+  f00 = $00A8
+  f02 = $006B
+  movementSpeed = 112 112 112 160 255 192
+  letUnitWobble = 0
+  isValidForStructure = 0
+  isSand = 1
+  isValidForStructure2 = 0
+  spice = -1
+  craterType = 1
+  radarColour = 88
+  spriteID = 37
+  f1A = 21
+record 1 PartialRock
+  f00 = $00A9
+  f02 = $006D
+  movementSpeed = 160 112 112 64 255 0
+  letUnitWobble = 1
+  isValidForStructure = 0
+  isSand = 0
+  isValidForStructure2 = 0
+  spice = 0
+  craterType = 1
+  radarColour = 28
+  spriteID = 39
+  f1A = 23
+record 2 Dune
+  f00 = $00AA
+  f02 = $006C
+  movementSpeed = 112 160 160 160 255 192
+  letUnitWobble = 0
+  isValidForStructure = 0
+  isSand = 1
+  isValidForStructure2 = 0
+  spice = -1
+  craterType = 1
+  radarColour = 92
+  spriteID = 41
+  f1A = 22
+record 3 PartialDune
+  f00 = $00AA
+  f02 = $006C
+  movementSpeed = 112 160 160 160 255 192
+  letUnitWobble = 0
+  isValidForStructure = 0
+  isSand = 1
+  isValidForStructure2 = 0
+  spice = -1
+  craterType = 1
+  radarColour = 89
+  spriteID = 43
+  f1A = 22
+record 4 Rock
+  f00 = $00A9
+  f02 = $006D
+  movementSpeed = 112 160 160 112 255 0
+  letUnitWobble = 1
+  isValidForStructure = 1
+  isSand = 0
+  isValidForStructure2 = 1
+  spice = 0
+  craterType = 2
+  radarColour = 30
+  spriteID = 45
+  f1A = 23
+record 5 MostlyRock
+  f00 = $00A9
+  f02 = $006D
+  movementSpeed = 160 160 160 160 255 0
+  letUnitWobble = 1
+  isValidForStructure = 1
+  isSand = 0
+  isValidForStructure2 = 1
+  spice = 0
+  craterType = 2
+  radarColour = 29
+  spriteID = 47
+  f1A = 23
+record 6 Mountain
+  f00 = $00AB
+  f02 = $006E
+  movementSpeed = 64 0 0 0 255 0
+  letUnitWobble = 1
+  isValidForStructure = 0
+  isSand = 0
+  isValidForStructure2 = 0
+  spice = 0
+  craterType = 0
+  radarColour = 12
+  spriteID = 49
+  f1A = 24
+record 7 PartialMountain
+  f00 = $00AB
+  f02 = $006E
+  movementSpeed = 112 64 64 64 255 0
+  letUnitWobble = 1
+  isValidForStructure = 0
+  isSand = 0
+  isValidForStructure2 = 0
+  spice = 0
+  craterType = 0
+  radarColour = 133
+  spriteID = 51
+  f1A = 24
+record 8 Spice
+  f00 = $00AC
+  f02 = $006A
+  movementSpeed = 112 160 160 160 255 192
+  letUnitWobble = 0
+  isValidForStructure = 0
+  isSand = 1
+  isValidForStructure2 = 0
+  spice = 25
+  craterType = 1
+  radarColour = 88
+  spriteID = 37
+  f1A = 25
+record 9 ThickSpice
+  f00 = $00AD
+  f02 = $006A
+  movementSpeed = 112 160 160 160 255 192
+  letUnitWobble = 1
+  isValidForStructure = 0
+  isSand = 1
+  isValidForStructure2 = 0
+  spice = 100
+  craterType = 1
+  radarColour = 88
+  spriteID = 37
+  f1A = 25
+record 10 Concrete
+  f00 = $00E8
+  f02 = $0041
+  movementSpeed = 255 255 255 255 255 0
+  letUnitWobble = 0
+  isValidForStructure = 1
+  isSand = 0
+  isValidForStructure2 = 0
+  spice = 0
+  craterType = 2
+  radarColour = 133
+  spriteID = 51
+  f1A = 2
+record 11 Wall
+  f00 = $0104
+  f02 = $004E
+  movementSpeed = 0 0 0 0 255 0
+  letUnitWobble = 0
+  isValidForStructure = 0
+  isSand = 0
+  isValidForStructure2 = 0
+  spice = 0
+  craterType = 0
+  radarColour = -1
+  spriteID = 31
+  f1A = 15
+record 12 Structure
+  f00 = $00AE
+  f02 = $FFFF
+  movementSpeed = 0 0 0 0 255 0
+  letUnitWobble = 0
+  isValidForStructure = 0
+  isSand = 0
+  isValidForStructure2 = 0
+  spice = 0
+  craterType = 0
+  radarColour = -1
+  spriteID = 31
+  f1A = 0
+record 13 DestroyedWall
+  f00 = $00A9
+  f02 = $006D
+  movementSpeed = 160 160 160 160 255 0
+  letUnitWobble = 1
+  isValidForStructure = 1
+  isSand = 0
+  isValidForStructure2 = 1
+  spice = 0
+  craterType = 2
+  radarColour = 29
+  spriteID = 47
+  f1A = 23
+record 14 Bloom
+  f00 = $002D
+  f02 = $006B
+  movementSpeed = 112 112 112 160 255 192
+  letUnitWobble = 0
+  isValidForStructure = 0
+  isSand = 1
+  isValidForStructure2 = 0
+  spice = -1
+  craterType = 1
+  radarColour = 50
+  spriteID = 57
+  f1A = 21
+end

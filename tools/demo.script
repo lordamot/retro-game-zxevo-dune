@@ -1,0 +1,6 @@
+# Start the SPG (tools/evo_control.py script --spg, `make shot` and `make
+# demo`), let it run five seconds and photograph it.  A debug build made
+# with HOUSE=... is in its battle by then; a plain one is in the front end.
+run 250
+shot tmp/battle.bmp
+state

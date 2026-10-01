@@ -1,0 +1,1192 @@
+# tables.txt - the constant tables the game reads, one per spec table.
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen; the
+# text is now the source and tools/dune_data.py compiles it into
+# build/gen/tables.inc.  The build never reads orig/.
+#
+# The format (shared by units.txt, structures.txt, houses.txt,
+# landscape.txt and actions.txt):
+#
+#   table NAME           the label is tbl_NAME
+#   rom $XXXXXX          where the cartridge keeps it (documentation,
+#                        and what port_data.py check compares with)
+#   count N / size $NN   records, bytes a record
+#   anchor $XXXXXX       tbl_NAME is this address; tbl_NAME_start the first byte
+#   prefix P_            field offsets become EQUs P_name
+#   idprefix I_          record identifiers become EQUs I_IDENT (the record number)
+#   field $OFF TYPE[*N] NAME[:TARGET] ; comment
+#   records              then  record N IDENT / name = values ... end
+#   data                 then values, record by record, field by field ... end
+#
+# Types (dune_data.py's header has the byte order):
+#   b sb hb      byte, unsigned / signed / shown in hex
+#   w sw hw      word                     -> little-endian
+#   l sl hl      32-bit value             -> little-endian, low word first
+#   pos          y,x: a position or a (y, x) word pair -> y word, x word, each LE
+#   str          "text": a ROM string pointer -> dw record number, 0
+#   ref:T        T[n]: a ROM pointer into table T -> dw n, 0 (none -> $FFFF, $FFFF)
+#   chr          'c': a pointer to a one-letter string -> the letter, one byte
+#
+# Values: 12  -3  $FF  'H'.  '#' starts a comment line, ';' a comment.
+
+
+# ---- the map and the ground (S3, S5, S8)
+
+table icon_landscape
+# S3/S5/S8: the landscape type (tbl_landscape) of each of the 360 map
+# icons, -1 for icons that are not ground; map_get_landscape_type
+# $0057E6 looks up the ground icon, and the overlay icon wins when it
+# gives 13
+rom $005818
+count 360
+field $00 sb type
+data
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 13 11 11 11 11 11 11 11 11 11 11 11 11 12 12
+  12 12 12 12 12 12 12 12 12 12 12 12 1 1 1 1
+  8 8 8 8 9 9 9 9 12 12 12 11 11 11 11 11
+  3 3 3 2 3 3 3 3 3 3 3 3 3 3 3 3
+  3 3 3 3 6 3 3 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 4 13 10 0
+  1 1 1 5 1 5 5 5 1 5 5 5 5 5 5 5
+  3 3 3 3 3 3 2 3 3 3 2 3 3 3 3 2
+  7 6 6 6 6 6 6 7 3 7 7 6 3 6 7 7
+  8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8
+  9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9
+  14 14 12 12 12 12 12 12 12 12 12 -1 -1 -1 -1 12
+  12 12 12 12 12 12 12 12 12 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 12 12 12 12 12 12 12 12 12 12 12 12 12
+  12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12
+  12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12
+  12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12
+  12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12
+  12 12 12 12 12 12 12 12 12 12 12 12 12 12 12 12
+  12 12 13 13 13 13 13 13 13 13 13 13 13 13 13 13
+  13 13 13 13 13 13 -1 -1
+end
+
+table icon_map
+# S8: ICON.MAP - 27 word offsets (in words from the start) to the
+# groups, then the groups' icon numbers
+rom $04AA28
+count 480
+field $00 w word
+data
+  27 28 34 40 46 52 60 135 151 154 235 238 265 277 295 313
+  325 337 349 361 373 400 418 436 446 456 468 0 1 2 3 4
+  5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+  21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36
+  37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52
+  53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68
+  69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84
+  85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100
+  101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116
+  117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132
+  133 134 135 136 137 138 139 140 141 142 143 144 145 146 147 148
+  149 150 151 152 153 154 155 156 157 158 159 160 161 162 163 164
+  165 166 167 168 169 170 171 172 173 174 175 176 177 178 179 180
+  181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196
+  197 198 199 200 201 202 203 204 205 206 207 208 209 210 318 319
+  320 321 322 323 324 325 326 338 339 340 341 342 343 344 345 346
+  210 211 212 213 214 215 216 217 218 333 334 335 336 353 354 355
+  356 219 220 221 222 327 328 329 330 331 332 347 348 349 350 351
+  352 223 224 225 226 227 228 327 328 329 330 331 332 347 348 349
+  350 351 352 229 230 231 232 233 234 333 334 335 336 353 354 355
+  356 235 236 237 238 333 334 335 336 353 354 355 356 239 240 241
+  242 333 334 335 336 353 354 355 356 243 244 245 246 333 334 335
+  336 353 354 355 356 247 248 249 250 333 334 335 336 353 354 355
+  356 251 252 253 254 318 319 320 321 322 323 324 325 326 338 339
+  340 341 342 343 344 345 346 255 256 257 258 259 260 261 262 263
+  327 328 329 330 331 332 347 348 349 350 351 352 264 265 266 267
+  268 269 327 328 329 330 331 332 347 348 349 350 351 352 270 271
+  272 273 274 275 337 357 276 277 278 279 280 281 282 283 337 357
+  284 285 286 287 288 289 290 291 333 334 335 336 353 354 355 356
+  292 293 294 295 333 334 335 336 353 354 355 356 296 297 298 299
+end
+
+table playable_area
+# S3/S8: the playable area per mapScale (0: 64 x 64, 1: 32 x 32);
+# map_is_valid_position $005798
+rom $06CE7A
+count 2
+field $00 w x0
+field $02 w y0
+field $04 w width
+field $06 w height
+data
+  1 1 62 62   ; 0
+  16 16 32 32   ; 1
+end
+
+table scale_offset
+# S8/S9: added to a square of a mission file per mapScale: 0, and $410
+# (16 rows and 16 columns in)
+rom $0714A0
+count 2
+field $00 w offset
+data
+  0 1040
+end
+
+table section_house
+# S9: the house of mission-file section s is tbl_section_house[s - 2]
+# (the loader indexes from $0714A0, so this continues tbl_scale_offset):
+# 0, 1, 2, 4
+rom $0714A4
+count 8
+field $00 w house
+data
+  0 1 2 4 3 0 0 0
+end
+
+table crater
+# S8: by landscape craterType: -1 never scarred, else compared with the
+# fog icons; map_explosion_ground $0273EA
+rom $0C7EDC
+count 3
+field $00 sw base
+data
+  -1 2 1
+end
+
+table overlay_stamp
+# S8: per overlay value 0-127 of a map animation: 1 means the icon is
+# stamped over every square of a structure layout ($00B0C2)
+rom $00B142
+count 128
+field $00 b flag
+data
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1
+  1 1 1 1 1 1 0 1 1 1 1 1 0 0 0 0
+  0 0 0 0 0 0 0 0 1 1 1 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+end
+
+table tile_step_dir8
+# S3: the square offset of each of the eight directions, N first and
+# clockwise
+rom $012A9C
+count 8
+field $00 sw step
+data
+  -64 -63 1 65 64 63 -1 -65
+end
+
+table direction_packed
+# S3: tile_direction_packed $01152A - the heading for four bits dy<=0
+# (8), dx<=0 (4), |dy|>2|dx| (2), |dx|>2|dy| (1); -1 where 2 and 1 are
+# both set
+rom $0115A2
+count 16
+field $00 sw heading
+data
+  96 64 128 -1 160 192 128 -1 32 64 0 -1 224 192 0 -1
+end
+
+table map_pos_step_x
+# S3: map_pos_step $019AD8 - the x step of the eight directions, 1/256
+# squares
+rom $0714C6
+count 8
+field $00 sw dx
+data
+  0 256 256 256 0 -256 -256 -256
+end
+
+table map_pos_step_y
+# S3: the y step of the eight directions
+rom $0714D6
+count 8
+field $00 sw dy
+data
+  -256 -256 0 256 256 256 0 -256
+end
+
+table path_smooth
+# S3: path_smooth $012E62 - by the difference of two directions
+rom $06C748
+count 8
+field $00 sb fold
+data
+  0 0 1 2 3 -2 -1 0
+end
+
+table spice_ring
+# S5: map_find_spice - (x, y*64) square offsets: the eight around a
+# square, then the sixteen around those
+rom $0714F2
+count 24
+field $00 sw dx
+field $02 sw dy64
+data
+  -1 -64   ; 0
+  0 -64   ; 1
+  1 -64   ; 2
+  1 0   ; 3
+  1 64   ; 4
+  0 64   ; 5
+  -1 64   ; 6
+  -1 0   ; 7
+  -2 -128   ; 8
+  -1 -128   ; 9
+  0 -128   ; 10
+  1 -128   ; 11
+  2 -128   ; 12
+  2 -64   ; 13
+  2 0   ; 14
+  2 64   ; 15
+  2 128   ; 16
+  1 128   ; 17
+  0 128   ; 18
+  -1 128   ; 19
+  -2 128   ; 20
+  -2 64   ; 21
+  -2 0   ; 22
+  -2 -64   ; 23
+end
+
+table spice_nesw
+# S5: N E S W as square offsets, read by $01A720 (map_fix_spice_edges)
+rom $071562
+count 4
+field $00 sw step
+data
+  -64 1 64 -1
+end
+
+table fog_nesw
+# S8: the same four offsets, read by $01AB5C (map_update_fog_edge)
+rom $07156A
+count 4
+field $00 sw step
+data
+  -64 1 64 -1
+end
+
+table neighbour8
+# S8: a square's eight neighbours as (dx, dy*64), NW clockwise to W;
+# summed per step at $0273B2
+rom $0C7EBC
+count 8
+field $00 sw dx
+field $02 sw dy64
+data
+  -1 -64   ; 0
+  0 -64   ; 1
+  1 -64   ; 2
+  1 0   ; 3
+  1 64   ; 4
+  0 64   ; 5
+  -1 64   ; 6
+  -1 0   ; 7
+end
+
+table neighbour9
+# the square and its eight neighbours as square offsets, read at $048D5C
+rom $0FEE6C
+count 9
+field $00 sw step
+data
+  0 -1 1 -64 64 -65 -63 65 63
+end
+
+table mcv_squares
+# S6: where a deploying MCV tries its Construction Yard: 0, -1, -64, -65
+# ($045E64)
+rom $0FEE20
+count 4
+field $00 sw step
+data
+  0 -1 -64 -65
+end
+
+table square_sample
+# S3: unit_update_map - eight (y, x) offsets per object size n (15-32
+# pixels), each visited square; $019F74
+rom $06C826
+count 32
+field $00 pos*8 offset
+data
+  16,0 0,16 16,16 0,0 0,0 0,0 0,0 0,0   ; 0
+  32,0 0,32 32,32 0,0 0,0 0,0 0,0 0,0   ; 1
+  48,0 0,48 48,48 0,0 0,0 0,0 0,0 0,0   ; 2
+  64,0 0,64 64,64 0,0 0,0 0,0 0,0 0,0   ; 3
+  80,0 0,80 80,80 0,0 0,0 0,0 0,0 0,0   ; 4
+  96,0 0,96 96,96 0,0 0,0 0,0 0,0 0,0   ; 5
+  112,0 0,112 112,112 0,0 0,0 0,0 0,0 0,0   ; 6
+  128,0 0,128 128,128 0,0 0,0 0,0 0,0 0,0   ; 7
+  144,0 0,144 144,144 0,0 0,0 0,0 0,0 0,0   ; 8
+  160,0 0,160 160,160 0,0 0,0 0,0 0,0 0,0   ; 9
+  176,0 0,176 176,176 0,0 0,0 0,0 0,0 0,0   ; 10
+  192,0 0,192 192,192 0,0 0,0 0,0 0,0 0,0   ; 11
+  208,0 0,208 208,208 0,0 0,0 0,0 0,0 0,0   ; 12
+  224,0 0,224 224,224 0,0 0,0 0,0 0,0 0,0   ; 13
+  240,0 0,240 240,240 0,0 0,0 0,0 0,0 0,0   ; 14
+  256,0 0,256 256,256 0,128 256,128 128,0 128,256 128,128   ; 15
+  272,0 0,272 272,272 0,128 272,128 128,0 128,272 128,128   ; 16
+  288,0 0,288 288,288 0,144 288,144 144,0 144,288 144,144   ; 17
+  304,0 0,304 304,304 0,144 304,144 144,0 144,304 144,144   ; 18
+  320,0 0,320 320,320 0,160 320,160 160,0 160,320 160,160   ; 19
+  336,0 0,336 336,336 0,160 336,160 160,0 160,336 160,160   ; 20
+  352,0 0,352 352,352 0,176 352,176 176,0 176,352 176,176   ; 21
+  368,0 0,368 368,368 0,176 368,176 176,0 176,368 176,176   ; 22
+  384,0 0,384 384,384 0,192 384,192 192,0 192,384 192,192   ; 23
+  400,0 0,400 400,400 0,192 400,192 192,0 192,400 192,192   ; 24
+  416,0 0,416 416,416 0,208 416,208 208,0 208,416 208,208   ; 25
+  432,0 0,432 432,432 0,208 432,208 208,0 208,432 208,208   ; 26
+  448,0 0,448 448,448 0,224 448,224 224,0 224,448 224,224   ; 27
+  464,0 0,464 464,464 0,224 464,224 224,0 224,464 224,224   ; 28
+  480,0 0,480 480,480 0,240 480,240 240,0 240,480 240,240   ; 29
+  496,0 0,496 496,496 0,240 496,240 240,0 240,496 240,240   ; 30
+  768,0 0,768 768,768 0,512 512,512 512,0 256,512 256,256   ; 31
+end
+
+table square_sample_half
+# S3: the half size (y, x) subtracted from the position first; $019F70
+rom $06CC26
+count 33
+field $00 pos half
+data
+  8,8 16,16 24,24 32,32 40,40 48,48 56,56 64,64 72,72 80,80 88,88 96,96 104,104 112,112 120,120 128,128
+  136,136 144,144 152,152 160,160 168,168 176,176 184,184 192,192 200,200 208,208 216,216 224,224 232,232 240,240 248,248 256,256
+  384,384
+end
+
+
+# ---- structures (S6, S8)
+
+table layout_tiles
+# S6: struct_place - the square offsets of each layout (unused slots 0)
+rom $06B738
+count 7
+field $00 sw*9 step
+data
+  0 0 0 0 0 0 0 0 0   ; 0
+  0 1 0 0 0 0 0 0 0   ; 1
+  0 64 0 0 0 0 0 0 0   ; 2
+  0 1 64 65 0 0 0 0 0   ; 3
+  0 1 64 65 128 129 0 0 0   ; 4
+  0 1 2 64 65 66 0 0 0   ; 5
+  0 1 2 64 65 66 128 129 130   ; 6
+end
+
+table layout_edge
+# per layout, eight square offsets by direction (PC layoutEdgeTiles; no
+# reader named in the specs)
+rom $06B7B6
+count 7
+field $00 sw*8 step
+data
+  0 0 0 0 0 0 0 0   ; 0
+  0 1 1 1 1 0 0 0   ; 1
+  0 0 0 64 64 64 0 0   ; 2
+  0 1 1 65 65 64 0 0   ; 3
+  0 1 65 129 129 128 64 0   ; 4
+  1 2 2 66 65 64 0 0   ; 5
+  1 2 66 130 129 128 64 0   ; 6
+end
+
+table layout_count
+# S6: the number of squares of each layout
+rom $06B826
+count 7
+field $00 w squares
+data
+  1 2 2 4 6 6 9
+end
+
+table layout_around
+# S6: the squares around each layout, 0 ends (the 3x3 fills all sixteen)
+rom $06B834
+count 7
+field $00 sw*16 step
+data
+  -64 -63 1 65 64 63 -1 -65 0 0 0 0 0 0 0 0   ; 0
+  -64 -63 -62 2 66 65 64 63 -1 -65 0 0 0 0 0 0   ; 1
+  -64 -63 1 65 129 128 127 63 -1 -65 0 0 0 0 0 0   ; 2
+  -64 -63 -62 2 66 130 129 128 127 63 -1 -65 0 0 0 0   ; 3
+  -64 -63 -62 2 66 130 194 193 192 191 127 63 -1 -65 0 0   ; 4
+  -64 -63 -62 -61 3 67 131 130 129 128 127 63 -1 -65 0 0   ; 5
+  -64 -63 -62 -61 3 67 131 195 194 193 192 191 127 63 -1 -65   ; 6
+end
+
+table layout_size
+# per layout, (width, height) in squares (PC layoutSize)
+rom $06B914
+count 7
+field $00 w width
+field $02 w height
+data
+  1 1   ; 0
+  2 1   ; 1
+  1 2   ; 2
+  2 2   ; 3
+  2 3   ; 4
+  3 2   ; 5
+  3 3   ; 6
+end
+
+table layout_centre
+# S8: added to a structure's position (y, x) for its centre - the fog is
+# lifted from there
+rom $06B930
+count 7
+field $00 pos centre
+data
+  128,128 128,256 256,128 256,256 384,256 256,384 384,384
+end
+
+table layout_centre8
+# S2: ref_position $02E256 - the same by layout & 7, the eighth (none) 0
+rom $02E2CE
+count 8
+field $00 pos centre
+data
+  128,128 128,256 256,128 256,256 384,256 256,384 384,384 0,0
+end
+
+table layout_bottom
+# how far down a layout's bottom row's centre is, in pixels
+rom $00B3D0
+count 8
+field $00 w dy
+data
+  16 16 48 48 80 48 80 0
+end
+
+table layout_cursor
+# S10: the placement cursor for each layout, then the seven for a place
+# that will not do ($028644)
+rom $0C7EE2
+count 14
+field $00 w shape
+data
+  1 2 3 4 12 13 14 15 16 17 18 19 20 21
+end
+
+table layout_cursor_frame
+# S10: a number per layout handed with the cursor frame ($0286AC)
+rom $0C7EFE
+count 8
+field $00 w frame
+data
+  9 9 9 10 11 11 30 30
+end
+
+table slab_bits
+# S6: struct_check_location - 1, 2, 4, 8, one per neighbour
+rom $06BBBE
+count 4
+field $00 b bit
+data
+  1 2 4 8
+end
+
+table slab_flags
+# S6: struct_check_location - a row of 12 flags per neighbour ($00F3C4)
+rom $06BBC2
+count 4
+field $00 b*12 flag
+data
+  1 1 0 0 0 0 0 0 0 1 1 1   ; 0
+  1 1 1 1 1 0 0 0 0 0 0 0   ; 1
+  0 0 0 0 0 0 1 1 1 1 1 0   ; 2
+  0 0 0 1 1 1 1 1 0 0 0 0   ; 3
+end
+
+table wall_nesw
+# the four neighbours N E S W, read by $00EE4C (wall joining)
+rom $06BA6C
+count 4
+field $00 sw step
+data
+  -64 1 64 -1
+end
+
+table wall_mask
+# the 256-byte neighbour-mask table $00EDCC copies to RAM (wall joining)
+rom $06BA74
+count 256
+field $00 b mask
+data
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  1 2 1 2 1 2 1 2 1 2 1 2 1 2 1 2
+  3 3 4 4 3 3 4 4 3 3 4 4 3 3 4 4
+  5 6 7 8 5 6 7 8 5 6 7 8 5 6 7 8
+  9 9 9 9 10 10 10 10 9 9 9 9 10 10 10 10
+  11 12 11 12 13 14 13 14 11 12 11 12 13 14 13 14
+  15 15 16 16 17 17 18 18 15 15 16 16 17 17 18 18
+  19 20 21 22 23 24 25 26 19 20 21 22 23 24 25 26
+  27 27 27 27 27 27 27 27 28 28 28 28 28 28 28 28
+  29 30 29 30 29 30 29 30 31 32 31 32 31 32 31 32
+  33 33 34 34 33 33 34 34 35 35 36 36 35 35 36 36
+  37 38 39 40 37 38 39 40 41 42 43 44 41 42 43 44
+  45 45 45 45 46 46 46 46 47 47 47 47 48 48 48 48
+  49 50 49 50 51 52 51 52 53 54 53 54 55 56 55 56
+  57 57 58 58 59 59 60 60 61 61 62 62 63 63 64 64
+  65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80
+end
+
+table wall_mask_values
+# 74 mask values: $00EDEE writes each one's index into the RAM copy of
+# tbl_wall_mask
+rom $06BB74
+count 74
+field $00 b mask
+data
+  1 2 3 4 6 7 9 11 12 13 14 15 17 42 138 170
+  21 69 85 19 35 51 38 70 102 76 140 204 25 137 153 23
+  39 55 71 87 103 119 46 78 110 142 174 206 238 29 77 93
+  141 157 205 221 27 43 59 139 155 171 187 31 47 63 79 95
+  111 127 143 159 175 191 207 223 239 255
+end
+
+table struct_icon_sets
+# 6 records: four icon numbers and four zero words, read by $00D800 and
+# $00D89E-$00DA82
+rom $06BA0C
+count 6
+field $00 w*4 icon
+field $08 w*4 zero
+data
+  266 312 314 316 0 0 0 0   ; 0
+  269 313 315 317 0 0 0 0   ; 1
+  259 300 304 308 0 0 0 0   ; 2
+  260 301 305 309 0 0 0 0   ; 3
+  262 302 306 310 0 0 0 0   ; 4
+  263 303 307 311 0 0 0 0   ; 5
+end
+
+table struct_pos_offsets
+# four (y, x) offsets added to a map position by $00DB94
+rom $06B9FC
+count 4
+field $00 pos offset
+data
+  0,0 64,64 128,64 128,0
+end
+
+table struct_anim_numbers
+# S6/S8: seven map-icon animation numbers ($2E, 0, 0, $2D, 0, $2C, $2B)
+# that $00F7C2 hands to map_anim_start
+rom $06BBF2
+count 7
+field $00 w anim
+data
+  46 0 0 45 0 44 43
+end
+
+table struct_anim
+# S6: the structure animation scripts, in the PC's opcodes (top nibble 1
+# abort, 3 pause, 4 rewind, 6 ground tile, 7 jump back); struct_info
+# +$40 points into them
+rom $06AE28
+count 191
+field $00 hw word
+data
+  $6001 $312C $1000 $6000 $1000 $6002 $312C $1000 $6002 $301E $6003 $301E $6004 $301E $6005 $301E
+  $4000 $6002 $301E $6003 $301E $4000 $6002 $301E $6003 $301E $4000 $6002 $301E $6005 $301E $6006
+  $301E $6007 $301E $4000 $6008 $301E $6009 $301E $4000 $6002 $301E $6003 $301E $4000 $6007 $301E
+  $6006 $301E $6005 $301E $6004 $301E $7FFC $4000 $6004 $301E $6005 $301E $6006 $301E $6007 $301E
+  $7FFC $4000 $6002 $301E $6003 $301E $4000 $6002 $301E $6003 $301E $4000 $6004 $301E $6005 $301E
+  $6006 $301E $6007 $301E $7FFC $4000 $6002 $301E $6003 $301E $4000 $6002 $301E $6003 $301E $4000
+  $6002 $301E $6005 $301E $6003 $301E $6004 $301E $6002 $301E $6005 $301E $6004 $301E $7FFC $6002
+  $301E $6003 $301E $4000 $6002 $301E $6005 $301E $6006 $301E $6007 $301E $4000 $6008 $301E $6009
+  $301E $4000 $6002 $301E $6003 $301E $4000 $6002 $301E $6003 $301E $4000 $6002 $301E $6003 $301E
+  $4000 $6008 $303C $6009 $303C $6006 $303C $6005 $303C $6002 $303C $6003 $303C $7FFC $4000 $6002
+  $303C $6003 $303C $4000 $6002 $303C $6005 $303C $6006 $303C $6009 $303C $6008 $303C $7FFC $4000
+  $6002 $301E $6003 $301E $4000 $6002 $301E $6003 $301E $4000 $6002 $301E $6003 $301E $4000
+end
+
+
+# ---- objects and sides (S2, S4, S7)
+
+table unit_side_list
+# S2: per unit type (and one over): 1 joins a side list and is counted
+rom $02056E
+count 28
+field $00 b counted
+data
+  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+  1 1 0 0 0 0 0 0 0 1 0 0
+end
+
+table struct_side_list
+# S2: per structure type (and one over): 0 slabs and wall, -1 turrets, 1
+# the rest
+rom $0204D0
+count 20
+field $00 sb list
+data
+  0 0 1 1 1 1 1 1 1 1 1 1 1 1 0 -1
+  -1 1 1 0
+end
+
+table house_side
+# S2: house_are_allied $023720 - each house's side, -1 0 -1 +1 -1 -1
+rom $023750
+count 6
+field $00 sb side
+data
+  -1 0 -1 1 -1 -1
+end
+
+table team_actions
+# S7/S9: the team behaviours' letters N S F K G (ROM: pointers to
+# one-letter strings; here the letters)
+rom $06CE66
+count 5
+field $00 chr letter
+data
+  'N' 'S' 'F' 'K' 'G'
+end
+
+table movement_letters
+# S7/S9: the movement types' letters F T H W W S (ROM: pointers; here
+# the letters) - the first match wins
+rom $06CE4E
+count 6
+field $00 chr letter
+data
+  'F' 'T' 'H' 'W' 'W' 'S'
+end
+
+table death_hand
+# S4: the Death Hand's blast - 17 (x, y) offsets in 1/256 squares: the
+# centre, eight at one square, eight at two ($0464E4)
+rom $0FEE28
+count 17
+field $00 sw dx
+field $02 sw dy
+data
+  0 0   ; 0
+  0 -256   ; 1
+  200 -200   ; 2
+  256 0   ; 3
+  200 200   ; 4
+  0 256   ; 5
+  -200 200   ; 6
+  -256 0   ; 7
+  -200 -200   ; 8
+  0 -512   ; 9
+  400 -400   ; 10
+  512 0   ; 11
+  400 400   ; 12
+  0 512   ; 13
+  -400 400   ; 14
+  -512 0   ; 15
+  -400 -400   ; 16
+end
+
+table fremen_types
+# S4: the Fremen a Palace sends: one of these unit types at random for
+# each
+rom $095CD0
+count 4
+field $00 w type
+data
+  3 5 3 3
+end
+
+table fremen_count
+# S4: how many Fremen, by the sum of bytes 3 and 5 of $FFBE5C
+rom $095CD8
+count 16
+field $00 b count
+data
+  5 5 4 4 3 2 1 0 0 0 0 0 0 0 0 0
+end
+
+
+# ---- the radar (S8)
+
+table radar_icon_colour
+# S8: radar colour of each map icon; a positive overlay entry wins, -1
+# is left to the unit check
+rom $005256
+count 360
+field $00 sb colour
+data
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 8 8 8 8 8 8 8 8 8 8 8 8 8 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 10 10 10 10
+  10 10 10 10 3 3 3 3 -1 -1 -1 0 0 0 0 0
+  10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10
+  10 10 10 10 11 10 10 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 12 8 8 8 10
+  10 10 10 8 10 8 8 8 10 8 8 8 8 8 8 8
+  10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10
+  8 11 11 11 11 11 11 8 10 8 8 11 10 11 8 8
+  10 10 10 10 10 3 3 3 10 3 3 3 3 3 3 3
+  3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+  14 14 -1 -1 -1 -1 -1 -1 -1 -1 -1 0 0 0 0 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 0 0 0 0 0 0 0
+  0 0 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 8 8 8 8 8 8 8 8 8 8 8 8 8
+  8 8 8 8 8 8 8 -1
+end
+
+table radar_house_colour
+# S8: a unit's or structure's radar colour by house: 4 7 6 9 13 0
+rom $00524E
+count 8
+field $00 b colour
+data
+  4 7 6 9 13 0 0 0
+end
+
+table radar_house_pixels
+# S8: three house-colour pixel longwords (4 bits a pixel) for rows 0 and
+# 63
+rom $00543C
+count 12
+field $00 hb pixel
+data
+  $44 $44 $44 $44 $77 $77 $77 $77 $66 $66 $66 $66
+end
+
+table radar_border_colour
+# S8: the first and last pixel of each radar row by the player's house
+rom $0054C0
+count 8
+field $00 b colour
+data
+  4 7 6 13 7 0 0 0
+end
+
+
+# ---- sound (S1, S10)
+
+table effect_song
+# S10: snd_play_effect - effect id 0-$40 to song, -1 none (the 66th is
+# never read)
+rom $06A876
+count 66
+field $00 sb song
+data
+  -1 -1 -1 -1 -1 -1 44 42 84 -1 -1 -1 25 82 81 79
+  80 67 68 -1 70 -1 -1 -1 -1 -1 -1 83 -1 -1 76 76
+  76 76 76 78 23 -1 40 35 36 39 74 34 29 -1 28 26
+  -1 39 71 81 27 21 -1 -1 69 69 72 73 -1 -1 75 77
+  72 24
+end
+
+table music
+# S1/S10: snd_play_music - track to (song, frames to play it or -1)
+rom $06A8B8
+count 39
+field $00 sw song
+field $02 sw frames
+data
+  -1 -1   ; 0
+  5 -1   ; 1
+  16 -1   ; 2
+  15 -1   ; 3
+  14 -1   ; 4
+  13 -1   ; 5
+  12 -1   ; 6
+  11 -1   ; 7
+  1 10020   ; 8
+  2 7320   ; 9
+  3 7560   ; 10
+  4 8040   ; 11
+  10 9840   ; 12
+  -1 -1   ; 13
+  -1 -1   ; 14
+  -1 -1   ; 15
+  -1 -1   ; 16
+  -1 -1   ; 17
+  -1 -1   ; 18
+  -1 -1   ; 19
+  -1 -1   ; 20
+  -1 -1   ; 21
+  -1 -1   ; 22
+  -1 -1   ; 23
+  6 -1   ; 24
+  0 -1   ; 25
+  8 -1   ; 26
+  -1 -1   ; 27
+  9 -1   ; 28
+  7 -1   ; 29
+  -1 -1   ; 30
+  -1 -1   ; 31
+  -1 -1   ; 32
+  18 -1   ; 33
+  -1 -1   ; 34
+  -1 -1   ; 35
+  -1 -1   ; 36
+  -1 -1   ; 37
+  17 -1   ; 38
+end
+
+table voice_song
+# S10: snd_play_voice - feedback id 0-$5D to song, -1 none; then two
+# zero bytes
+rom $06A954
+count 96
+field $00 sb song
+data
+  65 64 64 64 64 64 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  66 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+  -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 0 0
+end
+
+table song_start_now
+# S10: snd_play - per song 0-89: nonzero starts it at once, 0 queues it
+# for the vertical blank
+rom $02DD54
+count 90
+field $00 b mode
+data
+  255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255
+  255 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+  0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1
+  1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+  1 1 1 1 1 1 1 1 1 1
+end
+
+
+# ---- animations (S4, S8)
+
+table icon_anim_ptr
+# S8: map_anim_start - animation number & $3F to its script, a word
+# index into tbl_icon_anim
+rom $06A9B4
+count 64
+field $00 ref script:icon_anim
+data
+  icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[32] icon_anim[50] icon_anim[68] icon_anim[86] icon_anim[104]
+  icon_anim[122] icon_anim[140] icon_anim[160] icon_anim[178] icon_anim[196] icon_anim[214] icon_anim[232] icon_anim[250] icon_anim[268] icon_anim[286] icon_anim[304] icon_anim[322] icon_anim[328] icon_anim[334] icon_anim[340] icon_anim[346]
+  icon_anim[352] icon_anim[358] icon_anim[364] icon_anim[370] icon_anim[376] icon_anim[382] icon_anim[388] icon_anim[394] icon_anim[400] icon_anim[406] icon_anim[412] icon_anim[418] icon_anim[424] icon_anim[430] icon_anim[436] icon_anim[0]
+  icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0] icon_anim[0]
+end
+
+table icon_anim
+# S8: the map-icon animation scripts: (icon, frames) word pairs ended by
+# (0, -1)
+rom $06AAB4
+count 442
+field $00 sw word
+data
+  0 1 0 -1 0 1 0 -1 0 1 0 -1 0 1 0 -1
+  0 1 0 -1 0 1 0 -1 0 1 0 -1 0 1 0 -1
+  318 90 210 5 318 5 210 5 318 5 210 5 318 5 210 5
+  0 -1 327 90 219 5 327 5 219 5 327 5 219 5 327 5
+  219 5 0 -1 327 90 223 5 327 5 223 5 327 5 223 5
+  327 5 223 5 0 -1 333 90 229 5 333 5 229 5 333 5
+  229 5 333 5 229 5 0 -1 333 90 235 5 333 5 235 5
+  333 5 235 5 333 5 235 5 0 -1 333 90 247 5 333 5
+  247 5 333 5 247 5 333 5 247 5 0 -1 333 5 333 90
+  243 5 333 5 243 5 333 5 243 5 333 5 243 5 0 -1
+  333 90 247 5 333 5 247 5 333 5 247 5 333 5 247 5
+  0 -1 333 90 251 5 333 5 251 5 333 5 251 5 333 5
+  251 5 0 -1 318 90 255 5 318 5 255 5 318 5 255 5
+  318 5 255 5 0 -1 327 90 264 5 327 5 264 5 327 5
+  264 5 327 5 264 5 0 -1 327 90 270 5 327 5 270 5
+  327 5 270 5 327 5 270 5 0 -1 337 90 276 5 337 5
+  276 5 337 5 276 5 337 5 276 5 0 -1 337 90 284 5
+  337 5 284 5 337 5 284 5 337 5 284 5 0 -1 333 90
+  292 5 333 5 292 5 333 5 292 5 333 5 292 5 0 -1
+  333 90 296 5 333 5 296 5 333 5 296 5 333 5 296 5
+  0 -1 46 9 276 1 0 -1 47 9 277 1 0 -1 48 9
+  278 1 0 -1 49 9 279 1 0 -1 50 9 280 1 0 -1
+  51 9 281 1 0 -1 52 9 282 1 0 -1 53 9 283 1
+  0 -1 55 9 284 1 0 -1 56 9 285 1 0 -1 57 9
+  286 1 0 -1 58 9 287 1 0 -1 59 9 288 1 0 -1
+  72 9 289 1 0 -1 73 9 290 1 0 -1 74 9 291 1
+  0 -1 0 40 338 1 0 -1 0 30 347 1 0 -1 0 20
+  353 1 0 -1 0 20 357 1 0 -1
+end
+
+table effect_ptr
+# S4: the effect scripts by number, a word index into tbl_effect_scripts
+rom $0C80A2
+count 24
+field $00 ref script:effect_scripts
+data
+  effect_scripts[0] effect_scripts[4] effect_scripts[12] effect_scripts[16] effect_scripts[28] effect_scripts[40] effect_scripts[54] effect_scripts[68] effect_scripts[80] effect_scripts[92] effect_scripts[96] effect_scripts[100] effect_scripts[118] effect_scripts[122] effect_scripts[134] effect_scripts[150]
+  effect_scripts[154] effect_scripts[158] effect_scripts[162] effect_scripts[168] effect_scripts[186] effect_scripts[190] effect_scripts[194] effect_scripts[198]
+end
+
+table effect_scripts
+# S4: 24 effect scripts: (animation-table index, frames) word pairs,
+# each ended by (0, -1)
+rom $0C7F0E
+count 202
+field $00 sw word
+data
+  153 10 0 -1 153 10 154 10 155 10 0 -1 183 10 0 -1
+  183 10 184 10 185 10 186 10 187 10 0 -1 203 10 204 10
+  205 10 206 10 207 10 0 -1 7 20 183 10 184 10 185 10
+  186 10 187 10 0 -1 7 20 203 10 204 10 205 10 206 10
+  207 10 0 -1 208 10 209 10 210 10 211 10 212 30 0 -1
+  183 10 184 10 185 10 186 10 187 10 0 -1 180 84 0 -1
+  180 204 0 -1 183 10 184 10 204 10 185 10 186 10 205 10
+  206 10 187 10 0 -1 0 -1 0 -1 218 10 219 10 220 10
+  221 10 222 30 0 -1 183 5 203 7 184 7 204 10 205 10
+  206 10 207 10 0 -1 180 204 0 -1 0 -1 0 -1 0 -1
+  0 -1 183 5 186 15 0 -1 199 5 200 10 201 10 200 5
+  201 5 200 5 201 5 202 20 0 -1 31 600 0 -1 32 600
+  0 -1 35 600 0 -1 36 600 0 -1
+end
+
+table unit_frame_8
+# (frame, flip) per facing: $012458 picks a unit's sprite frame and flip
+rom $06C640
+count 8
+field $00 w frame
+field $02 w flip
+data
+  0 0   ; 0
+  1 0   ; 1
+  1 0   ; 2
+  1 0   ; 3
+  2 0   ; 4
+  1 1   ; 5
+  1 1   ; 6
+  1 1   ; 7
+end
+
+table unit_frame_8b
+# (frame, flip) per facing, for another kind of unit; $0123DC
+rom $06C660
+count 8
+field $00 w frame
+field $02 w flip
+data
+  0 0   ; 0
+  1 0   ; 1
+  2 0   ; 2
+  1 2   ; 3
+  0 2   ; 4
+  1 3   ; 5
+  2 1   ; 6
+  1 1   ; 7
+end
+
+table unit_frame_16
+# 16 (frame, flip) pairs; $012320
+rom $06C680
+count 16
+field $00 w frame
+field $02 w flip
+data
+  0 0   ; 0
+  1 0   ; 1
+  2 0   ; 2
+  3 0   ; 3
+  4 0   ; 4
+  3 2   ; 5
+  2 2   ; 6
+  1 2   ; 7
+  0 2   ; 8
+  1 3   ; 9
+  2 3   ; 10
+  3 3   ; 11
+  4 1   ; 12
+  3 1   ; 13
+  2 1   ; 14
+  1 1   ; 15
+end
+
+table infantry_walk
+# S1: the infantry walk cycle 0 1 0 2, by step & 3
+rom $06C6C0
+count 4
+field $00 b frame
+data
+  0 1 0 2
+end
+
+table unit_sprite_nibble
+# 16 sprite numbers indexed by a nibble at $0124A8
+rom $06C6C4
+count 16
+field $00 w sprite
+data
+  159 160 161 49 50 51 52 53 54 55 56 57 58 59 60 61
+end
+
+
+# ---- the score and the campaign (S9)
+
+table rank_scores
+# S9: the score thresholds of the ranks (txt_ranks), then $FFFF
+rom $0A68CA
+count 8
+field $00 w score
+data
+  50 100 150 200 250 300 400 65535
+end
+
+table briefing_first
+# S9: per house, the first of its 36 mission strings in txt_briefings
+# (ROM: pointers into the table at $087D74; here indices): Harkonnen 75,
+# Atreides 3, Ordos 39
+rom $087F30
+count 3
+field $00 ref index:@$087D74/4
+data
+  75 3 39
+end
+
+table campaign_attr
+# S9: the campaign map's tile attribute for each owner 0-3
+rom $095CE8
+count 4
+field $00 hw attr
+data
+  $0000 $4000 $2000 $6000
+end
+
+table campaign_attack_pal
+# S9: for owners 1-3, the offset of the six colours of the territory
+# under attack
+rom $095CF0
+count 4
+field $00 w offset
+data
+  2 18 34 50
+end
+
+table campaign_owner
+# S9: who owns each of the ten territories (0 nobody, 1 H, 2 A, 3 O) - a
+# row before each mission and one after; three tables of 10 rows:
+# Atreides, Ordos, Harkonnen
+rom $095D0C
+count 30
+field $00 w*10 owner
+data
+  1 0 2 0 0 0 0 0 3 0   ; 0
+  1 1 2 0 0 2 0 0 3 3   ; 1
+  1 1 2 3 1 2 0 3 3 2   ; 2
+  1 1 2 1 2 2 0 3 3 2   ; 3
+  1 2 2 3 2 2 0 1 3 2   ; 4
+  1 2 2 2 2 2 0 1 3 2   ; 5
+  2 2 2 2 2 2 0 1 3 2   ; 6
+  2 2 2 2 2 2 0 1 2 2   ; 7
+  2 2 2 2 2 2 0 2 2 2   ; 8
+  2 2 2 2 2 2 2 2 2 2   ; 9
+  0 0 0 2 0 0 1 0 3 0   ; 10
+  0 0 0 2 2 0 1 3 3 1   ; 11
+  2 0 1 2 2 1 3 3 3 1   ; 12
+  2 0 2 3 2 1 3 3 3 1   ; 13
+  2 0 2 3 3 1 3 3 3 1   ; 14
+  2 0 2 3 3 1 3 3 3 3   ; 15
+  3 0 2 3 3 1 3 3 3 3   ; 16
+  3 0 2 3 3 3 3 3 3 3   ; 17
+  3 0 3 3 3 3 3 3 3 3   ; 18
+  3 3 3 3 3 3 3 3 3 3   ; 19
+  1 0 2 0 3 0 0 0 0 0   ; 20
+  1 1 2 3 3 0 2 0 0 0   ; 21
+  1 1 1 3 3 3 2 2 0 2   ; 22
+  1 1 1 3 1 3 2 2 0 2   ; 23
+  1 1 1 1 1 3 2 2 0 3   ; 24
+  1 1 1 1 1 3 1 2 0 3   ; 25
+  1 1 1 1 1 1 1 2 0 3   ; 26
+  1 1 1 1 1 1 1 1 0 3   ; 27
+  1 1 1 1 1 1 1 1 0 1   ; 28
+  1 1 1 1 1 1 1 1 1 1   ; 29
+end
+
+
+# ---- maths
+
+table sin
+# S3: 126 * sin(2 pi n / 256), 0 = north
+rom $06CFA4
+count 256
+field $00 sb v
+data
+  0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45
+  48 51 54 57 59 62 65 67 70 73 75 78 80 82 85 87
+  89 91 94 96 98 100 101 103 105 107 108 110 111 113 114 116
+  117 118 119 120 121 122 123 123 124 125 125 126 126 126 126 126
+  127 126 126 126 126 126 125 125 124 123 123 122 121 120 119 118
+  117 116 114 113 112 110 108 107 105 103 102 100 98 96 94 91
+  89 87 85 82 80 78 75 73 70 67 65 62 59 57 54 51
+  48 45 42 39 36 33 30 27 24 21 18 15 12 9 6 3
+  0 -3 -6 -9 -12 -15 -18 -21 -24 -27 -30 -33 -36 -39 -42 -45
+  -48 -51 -54 -57 -59 -62 -65 -67 -70 -73 -75 -78 -80 -82 -85 -87
+  -89 -91 -94 -96 -98 -100 -102 -103 -105 -107 -108 -110 -111 -113 -114 -116
+  -117 -118 -119 -120 -121 -122 -123 -123 -124 -125 -125 -126 -126 -126 -126 -126
+  -126 -126 -126 -126 -126 -126 -125 -125 -124 -123 -123 -122 -121 -120 -119 -118
+  -117 -116 -114 -113 -112 -110 -108 -107 -105 -103 -102 -100 -98 -96 -94 -91
+  -89 -87 -85 -82 -80 -78 -75 -73 -70 -67 -65 -62 -59 -57 -54 -51
+  -48 -45 -42 -39 -36 -33 -30 -27 -24 -21 -18 -15 -12 -9 -6 -3
+end
+
+table cos
+# S3: the same a quarter turn on
+rom $06D0A4
+count 256
+field $00 sb v
+data
+  127 126 126 126 126 126 125 125 124 123 123 122 121 120 119 118
+  117 116 114 113 112 110 108 107 105 103 102 100 98 96 94 91
+  89 87 85 82 80 78 75 73 70 67 65 62 59 57 54 51
+  48 45 42 39 36 33 30 27 24 21 18 15 12 9 6 3
+  0 -3 -6 -9 -12 -15 -18 -21 -24 -27 -30 -33 -36 -39 -42 -45
+  -48 -51 -54 -57 -59 -62 -65 -67 -70 -73 -75 -78 -80 -82 -85 -87
+  -89 -91 -94 -96 -98 -100 -102 -103 -105 -107 -108 -110 -111 -113 -114 -116
+  -117 -118 -119 -120 -121 -122 -123 -123 -124 -125 -125 -126 -126 -126 -126 -126
+  -126 -126 -126 -126 -126 -126 -125 -125 -124 -123 -123 -122 -121 -120 -119 -118
+  -117 -116 -114 -113 -112 -110 -108 -107 -105 -103 -102 -100 -98 -96 -94 -91
+  -89 -87 -85 -82 -80 -78 -75 -73 -70 -67 -65 -62 -59 -57 -54 -51
+  -48 -45 -42 -39 -36 -33 -30 -27 -24 -21 -18 -15 -12 -9 -6 -3
+  0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45
+  48 51 54 57 59 62 65 67 70 73 75 78 80 82 85 87
+  89 91 94 96 98 100 101 103 105 107 108 110 111 113 114 116
+  117 118 119 120 121 122 123 123 124 125 125 126 126 126 126 126
+end
+
+table cot
+# S3: tile_direction's arctangent $019940 - 256 * cot(i * 360/256),
+# $3FFF for 0
+rom $0198B8
+count 32
+field $00 l v
+data
+  16383 10428 5210 3470 2599 2075 1725 1475 1286 1140 1022 925 843 774 715 663
+  618 577 541 508 478 451 427 404 383 363 345 328 311 296 282 268
+end
+
+table atan_quadrant
+# the arctangent's quadrant base angles, by the signs of dx (bit 0) and
+# dy (bit 1)
+rom $019938
+count 4
+field $00 w base
+data
+  64 128 0 192
+end
+
+table quarter_sine
+# 256 * sin(i * 90/64 degrees), i = 0..64, for the angle-and-radius
+# routine $000AB0
+rom $00030C
+count 65
+field $00 w v
+data
+  0 6 12 18 25 31 37 43 49 56 62 68 74 80 86 92
+  97 103 109 115 120 126 131 136 142 147 152 157 162 167 171 176
+  181 185 189 193 197 201 205 209 212 216 219 222 225 228 231 234
+  236 238 241 243 244 246 248 249 251 252 253 254 254 255 255 255
+  256
+end
+

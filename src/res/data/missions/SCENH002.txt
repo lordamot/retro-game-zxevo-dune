@@ -1,0 +1,80 @@
+# SCENH002.txt - mission 2 of the Harkonnen.
+#
+# From orig/dune2.gen $05A4E6, 604 bytes: SCENH002.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTVEHC.WSA" 14
+BASIC WinPicture   "WIN2.WSA" 10 hex:0057
+BASIC BriefPicture "HEADQRTS.WSA" 14
+BASIC Timeout      0
+BASIC MapScale     1
+BASIC CursorPos    531   ; x19 y8
+BASIC TacticalPos  531   ; x19 y8
+BASIC LoseFlags    5
+BASIC WinFlags     23
+MAP   Seed  20
+HOUSE Harkonnen  Quota    2700
+HOUSE Harkonnen  Credits  1200
+HOUSE Harkonnen  Brain    H
+HOUSE Harkonnen  MaxUnit  12
+HOUSE Atreides   Quota    0
+HOUSE Atreides   Credits  1000
+HOUSE Atreides   Brain    C
+HOUSE Atreides   MaxUnit  17
+TEAM  1   Atreides   Normal    Foot      3 5
+TEAM  2   Atreides   Normal    Foot      2 4
+TEAM  3   Atreides   Normal    Foot      3 4
+TEAM  4   Atreides   Normal    Foot      2 4
+TEAM  5   Atreides   Normal    Foot      2 4
+UNIT  3   Harkonnen  Quad        256 466   NW  Guard     ; x18 y7
+UNIT  4   Harkonnen  Quad        256 469   NE  Guard     ; x21 y7
+UNIT  5   Harkonnen  Trooper     256 534   E   Guard     ; x22 y8
+UNIT  6   Harkonnen  Trooper     256 593   W   Guard     ; x17 y9
+UNIT  7   Harkonnen  Quad        256 659   SW  Guard     ; x19 y10
+UNIT  8   Harkonnen  Quad        256 661   SE  Guard     ; x21 y10
+UNIT  9   Harkonnen  Trooper     256 724   S   Guard     ; x20 y11
+UNIT  12  Atreides   Trike       256 1428  N   Ambush    ; x20 y22
+UNIT  13  Atreides   Trike       256 1502  N   AreaGuard ; x30 y23
+UNIT  14  Atreides   Trike       256 1552  N   AreaGuard ; x16 y24
+UNIT  15  Atreides   Trike       256 1560  N   AreaGuard ; x24 y24
+UNIT  16  Atreides   Trooper     256 1608  N   Ambush    ; x8 y25
+UNIT  17  Atreides   Trike       256 1627  N   Ambush    ; x27 y25
+UNIT  18  Atreides   Quad        256 1629  N   AreaGuard ; x29 y25
+UNIT  19  Atreides   Trike       256 1687  NW  AreaGuard ; x23 y26
+UNIT  20  Atreides   Infantry    256 1815  N   AreaGuard ; x23 y28
+UNIT  21  Atreides   Infantry    256 1876  N   Ambush    ; x20 y29
+UNIT  22  Atreides   Troopers    256 2015  N   Hunt      ; x31 y31
+STRUCT 23  Harkonnen  ConstYard    256 531   ; x19 y8
+STRUCT 24  Atreides   Barracks     256 1689  ; x25 y26
+STRUCT 25  Atreides   Outpost      256 1691  ; x27 y26
+GEN   1693  Atreides   Slab   ; x29 y26
+STRUCT 26  Atreides   Windtrap     256 1694  ; x30 y26
+GEN   1757  Atreides   Slab   ; x29 y27
+GEN   1816  Atreides   Slab   ; x24 y28
+GEN   1817  Atreides   Slab   ; x25 y28
+GEN   1818  Atreides   Slab   ; x26 y28
+GEN   1819  Atreides   Slab   ; x27 y28
+GEN   1820  Atreides   Slab   ; x28 y28
+GEN   1821  Atreides   Slab   ; x29 y28
+GEN   1822  Atreides   Slab   ; x30 y28
+GEN   1823  Atreides   Slab   ; x31 y28
+STRUCT 27  Atreides   Refinery     256 1880  ; x24 y29
+STRUCT 28  Atreides   Silo         256 1883  ; x27 y29
+GEN   1885  Atreides   Slab   ; x29 y29
+STRUCT 29  Atreides   ConstYard    256 1886  ; x30 y29
+GEN   1949  Atreides   Slab   ; x29 y30
+END

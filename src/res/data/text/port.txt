@@ -1,0 +1,57 @@
+# port.txt - words the port adds for screens of its own.  These are not
+# the cartridge's: the Mega Drive has no start-up screen, and no "loading"
+# or "wait" anywhere in its text (orig/sega/res/text, ui.txt).  The same
+# form as ui.txt; tools/dune_data.py makes each txt_port_<id> in
+# text.inc.  @id "text" is one string.  Escapes: \n \" \\ \xNN {cN}.
+# The characters are ASCII (charset.txt says which the fonts have) and, for
+# the start-up screens' font only (FA_FONT_INTRO), Cyrillic: its letters and
+# their codes are src/res/art/ui/font_cyr.txt's.
+
+.join space
+
+# The start-up log (front_boot_say, font FA_FONT_INTRO): a line for each
+# check and each thing that goes to the sound card, "ok" or "error" after
+# it, at most 38 characters.  Latin letters draw as capitals, as in every
+# font here.
+@boot_evo               "ZX Evo BaseConf detect"    ; the machine (evo_check)
+@boot_gs                "GS detect"                 ; the sound card
+@boot_mem               "GS memory"                 ; its memory test, then its size
+@boot_mb                "Mb"                        ; the size in whole megabytes: "2Mb"
+@boot_kb                "Kb"                        ; ... else in kilobytes: "512Kb"
+@boot_init              "GS init done, loading"
+@boot_fx                "Sound effects"
+@boot_music             "Music:"                    ; then the tune's name
+@boot_ok                "ok"
+@boot_error             "error"                     ; and the start-up stops - or, for the card:
+@boot_nosound           "no sound: press a key to play without"
+@mus_title              "title"                     ; the tunes the music test has no name for
+@mus_intro              "intro"
+@mus_other              "song 18"
+
+# The intro's words (front_intro, font FA_FONT_INTRO): a line each \n,
+# every line centred, at most 40 characters.
+@press_key              "PRESS ANY KEY"             ; front_intro: under the words, blinking
+@intro_title            "Dune II The Battle For Arrakis SEGA"
+@intro_port             "порт для ZX Evolution BaseConf\n+ General Sound"
+@intro_thanks           "Огромная благодарность всем участникам\nкто, так или иначе, сподвиг меня\nпопробовать это сделать."
+@intro_bugs             "Данная версия может и будет содержать\nошибки и глюки - буду рад обратной\nсвязи на почту daemon.user@gmail.com\nили в телеграм lordamot."
+@intro_authors          "Авторы порта - Сергей Лемешев aka\nlordamot и Claude Code"
+@intro_place            "ПЕНЗА, 27 сентября 2026 года"
+# {version} is PORT_VERSION in tools/dune_data.py - change it there.
+@intro_version          "v.{version}"               ; front_intro: top right, 12 characters
+
+# REDEFINE KEYS: the title menu's fourth line and its screen
+# (fe_redefine), which sets the keys each Mega Drive button is read from.
+@title_redefine         "REDEFINE KEYS"     ; fe_title_still: the title menu's fourth line
+@keys_title             "REDEFINE KEYS"     ; fe_redefine: the heading
+@keys_up                "UP"                ; fe_redefine: the pad's buttons, in PAD_ order
+@keys_down              "DOWN"
+@keys_left              "LEFT"
+@keys_right             "RIGHT"
+@keys_a                 "A  SELECT"
+@keys_b                 "B  BACK"
+@keys_c                 "C  SCROLL"
+@keys_start             "START  OPTIONS"
+@keys_prompt            "PRESS A KEY FOR EACH"  ; fe_redefine: under the list
+@keys_taken             "THAT KEY IS TAKEN"     ; fe_redefine: a key already chosen
+@keys_names             "CAPS Z    X    C    V    A    S    D    F    G    Q    W    E    R    T    1    2    3    4    5    0    9    8    7    6    P    O    I    U    Y    ENTERL    K    J    H    SPACESYM  M    N    B    "  ; fe_redefine: the 40 keys, 5 characters each, by half-row $FE, $FD ... $7F and bit 0-4

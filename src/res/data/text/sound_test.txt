@@ -1,0 +1,51 @@
+# sound_test.txt - the options screen's sound test ($087FD4): each sound's
+# name and its song number (S10).
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source (tools/dune_data.py -> text.inc).
+# @id "text" [attr=value] is one string; @id [attr=value] then
+# lines then @end is a long one.  Escapes: \n \" \\ \xNN {cN}.
+# The characters are ASCII; charset.txt says which the fonts have.
+
+.join space
+
+@target_0               "target         " song=23   ; $020990
+@menu_select_1          "menu select    " song=25   ; $0209A0
+@positive_select_2      "positive select" song=40   ; $0209B0
+@invalid_select_3       "invalid select " song=26   ; $0209C0
+@building_4             "building       " song=82   ; $0209D0
+@placement_5            "placement      " song=70   ; $0209E0
+@countdown_6            "countdown      " song=28   ; $0209F0
+@credit_down_7          "credit down    " song=21   ; $020A00
+@credit_up_8            "credit up      " song=27   ; $020A10
+@rifle_fx_9             "rifle (fx)     " song=22   ; $020A20
+@rifle_10               "rifle          " song=72   ; $020A30
+@machinegun_fx_11       "machinegun (fx)" song=20   ; $020A40
+@machinegun_12          "machinegun     " song=73   ; $020A50
+@cannon_fx_13           "cannon (fx)    " song=37   ; $020A60
+@cannon_14              "cannon         " song=69   ; $020A70
+@rocket_launch_15       "rocket launch  " song=33   ; $020A80
+@sonic_blast_16         "sonic blast    " song=34   ; $020A90
+@missile_17             "missile        " song=74   ; $020AA0
+@heavy_drop_18          "heavy drop     " song=30   ; $020AB0
+@gas_hit_19             "gas hit        " song=35   ; $020AC0
+@worm_eats_fx_20        "worm eats (fx) " song=32   ; $020AD0
+@worm_eats_21           "worm eats      " song=77   ; $020AE0
+@explosion_1_22         "explosion 1    " song=38   ; $020AF0
+@explosion_2_23         "explosion 2    " song=39   ; $020B00
+@explosion_3_24         "explosion 3    " song=71   ; $020B10
+@multi_explosion_25     "multi explosion" song=81   ; $020B20
+@dud_explosion_26       "dud explosion  " song=36   ; $020B30
+@scream_27              "scream         " song=76   ; $020B40
+@squish_28              "squish         " song=78   ; $020B50
+@static_fx_29           "static (fx)    " song=31   ; $020B60
+@static_30              "static         " song=75   ; $020B70
+@const_complete_31      "const. complete" song=65   ; $020B80
+@unit_approach_32       "unit approach  " song=64   ; $020B90
+@under_attack_33        "under attack   " song=66   ; $020BA0
+@death_hand_34          "death hand     " song=83   ; $020BB0
+@yes_sir_35             "yes sir        " song=67   ; $020BC0
+@acknowledged_36        "acknowledged   " song=68   ; $020BD0
+@moving_out_37          "moving out     " song=80   ; $020BE0
+@reporting_38           "reporting      " song=79   ; $020BF0
+@planet_shimmer_39      "planet shimmer " song=24   ; $020C00

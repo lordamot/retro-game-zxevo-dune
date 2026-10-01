@@ -1,0 +1,185 @@
+# SCENH005.txt - mission 5 of the Harkonnen.
+#
+# From orig/dune2.gen $05AF0E, 1554 bytes: SCENH005.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTVEHC.WSA" 14
+BASIC WinPicture   "WIN2.WSA" 10 hex:0057
+BASIC BriefPicture "REPAIR.WSA" 12 hex:0041
+BASIC Timeout      0
+BASIC MapScale     0
+BASIC CursorPos    785   ; x17 y12
+BASIC TacticalPos  785   ; x17 y12
+BASIC LoseFlags    1
+BASIC WinFlags     3
+MAP   Bloom 4008   ; x40 y62
+MAP   Seed  23
+HOUSE Harkonnen  Quota    0
+HOUSE Harkonnen  Credits  1500
+HOUSE Harkonnen  Brain    H
+HOUSE Harkonnen  MaxUnit  18
+HOUSE Atreides   Quota    0
+HOUSE Atreides   Credits  2700
+HOUSE Atreides   Brain    C
+HOUSE Atreides   MaxUnit  25
+TEAM  1   Atreides   Normal    Foot      3 5
+TEAM  2   Atreides   Normal    Tracked   3 7
+TEAM  3   Atreides   Kamikaze  Wheeled   3 6
+TEAM  4   Atreides   Kamikaze  Foot      3 5
+TEAM  5   Atreides   Normal    Wheeled   3 6
+TEAM  6   Atreides   Normal    Tracked   3 6
+TEAM  7   Atreides   Kamikaze  Tracked   3 7
+UNIT  2   Harkonnen  Troopers    256 658   S   Guard     ; x18 y10
+UNIT  3   Harkonnen  Quad        256 721   S   Guard     ; x17 y11
+UNIT  4   Harkonnen  Tank        256 724   S   Guard     ; x20 y11
+UNIT  5   Harkonnen  Tank        256 783   S   Guard     ; x15 y12
+UNIT  6   Harkonnen  Quad        256 851   S   Guard     ; x19 y13
+UNIT  7   Harkonnen  Quad        256 911   S   Guard     ; x15 y14
+UNIT  8   Harkonnen  Tank        256 914   S   Guard     ; x18 y14
+UNIT  9   Harkonnen  Troopers    256 976   S   Guard     ; x16 y15
+UNIT  10  Atreides   Launcher    256 2915  S   AreaGuard ; x35 y45
+UNIT  11  Atreides   Launcher    256 3486  S   AreaGuard ; x30 y54
+UNIT  14  Atreides   Troopers    256 1715  S   Guard     ; x51 y26
+UNIT  17  Fremen     Sandworm    256 2179  S   AreaGuard ; x3 y34
+UNIT  18  Fremen     Sandworm    256 2204  S   Ambush    ; x28 y34
+UNIT  20  Atreides   Tank        256 2726  S   Ambush    ; x38 y42
+UNIT  21  Atreides   Tank        256 2913  S   AreaGuard ; x33 y45
+UNIT  22  Atreides   Launcher    256 2971  S   Guard     ; x27 y46
+UNIT  23  Atreides   Launcher    256 3032  S   AreaGuard ; x24 y47
+UNIT  24  Atreides   Launcher    256 3049  S   Guard     ; x41 y47
+UNIT  25  Atreides   Troopers    256 3102  S   Guard     ; x30 y48
+UNIT  26  Atreides   Launcher    256 3109  S   Guard     ; x37 y48
+UNIT  27  Atreides   Tank        256 3225  S   AreaGuard ; x25 y50
+UNIT  28  Atreides   Launcher    256 3248  S   AreaGuard ; x48 y50
+UNIT  29  Atreides   Tank        256 3416  S   AreaGuard ; x24 y53
+STRUCT 32  Harkonnen  ConstYard    256 785   ; x17 y12
+STRUCT 40  Atreides   Turret       256 3034  ; x26 y47
+STRUCT 41  Atreides   Turret       256 3036  ; x28 y47
+GEN   3035  Atreides   Wall   ; x27 y47
+GEN   3098  Atreides   Wall   ; x26 y48
+STRUCT 42  Atreides   Windtrap     256 3099  ; x27 y48
+GEN   3107  Atreides   Slab   ; x35 y48
+STRUCT 43  Atreides   Turret       256 3108  ; x36 y48
+GEN   3109  Atreides   Slab   ; x37 y48
+GEN   3110  Atreides   Slab   ; x38 y48
+STRUCT 44  Atreides   Turret       256 3111  ; x39 y48
+GEN   3112  Atreides   Slab   ; x40 y48
+GEN   3113  Atreides   Slab   ; x41 y48
+STRUCT 45  Atreides   Turret       256 3114  ; x42 y48
+GEN   3162  Atreides   Wall   ; x26 y49
+GEN   3168  Atreides   Wall   ; x32 y49
+GEN   3169  Atreides   Wall   ; x33 y49
+GEN   3170  Atreides   Wall   ; x34 y49
+GEN   3171  Atreides   Slab   ; x35 y49
+GEN   3172  Atreides   Wall   ; x36 y49
+GEN   3173  Atreides   Wall   ; x37 y49
+GEN   3174  Atreides   Slab   ; x38 y49
+GEN   3175  Atreides   Wall   ; x39 y49
+GEN   3176  Atreides   Wall   ; x40 y49
+GEN   3177  Atreides   Wall   ; x41 y49
+GEN   3178  Atreides   Wall   ; x42 y49
+GEN   3179  Atreides   Wall   ; x43 y49
+GEN   3180  Atreides   Wall   ; x44 y49
+GEN   3226  Atreides   Wall   ; x26 y50
+GEN   3227  Atreides   Slab   ; x27 y50
+GEN   3228  Atreides   Slab   ; x28 y50
+GEN   3229  Atreides   Slab   ; x29 y50
+STRUCT 46  Atreides   Outpost      256 3230  ; x30 y50
+GEN   3232  Atreides   Slab   ; x32 y50
+STRUCT 47  Atreides   ConstYard    256 3625  ; x41 y56
+GEN   3235  Atreides   Slab   ; x35 y50
+GEN   3236  Atreides   Wall   ; x36 y50
+STRUCT 48  Atreides   Refinery     256 3237  ; x37 y50
+STRUCT 49  Atreides   Silo         256 3240  ; x40 y50
+STRUCT 50  Atreides   Windtrap     256 3242  ; x42 y50
+GEN   3244  Atreides   Wall   ; x44 y50
+STRUCT 51  Atreides   Turret       256 3245  ; x45 y50
+GEN   3290  Atreides   Wall   ; x26 y51
+STRUCT 52  Atreides   Windtrap     256 3291  ; x27 y51
+GEN   3293  Atreides   Slab   ; x29 y51
+GEN   3296  Atreides   Slab   ; x32 y51
+GEN   3299  Atreides   Slab   ; x35 y51
+GEN   3300  Atreides   Wall   ; x36 y51
+GEN   3308  Atreides   Wall   ; x44 y51
+GEN   3354  Atreides   Wall   ; x26 y52
+GEN   3357  Atreides   Slab   ; x29 y52
+GEN   3358  Atreides   Slab   ; x30 y52
+GEN   3359  Atreides   Slab   ; x31 y52
+GEN   3360  Atreides   Slab   ; x32 y52
+GEN   3361  Atreides   Slab   ; x33 y52
+GEN   3362  Atreides   Slab   ; x34 y52
+GEN   3363  Atreides   Slab   ; x35 y52
+GEN   3364  Atreides   Slab   ; x36 y52
+GEN   3365  Atreides   Slab   ; x37 y52
+GEN   3366  Atreides   Slab   ; x38 y52
+GEN   3367  Atreides   Slab   ; x39 y52
+GEN   3368  Atreides   Slab   ; x40 y52
+STRUCT 53  Atreides   HeavyFactory 256 3369  ; x41 y52
+GEN   3372  Atreides   Wall   ; x44 y52
+GEN   3418  Atreides   Wall   ; x26 y53
+GEN   3419  Atreides   Wall   ; x27 y53
+GEN   3420  Atreides   Wall   ; x28 y53
+GEN   3421  Atreides   Wall   ; x29 y53
+STRUCT 54  Atreides   Turret       256 3422  ; x30 y53
+GEN   3423  Atreides   Slab   ; x31 y53
+GEN   3424  Atreides   Slab   ; x32 y53
+STRUCT 61  Atreides   Turret       256 3425  ; x33 y53
+STRUCT 55  Atreides   HeavyFactory 256 3426  ; x34 y53
+GEN   3429  Atreides   Slab   ; x37 y53
+GEN   3430  Atreides   Slab   ; x38 y53
+GEN   3431  Atreides   Slab   ; x39 y53
+GEN   3432  Atreides   Slab   ; x40 y53
+GEN   3436  Atreides   Wall   ; x44 y53
+GEN   3488  Atreides   Slab   ; x32 y54
+GEN   3489  Atreides   Wall   ; x33 y54
+GEN   3493  Atreides   Slab   ; x37 y54
+GEN   3497  Atreides   Slab   ; x41 y54
+GEN   3498  Atreides   Wall   ; x42 y54
+GEN   3499  Atreides   Wall   ; x43 y54
+GEN   3500  Atreides   Wall   ; x44 y54
+STRUCT 56  Atreides   Turret       256 3501  ; x45 y54
+GEN   3552  Atreides   Slab   ; x32 y55
+GEN   3553  Atreides   Wall   ; x33 y55
+GEN   3554  Atreides   Wall   ; x34 y55
+GEN   3555  Atreides   Wall   ; x35 y55
+GEN   3556  Atreides   Wall   ; x36 y55
+GEN   3557  Atreides   Wall   ; x37 y55
+GEN   3561  Atreides   Slab   ; x41 y55
+GEN   3562  Atreides   Slab   ; x42 y55
+GEN   3563  Atreides   Slab   ; x43 y55
+GEN   3564  Atreides   Slab   ; x44 y55
+GEN   3565  Atreides   Slab   ; x45 y55
+GEN   3616  Atreides   Slab   ; x32 y56
+STRUCT 57  Atreides   Refinery     256 3617  ; x33 y56
+STRUCT 58  Atreides   Silo         256 3620  ; x36 y56
+GEN   3622  Atreides   Wall   ; x38 y56
+STRUCT 59  Atreides   Windtrap     256 3233  ; x33 y50
+GEN   3627  Atreides   Wall   ; x43 y56
+GEN   3628  Atreides   Wall   ; x44 y56
+STRUCT 60  Atreides   Turret       256 3629  ; x45 y56
+GEN   3680  Atreides   Slab   ; x32 y57
+GEN   3686  Atreides   Wall   ; x38 y57
+GEN   3691  Atreides   Wall   ; x43 y57
+GEN   3747  Atreides   Wall   ; x35 y58
+GEN   3748  Atreides   Wall   ; x36 y58
+GEN   3749  Atreides   Wall   ; x37 y58
+STRUCT 62  Atreides   Turret       256 3753  ; x41 y58
+GEN   3754  Atreides   Wall   ; x42 y58
+GEN   3755  Atreides   Wall   ; x43 y58
+STRUCT 63  Atreides   Turret       256 3746  ; x34 y58
+STRUCT 64  Atreides   Turret       256 3750  ; x38 y58
+END

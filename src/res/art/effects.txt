@@ -1,0 +1,43 @@
+# effects.txt - the explosion and effect animations of a Mega Drive Dune II
+# battle, for the port.  Written by tools/sega/port_sprites.py.
+#
+# 24 scripts at $0C80A2, started by fx_explosion_start $00AEDA at a
+# position; each step shows a frame (an id in sprites.txt) for so many
+# ticks (game frames, $FFFFFE); '-' is a blank step; 'smoke a b c' is the
+# smoke frame of the global phase.  The effect ends after its last step.
+# 'house' in a step means the id is in house-p{L}.png in the line of the
+# house that died (types 20, 21).
+#
+# who starts them: map_make_explosion $00A934 (types 0-19, by the
+# weapon), map_deviate_area $00ADBE (7), emc_unit_explode $045808 (20
+# infantry dies, 21 anything else dies, 22/23 run over), the Sandworm (13).
+
+fx  0  288/10   # a bullet's hit
+fx  1  288/10 289/10 290/10   # a shell's hit (bullet +3 = 9)
+fx  2  291/10
+fx  3  291/10 292/10 293/10 294/10 295/10
+fx  4  296/10 297/10 298/10 299/10 300/10
+fx  5  -/20 291/10 292/10 293/10 294/10 295/10
+fx  6  -/20 296/10 297/10 298/10 299/10 300/10
+fx  7  301/10 302/10 303/10 304/10 305/30   # the Deviator's cloud
+fx  8  291/10 292/10 293/10 294/10 295/10
+fx  9  smoke 285 286 287/84
+fx 10  smoke 285 286 287/204
+fx 11  291/10 292/10 297/10 293/10 294/10 298/10 299/10 295/10
+fx 12  (nothing)
+fx 13  306/10 307/10 308/10 309/10 310/30   # the Sandworm
+fx 14  291/5 296/7 292/7 297/10 298/10 299/10 300/10
+fx 15  smoke 285 286 287/204   # smoke: a hit structure below half health (from 2)
+fx 16  (nothing)
+fx 17  (nothing)
+fx 18  291/5 294/15
+fx 19  311/5 312/10 313/10 312/5 313/5 312/5 313/5 314/20   # (made in house 0's line)
+fx 20  315/600   # infantry dies
+fx 21  316/600   # a unit dies
+fx 22  317/600   # infantry run over
+fx 23  318/600   # run over
+
+# A '-' step is animation 7, whose one piece is tile 0: blank.  Types
+# 12, 16 and 17 end at once.  Only a step's first frame is drawn in the
+# starter's line (map_make_explosion passes house 3, line 1); the rest
+# are remade in house 0's (line 0) by $00B2A6 - the ids already say so.

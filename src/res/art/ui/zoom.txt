@@ -1,0 +1,212 @@
+# zoom.txt - the campaign map's zoom into the territory attacked
+# next (campaign_attack $026108, campaign_zoom $0256AA).  Written by
+# tools/sega/port_tutorial.py; read by tools/dune_front.py.
+#
+# origin: the territory's first land piece ($0962D4 list, first
+#   long) in Mega Drive screen pixels - the zoom buffer's (0, 0)
+#   and so the point the zoom grows from
+# step n: dx dy scale w h - the table at $024B8A: the scroll moves
+#   by (-dx, +dy) before step n is shown; scale is the 16.16
+#   sampling step of campaign_zoom_render ($024AEE); w x h the
+#   tiles it renders.  campaign_zoom shows render n-1 with the
+#   scroll of step n, every 5 frames (measured: 4179, 4184, ...),
+#   and campaign_zoom_vblank darkens the palette a step every 5
+#   frames from 40 frames after it is installed (black 70 frames
+#   after), so steps 1-13 are seen and the rest render in the dark.
+
+territory 0 origin 48 48
+  step  0:   0   0 $00010000 10  9
+  step  1:   0   0 $0000FF00 12 10
+  step  2:   0   0 $0000FA00 12 10
+  step  3:   0   0 $0000F500 12 10
+  step  4:   0   0 $0000EF00 12 11
+  step  5:   0   0 $0000E400 13 11
+  step  6:   0   0 $0000D900 13 12
+  step  7:   0   0 $0000CE00 14 12
+  step  8:   0   0 $0000C300 15 13
+  step  9:   0   0 $0000B800 16 14
+  step 10:   0   0 $0000AD00 17 14
+  step 11:   0   0 $0000A200 18 14
+  step 12:   0   0 $00009700 19 14
+  step 13:   0   0 $00008C00 21 14
+  step 14:   0   0 $00008100 23 14
+  step 15:   0   0 $00007600 26 14
+  step 16:   0   0 $00006600 29 14
+territory 1 origin 104 48
+  step  0:   0   0 $00010000 10  4
+  step  1:   3   0 $0000FF00 12  5
+  step  2:   3   0 $0000F500 12  5
+  step  3:   3   0 $0000EF00 12  5
+  step  4:   3   0 $0000E400 13  5
+  step  5:   3   0 $0000D900 13  6
+  step  6:   3   0 $0000CE00 14  6
+  step  7:   3   0 $0000C300 15  6
+  step  8:   3   0 $0000B800 16  7
+  step  9:   3   0 $0000AD00 17  7
+  step 10:   3   0 $0000A200 18  8
+  step 11:   3   0 $00009700 19  8
+  step 12:   3   0 $00008C00 21  9
+  step 13:   3   0 $00008100 23 10
+  step 14:   3   0 $00007600 26 11
+  step 15:   3   0 $00006600 29 12
+  step 16:   3   0 $00006000 33 13
+territory 2 origin 176 48
+  step  0:   0   0 $00010000 10  4
+  step  1:   5   0 $0000FF00 12  5
+  step  2:   5   0 $0000F500 12  5
+  step  3:   5   0 $0000EF00 12  5
+  step  4:   5   0 $0000E400 13  5
+  step  5:   5   0 $0000D900 13  6
+  step  6:   5   0 $0000CE00 14  6
+  step  7:   5   0 $0000C300 15  6
+  step  8:   5   0 $0000B800 16  7
+  step  9:   5   0 $0000AD00 17  7
+  step 10:   5   0 $0000A200 18  8
+  step 11:   5   0 $00009700 19  8
+  step 12:   5   0 $00008C00 21  9
+  step 13:   5   0 $00008100 23 10
+  step 14:   5   0 $00007600 26 11
+  step 15:   5   0 $00006600 29 12
+  step 16:   5   0 $00006000 33 13
+territory 3 origin 80 64
+  step  0:   0   0 $00010000 10  9
+  step  1:   0  -2 $0000FF00 12 10
+  step  2:   0  -2 $0000FA00 12 10
+  step  3:   0  -2 $0000F500 12 10
+  step  4:   0  -2 $0000EF00 12 11
+  step  5:   0  -2 $0000E400 13 11
+  step  6:   0  -2 $0000D900 13 12
+  step  7:   0  -2 $0000CE00 14 12
+  step  8:   0  -2 $0000C300 15 13
+  step  9:   0  -2 $0000B800 16 14
+  step 10:   0  -2 $0000AD00 17 14
+  step 11:   0  -2 $0000A200 18 14
+  step 12:   0  -2 $00009700 19 14
+  step 13:   0  -2 $00008C00 21 14
+  step 14:   0  -2 $00008100 23 14
+  step 15:   0  -2 $00007600 26 14
+  step 16:   0  -2 $00006600 29 14
+territory 4 origin 152 56
+  step  0:   0   0 $00010000 10  9
+  step  1:   5   0 $0000FF00 12 10
+  step  2:   5   0 $0000FA00 12 10
+  step  3:   5   0 $0000F500 12 10
+  step  4:   5   0 $0000EF00 12 11
+  step  5:   5   0 $0000E400 13 11
+  step  6:   5   0 $0000D900 13 12
+  step  7:   5   0 $0000CE00 14 12
+  step  8:   5   0 $0000C300 15 13
+  step  9:   5   0 $0000B800 16 14
+  step 10:   5   0 $0000AD00 17 14
+  step 11:   5   0 $0000A200 18 14
+  step 12:   5   0 $00009700 19 14
+  step 13:   5   0 $00008C00 21 14
+  step 14:   5   0 $00008100 23 14
+  step 15:   5   0 $00007600 26 14
+  step 16:   5   0 $00006600 29 14
+territory 5 origin 200 48
+  step  0:   0   0 $00010000 10  6
+  step  1:   5   0 $0000FF00 12  7
+  step  2:   5   0 $0000F500 12  7
+  step  3:   5   0 $0000EF00 12  7
+  step  4:   5   0 $0000E400 13  7
+  step  5:   5   0 $0000D900 13  8
+  step  6:   5   0 $0000CE00 14  8
+  step  7:   5   0 $0000C300 15  8
+  step  8:   5   0 $0000B800 16  9
+  step  9:   5   0 $0000AD00 17  9
+  step 10:   5   0 $0000A200 18 10
+  step 11:   5   0 $00009700 19 10
+  step 12:   5   0 $00008C00 21 11
+  step 13:   5   0 $00008100 23 13
+  step 14:   5   0 $00007600 26 14
+  step 15:   5   0 $00006600 29 14
+  step 16:   5   0 $00006000 33 14
+territory 6 origin 24 96
+  step  0:   0   0 $00010000 11  9
+  step  1:  -2  -3 $0000FF00 13 10
+  step  2:  -2  -3 $0000F500 13 10
+  step  3:  -2  -3 $0000EF00 14 10
+  step  4:  -2  -3 $0000E400 14 11
+  step  5:  -2  -3 $0000D900 14 11
+  step  6:  -2  -3 $0000CE00 15 12
+  step  7:  -2  -3 $0000C300 16 12
+  step  8:  -2  -3 $0000B800 17 13
+  step  9:  -2  -3 $0000AD00 18 14
+  step 10:  -2  -3 $0000A200 19 14
+  step 11:  -2  -3 $00009700 20 14
+  step 12:  -2  -3 $00008C00 22 14
+  step 13:  -2  -3 $00008100 24 14
+  step 14:  -2  -3 $00007600 33 14
+  step 15:  -2  -3 $00006600 33 14
+  step 16:  -2  -3 $00006000 33 14
+territory 7 origin 96 96
+  step  0:   0   0 $00010000 14  9
+  step  1:   3  -3 $0000FF00 15 10
+  step  2:   3  -3 $0000F500 16 10
+  step  3:   3  -3 $0000EF00 17 10
+  step  4:   3  -3 $0000E400 18 11
+  step  5:   3  -3 $0000D900 19 11
+  step  6:   3  -3 $0000CE00 20 12
+  step  7:   3  -3 $0000C300 21 12
+  step  8:   3  -3 $0000B800 22 13
+  step  9:   3  -3 $0000AD00 24 14
+  step 10:   3  -3 $0000A200 26 14
+  step 11:   3  -3 $00009700 28 14
+  step 12:   3  -3 $00008C00 30 14
+  step 13:   3  -3 $00008100 33 14
+  step 14:   3  -3 $00007600 33 14
+  step 15:   3  -3 $00006600 33 14
+  step 16:   3  -3 $00006000 33 14
+territory 8 origin 168 104
+  step  0:   0   0 $00010000 14  9
+  step  1:   7  -3 $0000FF00 15 10
+  step  2:   7  -3 $0000F500 16 10
+  step  3:   7  -3 $0000EF00 17 10
+  step  4:   7  -3 $0000E400 18 11
+  step  5:   7  -3 $0000D900 19 11
+  step  6:   7  -3 $0000CE00 20 12
+  step  7:   7  -3 $0000C300 21 12
+  step  8:   7  -3 $0000B800 22 13
+  step  9:   7  -3 $0000AD00 24 14
+  step 10:   7  -3 $0000A200 26 14
+  step 11:   7  -3 $00009700 28 14
+  step 12:   7  -3 $00008C00 30 14
+  step 13:   7  -3 $00008100 33 14
+  step 14:   7  -3 $00007600 33 14
+  step 15:   7  -3 $00006600 33 14
+  step 16:   7  -3 $00006000 33 14
+territory 9 origin 208 72
+  step  0:   0   0 $00010000 10 10
+  step  1:   9  -3 $0000FF00 12 11
+  step  2:   9  -3 $0000FA00 12 11
+  step  3:   9  -3 $0000F500 12 11
+  step  4:   9  -3 $0000EF00 12 12
+  step  5:   9  -3 $0000E400 13 12
+  step  6:   9  -3 $0000D900 13 12
+  step  7:   9  -3 $0000CE00 14 13
+  step  8:   9  -3 $0000C300 15 14
+  step  9:   9  -3 $0000B800 16 14
+  step 10:   9  -3 $0000AD00 17 14
+  step 11:   9  -3 $0000A200 18 14
+  step 12:   9  -3 $00009700 19 14
+  step 13:   9  -3 $00008C00 21 14
+  step 14:   9  -3 $00008100 23 14
+  step 15:   9  -3 $00007600 26 14
+  step 16:   9  -3 $00006600 29 14
+
+# campaign_border_N.png: territory N's own border pieces ($096150,
+# tiles $09631C), drawn in palette line 0 like campaign_land_N.png.
+# campaign_draw_pieces_chunky draws them into the zoom's buffer
+# after the land, and a lifted territory's sprite carries them
+# (campaign_lift_territory $0244C8): x y of each picture.
+border 0 at 51 51
+border 1 at 107 51
+border 2 at 176 52
+border 3 at 80 81
+border 4 at 152 72
+border 5 at 203 76
+border 6 at 28 132
+border 7 at 99 117
+border 8 at 173 148
+border 9 at 209 96

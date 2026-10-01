@@ -1,0 +1,31 @@
+# charset.txt - which characters the cartridge can draw.
+#
+# Written once by tools/sega/port_data.py; notes only, no strings.
+# The Mega Drive keeps its text as ASCII, and so does the port:
+# text.inc holds the character codes as they are, ended by $FF.
+#
+# $051C2C: 128 glyphs of 8x8, 4 bits a pixel, by character code - the default font of the text routine $022190.
+#   drawn (not blank): $00-$7F
+# $050C2C: 128 glyphs of 8x8, 4 bits a pixel, by character code - the other font ($022190 when asked; $026E46 sends it to VRAM $A000).
+#   drawn (not blank): $00-$7F
+#   So both have every printable ASCII character, $20-$7E, and 32 symbols
+#   below $20 that no string here uses.
+#
+# $001ED6: the region-lock and exception screens' font, 59 glyphs,
+#   $20-$5A only - space, punctuation, digits and capitals.
+#
+# $042AC8: the tutorial's text strip maps characters to 34 glyphs; it has
+#   ' .012345:ABCDEFGHIKLMNOPRSTUVYabcdefghiklmnoprstuvy|' (lower case drawn as capitals)
+#
+# The characters the strings in this folder use:
+#   briefings: ' !,.0127:?ABCDEFGHIKMNOPRSTUVWY`abcdefghijklmnopqrstuvwxyz'
+#   credits: ' ,-./1489@ABCDEFGHIJKLMNOPQRSTUVWYabcdefghijklmnoprstuvwxyz' and $02 $03 $0A $FF
+#   passwords: 'ABCDEFGHIJKLMNOPRSTUVWY'
+#   music_test: ' abcdefghiklmnopqrstuvy'
+#   sound_test: ' ().123abcdefghiklmnopqrstuvwxy'
+#   ranks: ' ABCDLMORSTWacdefgiklmnopqrstu'
+#   score_houses: ' ADEHIKNORST'
+#   ui: ' !*-.012479:<>ABCDEFGHIJKLMNOPQRSTUVWXYZ_acdefghikmnoprstu' and $0A
+#
+# ` stands for an apostrophe in the mentat's prose; the credits'
+# $FF n (a colour) is {cN} in credits.txt and $FE n in the port.

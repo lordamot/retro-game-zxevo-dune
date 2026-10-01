@@ -1,0 +1,65 @@
+# SCENA001.txt - mission 1 of the Atreides.
+#
+# From orig/dune2.gen $056FA6, 406 bytes: SCENA001.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTBILD.WSA" 14
+BASIC WinPicture   "WIN1.WSA" 10 hex:0057
+BASIC BriefPicture "HARVEST.WSA" 12
+BASIC Timeout      0
+BASIC MapScale     1
+BASIC CursorPos    1224   ; x8 y19
+BASIC TacticalPos  1224   ; x8 y19
+BASIC LoseFlags    4
+BASIC WinFlags     6
+MAP   Seed  1
+HOUSE Atreides   Quota    1000
+HOUSE Atreides   Credits  990
+HOUSE Atreides   Brain    H
+HOUSE Atreides   MaxUnit  25
+HOUSE Ordos      Quota    0
+HOUSE Ordos      Credits  0
+HOUSE Ordos      Brain    C
+HOUSE Ordos      MaxUnit  16
+CHOAM Trike        5
+CHOAM Quad         5
+CHOAM Tank         6
+CHOAM Launcher     5
+CHOAM SiegeTank    6
+CHOAM Harvester    4
+CHOAM MCV          2
+CHOAM Thopter      5
+UNIT  1   Ordos      Soldier     256 65    S   Hunt      ; x1 y1
+UNIT  2   Ordos      Soldier     256 70    S   Ambush    ; x6 y1
+UNIT  3   Ordos      Soldier     256 145   S   Ambush    ; x17 y2
+UNIT  4   Ordos      Soldier     256 221   S   Hunt      ; x29 y3
+UNIT  5   Ordos      Soldier     256 654   S   Ambush    ; x14 y10
+UNIT  6   Ordos      Soldier     256 722   S   Ambush    ; x18 y11
+UNIT  7   Ordos      Soldier     256 907   S   Ambush    ; x11 y14
+UNIT  8   Ordos      Soldier     256 1154  S   Ambush    ; x2 y18
+UNIT  9   Atreides   Soldier     256 1158  S   Guard     ; x6 y18
+UNIT  10  Atreides   Trike       256 1162  NE  Guard     ; x10 y18
+UNIT  11  Ordos      Soldier     256 1170  S   Ambush    ; x18 y18
+UNIT  12  Atreides   Infantry    256 1286  S   Guard     ; x6 y20
+UNIT  13  Atreides   Soldier     256 1291  S   Guard     ; x11 y20
+UNIT  14  Atreides   Trike       256 1415  SW  Guard     ; x7 y22
+UNIT  15  Ordos      Soldier     256 1485  S   Ambush    ; x13 y23
+UNIT  16  Ordos      Soldier     256 1539  S   Ambush    ; x3 y24
+UNIT  17  Ordos      Soldier     256 1807  S   Ambush    ; x15 y28
+UNIT  18  Ordos      Soldier     256 1923  S   Hunt      ; x3 y30
+STRUCT 19  Atreides   ConstYard    256 1224  ; x8 y19
+END

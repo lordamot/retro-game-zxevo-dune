@@ -1,0 +1,325 @@
+# SCENO009.txt - mission 9 of the Ordos.
+#
+# From orig/dune2.gen $0603DE, 2726 bytes: SCENO009.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTBILD.WSA" 14
+BASIC WinPicture   "WIN2.WSA" 10 hex:0057
+BASIC BriefPicture "SARDUKAR.WSA" 14
+BASIC Timeout      0
+BASIC MapScale     0
+BASIC CursorPos    2710   ; x22 y42
+BASIC TacticalPos  2710   ; x22 y42
+BASIC LoseFlags    1
+BASIC WinFlags     3
+MAP   Seed  8
+HOUSE Ordos      Quota    0
+HOUSE Ordos      Credits  2000
+HOUSE Ordos      Brain    H
+HOUSE Ordos      MaxUnit  25
+HOUSE Sardaukar  Quota    0
+HOUSE Sardaukar  Credits  10500
+HOUSE Sardaukar  Brain    C
+HOUSE Sardaukar  MaxUnit  37
+CHOAM Trike        5
+CHOAM Quad         5
+CHOAM Tank         6
+CHOAM Launcher     5
+CHOAM SiegeTank    6
+CHOAM Harvester    4
+CHOAM MCV          2
+CHOAM Thopter      5
+TEAM  1   Sardaukar  Kamikaze  Foot      3 6
+TEAM  2   Sardaukar  Kamikaze  Tracked   3 6
+TEAM  3   Sardaukar  Normal    Tracked   3 6
+TEAM  4   Sardaukar  Kamikaze  Wheeled   3 5
+TEAM  5   Sardaukar  Normal    Foot      3 5
+TEAM  6   Sardaukar  Kamikaze  Wheeled   3 6
+TEAM  7   Sardaukar  Kamikaze  Tracked   3 7
+REINF 1   Sardaukar  Troopers    Enemybase 8+
+REINF 2   Sardaukar  SiegeTank   Enemybase 8+
+REINF 3   Sardaukar  Devastator  Enemybase 12+
+REINF 4   Sardaukar  Devastator  Enemybase 12+
+REINF 5   Sardaukar  Devastator  Enemybase 21+
+REINF 6   Sardaukar  Launcher    Enemybase 21+
+REINF 7   Ordos      Deviator    Homebase  9
+REINF 8   Ordos      Troopers    Homebase  9
+REINF 9   Ordos      Troopers    Homebase  13
+REINF 10  Ordos      SiegeTank   Homebase  13
+REINF 11  Ordos      Deviator    Homebase  22
+UNIT  1   Sardaukar  Launcher    256 274   SE  Guard     ; x18 y4
+UNIT  2   Sardaukar  SiegeTank   256 410   SE  Ambush    ; x26 y6
+UNIT  3   Sardaukar  SiegeTank   256 444   S   AreaGuard ; x60 y6
+UNIT  4   Sardaukar  Launcher    256 453   SE  AreaGuard ; x5 y7
+UNIT  5   Sardaukar  Devastator  256 529   SE  Ambush    ; x17 y8
+UNIT  6   Sardaukar  Launcher    256 564   S   AreaGuard ; x52 y8
+UNIT  7   Sardaukar  Launcher    256 581   SE  AreaGuard ; x5 y9
+UNIT  8   Sardaukar  SiegeTank   256 590   SE  AreaGuard ; x14 y9
+UNIT  9   Sardaukar  Launcher    256 706   SE  AreaGuard ; x2 y11
+UNIT  10  Sardaukar  Launcher    256 779   SE  AreaGuard ; x11 y12
+UNIT  11  Sardaukar  SiegeTank   256 880   S   AreaGuard ; x48 y13
+UNIT  12  Sardaukar  Launcher    256 898   SE  AreaGuard ; x2 y14
+UNIT  13  Sardaukar  Launcher    256 972   SE  AreaGuard ; x12 y15
+UNIT  14  Sardaukar  Devastator  256 1032  SE  AreaGuard ; x8 y16
+UNIT  15  Sardaukar  Launcher    256 1076  S   AreaGuard ; x52 y16
+UNIT  16  Sardaukar  SiegeTank   256 1202  S   AreaGuard ; x50 y18
+UNIT  17  Sardaukar  SiegeTank   256 1205  S   AreaGuard ; x53 y18
+UNIT  18  Sardaukar  Launcher    256 1208  S   AreaGuard ; x56 y18
+UNIT  19  Sardaukar  SiegeTank   256 1339  S   AreaGuard ; x59 y20
+UNIT  20  Fremen     Sandworm    256 1877  N   Ambush    ; x21 y29
+UNIT  21  Fremen     Sandworm    256 1960  S   Ambush    ; x40 y30
+UNIT  22  Ordos      SiegeTank   256 2581  NE  Guard     ; x21 y40
+UNIT  23  Ordos      Deviator    256 2649  N   Guard     ; x25 y41
+UNIT  24  Ordos      Deviator    256 2707  NE  Guard     ; x19 y42
+UNIT  25  Ordos      Tank        256 2777  SE  Guard     ; x25 y43
+UNIT  26  Ordos      SiegeTank   256 2836  SW  Guard     ; x20 y44
+UNIT  27  Ordos      Quad        256 2840  SE  Guard     ; x24 y44
+UNIT  28  Ordos      SiegeTank   256 2902  E   Guard     ; x22 y45
+GEN   75    Sardaukar  Wall   ; x11 y1
+STRUCT 1   Sardaukar  Windtrap     256 76    ; x12 y1
+STRUCT 2   Sardaukar  Windtrap     256 78    ; x14 y1
+STRUCT 3   Sardaukar  HeavyFactory 256 80    ; x16 y1
+GEN   83    Sardaukar  Slab   ; x19 y1
+STRUCT 4   Sardaukar  Refinery     256 84    ; x20 y1
+GEN   87    Sardaukar  Slab   ; x23 y1
+GEN   133   Sardaukar  Wall   ; x5 y2
+GEN   134   Sardaukar  Wall   ; x6 y2
+GEN   135   Sardaukar  Wall   ; x7 y2
+GEN   136   Sardaukar  Wall   ; x8 y2
+GEN   137   Sardaukar  Wall   ; x9 y2
+GEN   138   Sardaukar  Wall   ; x10 y2
+GEN   139   Sardaukar  Wall   ; x11 y2
+GEN   147   Sardaukar  Slab   ; x19 y2
+GEN   151   Sardaukar  Slab   ; x23 y2
+GEN   152   Sardaukar  Slab   ; x24 y2
+GEN   197   Sardaukar  Wall   ; x5 y3
+STRUCT 5   Sardaukar  ConstYard    256 198   ; x6 y3
+STRUCT 6   Sardaukar  Silo         256 200   ; x8 y3
+GEN   202   Sardaukar  Wall   ; x10 y3
+GEN   203   Sardaukar  Wall   ; x11 y3
+GEN   204   Sardaukar  Slab   ; x12 y3
+GEN   205   Sardaukar  Slab   ; x13 y3
+GEN   206   Sardaukar  Slab   ; x14 y3
+GEN   207   Sardaukar  Slab   ; x15 y3
+GEN   208   Sardaukar  Slab   ; x16 y3
+GEN   209   Sardaukar  Slab   ; x17 y3
+GEN   210   Sardaukar  Slab   ; x18 y3
+GEN   211   Sardaukar  Slab   ; x19 y3
+GEN   212   Sardaukar  Slab   ; x20 y3
+GEN   213   Sardaukar  Slab   ; x21 y3
+GEN   214   Sardaukar  Slab   ; x22 y3
+GEN   215   Sardaukar  Slab   ; x23 y3
+GEN   216   Sardaukar  Slab   ; x24 y3
+GEN   217   Sardaukar  Slab   ; x25 y3
+GEN   261   Sardaukar  Wall   ; x5 y4
+GEN   266   Sardaukar  Wall   ; x10 y4
+STRUCT 7   Sardaukar  RTurret      256 267   ; x11 y4
+GEN   268   Sardaukar  Slab   ; x12 y4
+STRUCT 8   Sardaukar  Windtrap     256 269   ; x13 y4
+STRUCT 9   Sardaukar  Outpost      256 271   ; x15 y4
+GEN   273   Sardaukar  Wall   ; x17 y4
+GEN   277   Sardaukar  Wall   ; x21 y4
+GEN   278   Sardaukar  Wall   ; x22 y4
+GEN   279   Sardaukar  Wall   ; x23 y4
+GEN   280   Sardaukar  Wall   ; x24 y4
+STRUCT 10  Sardaukar  RTurret      256 281   ; x25 y4
+GEN   325   Sardaukar  Wall   ; x5 y5
+GEN   326   Sardaukar  Wall   ; x6 y5
+GEN   327   Sardaukar  Wall   ; x7 y5
+GEN   328   Sardaukar  Wall   ; x8 y5
+GEN   329   Sardaukar  Wall   ; x9 y5
+GEN   330   Sardaukar  Wall   ; x10 y5
+GEN   331   Sardaukar  Slab   ; x11 y5
+GEN   332   Sardaukar  Slab   ; x12 y5
+GEN   337   Sardaukar  Wall   ; x17 y5
+GEN   385   Sardaukar  Wall   ; x1 y6
+GEN   386   Sardaukar  Wall   ; x2 y6
+GEN   387   Sardaukar  Wall   ; x3 y6
+GEN   388   Sardaukar  Wall   ; x4 y6
+GEN   389   Sardaukar  Wall   ; x5 y6
+GEN   390   Sardaukar  Wall   ; x6 y6
+STRUCT 11  Sardaukar  HeavyFactory 256 391   ; x7 y6
+GEN   394   Sardaukar  Slab   ; x10 y6
+GEN   395   Sardaukar  Slab   ; x11 y6
+GEN   396   Sardaukar  Slab   ; x12 y6
+STRUCT 12  Sardaukar  Windtrap     256 397   ; x13 y6
+GEN   399   Sardaukar  Wall   ; x15 y6
+GEN   400   Sardaukar  Wall   ; x16 y6
+GEN   401   Sardaukar  Wall   ; x17 y6
+STRUCT 13  Sardaukar  Palace       256 449   ; x1 y7
+GEN   452   Sardaukar  Wall   ; x4 y7
+GEN   453   Sardaukar  Slab   ; x5 y7
+GEN   454   Sardaukar  Wall   ; x6 y7
+GEN   458   Sardaukar  Slab   ; x10 y7
+GEN   459   Sardaukar  Slab   ; x11 y7
+GEN   460   Sardaukar  Wall   ; x12 y7
+GEN   463   Sardaukar  Wall   ; x15 y7
+GEN   502   Sardaukar  Wall   ; x54 y7
+GEN   503   Sardaukar  Wall   ; x55 y7
+GEN   504   Sardaukar  Wall   ; x56 y7
+GEN   505   Sardaukar  Wall   ; x57 y7
+GEN   506   Sardaukar  Wall   ; x58 y7
+GEN   507   Sardaukar  Wall   ; x59 y7
+GEN   508   Sardaukar  Wall   ; x60 y7
+GEN   509   Sardaukar  Wall   ; x61 y7
+GEN   510   Sardaukar  Wall   ; x62 y7
+GEN   516   Sardaukar  Wall   ; x4 y8
+GEN   517   Sardaukar  Wall   ; x5 y8
+GEN   518   Sardaukar  Wall   ; x6 y8
+GEN   519   Sardaukar  Slab   ; x7 y8
+GEN   520   Sardaukar  Slab   ; x8 y8
+GEN   521   Sardaukar  Slab   ; x9 y8
+GEN   522   Sardaukar  Slab   ; x10 y8
+GEN   523   Sardaukar  Slab   ; x11 y8
+GEN   524   Sardaukar  Wall   ; x12 y8
+GEN   525   Sardaukar  Wall   ; x13 y8
+GEN   526   Sardaukar  Wall   ; x14 y8
+STRUCT 14  Sardaukar  RTurret      256 527   ; x15 y8
+GEN   566   Sardaukar  Wall   ; x54 y8
+STRUCT 15  Sardaukar  Windtrap     256 567   ; x55 y8
+STRUCT 16  Sardaukar  Windtrap     256 569   ; x57 y8
+STRUCT 17  Sardaukar  Windtrap     256 571   ; x59 y8
+STRUCT 18  Sardaukar  Windtrap     256 573   ; x61 y8
+GEN   580   Sardaukar  Wall   ; x4 y9
+GEN   581   Sardaukar  Slab   ; x5 y9
+GEN   582   Sardaukar  Wall   ; x6 y9
+GEN   583   Sardaukar  Slab   ; x7 y9
+GEN   584   Sardaukar  Slab   ; x8 y9
+GEN   585   Sardaukar  Slab   ; x9 y9
+GEN   586   Sardaukar  Slab   ; x10 y9
+GEN   587   Sardaukar  Slab   ; x11 y9
+GEN   626   Sardaukar  Wall   ; x50 y9
+GEN   627   Sardaukar  Wall   ; x51 y9
+GEN   628   Sardaukar  Wall   ; x52 y9
+GEN   629   Sardaukar  Wall   ; x53 y9
+GEN   630   Sardaukar  Wall   ; x54 y9
+GEN   641   Sardaukar  Wall   ; x1 y10
+GEN   642   Sardaukar  Wall   ; x2 y10
+GEN   643   Sardaukar  Wall   ; x3 y10
+GEN   644   Sardaukar  Wall   ; x4 y10
+GEN   645   Sardaukar  Wall   ; x5 y10
+GEN   646   Sardaukar  Wall   ; x6 y10
+GEN   647   Sardaukar  Slab   ; x7 y10
+GEN   648   Sardaukar  Slab   ; x8 y10
+GEN   649   Sardaukar  Slab   ; x9 y10
+GEN   650   Sardaukar  Wall   ; x10 y10
+GEN   651   Sardaukar  Wall   ; x11 y10
+GEN   690   Sardaukar  Slab   ; x50 y10
+GEN   691   Sardaukar  Slab   ; x51 y10
+GEN   692   Sardaukar  Slab   ; x52 y10
+GEN   693   Sardaukar  Slab   ; x53 y10
+STRUCT 19  Sardaukar  RTurret      256 694   ; x54 y10
+GEN   695   Sardaukar  Wall   ; x55 y10
+GEN   696   Sardaukar  Wall   ; x56 y10
+GEN   697   Sardaukar  Wall   ; x57 y10
+GEN   698   Sardaukar  Wall   ; x58 y10
+GEN   699   Sardaukar  Wall   ; x59 y10
+GEN   700   Sardaukar  Wall   ; x60 y10
+STRUCT 20  Sardaukar  Silo         256 701   ; x61 y10
+GEN   705   Sardaukar  Wall   ; x1 y11
+GEN   706   Sardaukar  Slab   ; x2 y11
+GEN   707   Sardaukar  Wall   ; x3 y11
+GEN   708   Sardaukar  Slab   ; x4 y11
+STRUCT 21  Sardaukar  WOR          256 709   ; x5 y11
+GEN   711   Sardaukar  Slab   ; x7 y11
+GEN   712   Sardaukar  Slab   ; x8 y11
+GEN   713   Sardaukar  Slab   ; x9 y11
+GEN   714   Sardaukar  Wall   ; x10 y11
+STRUCT 22  Sardaukar  RTurret      256 715   ; x11 y11
+GEN   754   Sardaukar  Wall   ; x50 y11
+GEN   755   Sardaukar  Wall   ; x51 y11
+GEN   756   Sardaukar  Slab   ; x52 y11
+STRUCT 23  Sardaukar  WOR          256 757   ; x53 y11
+GEN   759   Sardaukar  Slab   ; x55 y11
+STRUCT 24  Sardaukar  Outpost      256 760   ; x56 y11
+STRUCT 25  Sardaukar  HiTech       256 762   ; x58 y11
+GEN   764   Sardaukar  Wall   ; x60 y11
+GEN   769   Sardaukar  Wall   ; x1 y12
+GEN   770   Sardaukar  Wall   ; x2 y12
+GEN   771   Sardaukar  Wall   ; x3 y12
+GEN   772   Sardaukar  Slab   ; x4 y12
+GEN   775   Sardaukar  Slab   ; x7 y12
+GEN   776   Sardaukar  Slab   ; x8 y12
+GEN   777   Sardaukar  Slab   ; x9 y12
+GEN   778   Sardaukar  Wall   ; x10 y12
+STRUCT 26  Sardaukar  RTurret      256 818   ; x50 y12
+GEN   819   Sardaukar  Wall   ; x51 y12
+GEN   820   Sardaukar  Slab   ; x52 y12
+GEN   823   Sardaukar  Slab   ; x55 y12
+GEN   828   Sardaukar  Wall   ; x60 y12
+GEN   829   Sardaukar  Wall   ; x61 y12
+GEN   830   Sardaukar  Wall   ; x62 y12
+GEN   835   Sardaukar  Wall   ; x3 y13
+GEN   836   Sardaukar  Slab   ; x4 y13
+GEN   837   Sardaukar  Slab   ; x5 y13
+GEN   838   Sardaukar  Slab   ; x6 y13
+GEN   839   Sardaukar  Slab   ; x7 y13
+GEN   840   Sardaukar  Slab   ; x8 y13
+GEN   841   Sardaukar  Slab   ; x9 y13
+GEN   842   Sardaukar  Wall   ; x10 y13
+GEN   883   Sardaukar  Slab   ; x51 y13
+GEN   884   Sardaukar  Slab   ; x52 y13
+GEN   885   Sardaukar  Slab   ; x53 y13
+GEN   886   Sardaukar  Slab   ; x54 y13
+GEN   887   Sardaukar  Slab   ; x55 y13
+GEN   888   Sardaukar  Slab   ; x56 y13
+GEN   889   Sardaukar  Slab   ; x57 y13
+GEN   890   Sardaukar  Slab   ; x58 y13
+GEN   891   Sardaukar  Slab   ; x59 y13
+GEN   892   Sardaukar  Slab   ; x60 y13
+GEN   893   Sardaukar  Slab   ; x61 y13
+GEN   894   Sardaukar  Slab   ; x62 y13
+GEN   899   Sardaukar  Wall   ; x3 y14
+GEN   900   Sardaukar  Wall   ; x4 y14
+GEN   901   Sardaukar  Wall   ; x5 y14
+GEN   902   Sardaukar  Wall   ; x6 y14
+STRUCT 27  Sardaukar  RTurret      256 903   ; x7 y14
+GEN   904   Sardaukar  Slab   ; x8 y14
+GEN   905   Sardaukar  Slab   ; x9 y14
+GEN   906   Sardaukar  Slab   ; x10 y14
+GEN   947   Sardaukar  Slab   ; x51 y14
+GEN   948   Sardaukar  Wall   ; x52 y14
+GEN   949   Sardaukar  Wall   ; x53 y14
+GEN   950   Sardaukar  Wall   ; x54 y14
+STRUCT 28  Sardaukar  HeavyFactory 256 951   ; x55 y14
+GEN   954   Sardaukar  Slab   ; x58 y14
+STRUCT 29  Sardaukar  Refinery     256 955   ; x59 y14
+GEN   958   Sardaukar  Slab   ; x62 y14
+STRUCT 30  Sardaukar  RTurret      256 1013  ; x53 y15
+GEN   1014  Sardaukar  Wall   ; x54 y15
+GEN   1018  Sardaukar  Slab   ; x58 y15
+GEN   1022  Sardaukar  Slab   ; x62 y15
+GEN   1078  Sardaukar  Wall   ; x54 y16
+GEN   1079  Sardaukar  Slab   ; x55 y16
+GEN   1080  Sardaukar  Slab   ; x56 y16
+GEN   1081  Sardaukar  Slab   ; x57 y16
+GEN   1082  Sardaukar  Slab   ; x58 y16
+GEN   1083  Sardaukar  Slab   ; x59 y16
+GEN   1084  Sardaukar  Slab   ; x60 y16
+GEN   1085  Sardaukar  Slab   ; x61 y16
+GEN   1086  Sardaukar  Slab   ; x62 y16
+GEN   1142  Sardaukar  Wall   ; x54 y17
+GEN   1143  Sardaukar  Wall   ; x55 y17
+STRUCT 31  Sardaukar  RTurret      256 1144  ; x56 y17
+GEN   1145  Sardaukar  Slab   ; x57 y17
+GEN   1146  Sardaukar  Slab   ; x58 y17
+STRUCT 32  Sardaukar  RTurret      256 1147  ; x59 y17
+GEN   1148  Sardaukar  Wall   ; x60 y17
+GEN   1149  Sardaukar  Wall   ; x61 y17
+GEN   1150  Sardaukar  Wall   ; x62 y17
+STRUCT 33  Ordos      ConstYard    256 2710  ; x22 y42
+END

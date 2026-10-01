@@ -1,0 +1,77 @@
+# SCENO002.txt - mission 2 of the Ordos.
+#
+# From orig/dune2.gen $05DC9A, 586 bytes: SCENO002.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTVEHC.WSA" 14
+BASIC WinPicture   "WIN2.WSA" 10 hex:0057
+BASIC BriefPicture "HEADQRTS.WSA" 14
+BASIC Timeout      0
+BASIC MapScale     1
+BASIC CursorPos    407   ; x23 y6
+BASIC TacticalPos  407   ; x23 y6
+BASIC LoseFlags    5
+BASIC WinFlags     23
+MAP   Seed  11
+HOUSE Harkonnen  Quota    0
+HOUSE Harkonnen  Credits  600
+HOUSE Harkonnen  Brain    C
+HOUSE Harkonnen  MaxUnit  16
+HOUSE Ordos      Quota    2700
+HOUSE Ordos      Credits  1200
+HOUSE Ordos      Brain    H
+HOUSE Ordos      MaxUnit  12
+TEAM  1   Harkonnen  Normal    Foot      2 4
+TEAM  2   Harkonnen  Normal    Foot      2 4
+TEAM  3   Harkonnen  Normal    Foot      3 4
+TEAM  4   Harkonnen  Normal    Foot      2 4
+TEAM  5   Harkonnen  Normal    Foot      2 4
+UNIT  2   Ordos      Infantry    256 341   W   Guard     ; x21 y5
+UNIT  3   Ordos      RaiderTrike 256 343   NW  Guard     ; x23 y5
+UNIT  4   Ordos      Soldier     256 346   N   Guard     ; x26 y5
+UNIT  5   Ordos      RaiderTrike 256 405   W   Guard     ; x21 y6
+UNIT  6   Ordos      RaiderTrike 256 409   SE  Guard     ; x25 y6
+UNIT  7   Ordos      RaiderTrike 256 470   SW  Guard     ; x22 y7
+UNIT  8   Ordos      Infantry    256 474   SE  Guard     ; x26 y7
+UNIT  9   Ordos      Soldier     256 533   S   Guard     ; x21 y8
+UNIT  11  Ordos      Troopers    256 600   S   Guard     ; x24 y9
+UNIT  14  Harkonnen  Trooper     256 1537  NE  AreaGuard ; x1 y24
+UNIT  15  Harkonnen  Quad        256 1542  N   AreaGuard ; x6 y24
+UNIT  16  Harkonnen  Trooper     256 1562  N   Ambush    ; x26 y24
+UNIT  17  Harkonnen  Quad        256 1603  N   AreaGuard ; x3 y25
+UNIT  18  Harkonnen  Trooper     256 1608  NE  AreaGuard ; x8 y25
+UNIT  19  Harkonnen  Quad        256 1673  SE  AreaGuard ; x9 y26
+UNIT  20  Harkonnen  Quad        256 1677  N   Ambush    ; x13 y26
+UNIT  21  Harkonnen  Trooper     256 1802  N   Ambush    ; x10 y28
+UNIT  22  Harkonnen  Quad        256 1928  E   AreaGuard ; x8 y30
+UNIT  23  Harkonnen  Trooper     256 2015  N   Hunt      ; x31 y31
+STRUCT 24  Ordos      ConstYard    256 407   ; x23 y6
+GEN   1606  Harkonnen  Slab   ; x6 y25
+GEN   1607  Harkonnen  Slab   ; x7 y25
+STRUCT 25  Harkonnen  Refinery     256 1664  ; x0 y26
+GEN   1667  Harkonnen  Slab   ; x3 y26
+GEN   1668  Harkonnen  Slab   ; x4 y26
+STRUCT 26  Harkonnen  Outpost      256 1669  ; x5 y26
+STRUCT 27  Harkonnen  WOR          256 1671  ; x7 y26
+STRUCT 28  Harkonnen  ConstYard    256 1731  ; x3 y27
+STRUCT 29  Harkonnen  Silo         256 1792  ; x0 y28
+GEN   1794  Harkonnen  Slab   ; x2 y28
+GEN   1797  Harkonnen  Slab   ; x5 y28
+STRUCT 30  Harkonnen  Windtrap     256 1798  ; x6 y28
+GEN   1800  Harkonnen  Slab   ; x8 y28
+GEN   1864  Harkonnen  Slab   ; x8 y29
+END

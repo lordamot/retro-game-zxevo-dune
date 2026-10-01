@@ -1,0 +1,386 @@
+# icons.txt - the Mega Drive Dune II's 360 map icons
+#
+# Written by tools/sega/port_icons.py; its docstring has the method.
+# Icon n is icons.png at column n % 16, row n // 16, 32 x 32 pixels,
+# RGBA in the battle CRAM's colours (v * 255 // 7), alpha 0 where
+# the cell's pixel is colour 0 of its line.  Ground icons go on
+# plane B, whose colour 0 shows the backdrop (CRAM 0: black);
+# overlays go on plane A, over the ground.  Icons 20-26 are
+# animated: icons_marker.png, a row an icon, a column a frame.
+# structanims.txt says how the structure icons are chosen.
+#
+# columns:
+#   icon      decimal, hex
+#   group     ICON.MAP group.entry, every one it appears at
+#   land      landscape type from $005818 (- none; S8 names them)
+#   use       ground / overlay: where the game puts it
+#   flags     P = priority bit (the fog: drawn over the sprites),
+#             B = blank (all 16 cells tile 0, fully transparent)
+#   seen      squares holding it as ground/overlay, summed over the
+#             recorded battles
+#
+# The art checks:
+#   59 battle states; icons use tiles 0-921 (922 tiles)
+#   tiles that differ between battles: [702, 703, 704, 705] (outside the orb: none)
+#   distinct CRAMs: 1
+#
+  0 $000  0.0                                      -  ground+overlay B   43008/46566  nothing: overlay 0, and the ground outside a 32 x 32 map
+  1 $001  1.0                                      -  overlay        -           0/0  rock crater, shape 0, depth 0 (map_add_crater: +2 a blast, up to depth 2)
+  2 $002  1.1                                      -  overlay        -           0/0  rock crater, shape 1, depth 0 (map_add_crater: +2 a blast, up to depth 2)
+  3 $003  1.2                                      -  overlay        -           0/0  rock crater, shape 0, depth 1 (map_add_crater: +2 a blast, up to depth 2)
+  4 $004  1.3                                      -  overlay        -           0/3  rock crater, shape 1, depth 1 (map_add_crater: +2 a blast, up to depth 2)
+  5 $005  1.4                                      -  overlay        -           0/1  rock crater, shape 0, depth 2 (map_add_crater: +2 a blast, up to depth 2)
+  6 $006  1.5                                      -  overlay        -           0/3  rock crater, shape 1, depth 2 (map_add_crater: +2 a blast, up to depth 2)
+  7 $007  2.0                                      -  overlay        -           0/0  sand crater, shape 0, depth 0 (map_add_crater: +2 a blast, up to depth 2)
+  8 $008  2.1                                      -  overlay        -           0/0  sand crater, shape 1, depth 0 (map_add_crater: +2 a blast, up to depth 2)
+  9 $009  2.2                                      -  overlay        -           0/0  sand crater, shape 0, depth 1 (map_add_crater: +2 a blast, up to depth 2)
+ 10 $00A  2.3                                      -  overlay        -           0/0  sand crater, shape 1, depth 1 (map_add_crater: +2 a blast, up to depth 2)
+ 11 $00B  2.4                                      -  overlay        -           0/0  sand crater, shape 0, depth 2 (map_add_crater: +2 a blast, up to depth 2)
+ 12 $00C  2.5                                      -  overlay        -           0/0  sand crater, shape 1, depth 2 (map_add_crater: +2 a blast, up to depth 2)
+ 13 $00D  3.0                                      -  -              B           0/0  blank (all tile 0)
+ 14 $00E  3.1                                      -  -              B           0/0  blank (all tile 0)
+ 15 $00F  3.2                                      -  -              B           0/0  blank (all tile 0)
+ 16 $010  3.3                                      -  -              B           0/0  blank (all tile 0)
+ 17 $011  3.4                                      -  -              B           0/0  blank (all tile 0)
+ 18 $012  3.5                                      -  -              B           0/0  blank (all tile 0)
+ 19 $013  4.0                                      -  -              B           0/0  blank (all tile 0)
+ 20 $014  4.1                                      -  -              -           0/0  orb pieces (tiles $2BE-$2C2 flipped, so they animate with the marker); no writer found, never seen
+ 21 $015  4.2                                      -  -              -           0/0  orb pieces (tiles $2BE-$2C2 flipped, so they animate with the marker); no writer found, never seen
+ 22 $016  4.3                                      -  overlay        -          0/15  house marker, Harkonnen: an orb in the bottom-left quarter, animated (icons_marker.png)
+ 23 $017  4.4                                      -  overlay        -          0/19  house marker, Atreides: an orb in the bottom-left quarter, animated (icons_marker.png)
+ 24 $018  4.5                                      -  overlay        -          0/17  house marker, Ordos: an orb in the bottom-left quarter, animated (icons_marker.png)
+ 25 $019  5.0                                      -  overlay        -           0/0  house marker, Fremen: an orb in the bottom-left quarter, animated (icons_marker.png)
+ 26 $01A  5.1                                      -  overlay        -           0/0  house marker, Sardaukar: an orb in the bottom-left quarter, animated (icons_marker.png)
+ 27 $01B  5.2                                      -  -              B           0/0  blank (all tile 0)
+ 28 $01C  5.3                                      -  -              B           0/0  blank (all tile 0)
+ 29 $01D  5.4                                      -  -              B           0/0  blank (all tile 0)
+ 30 $01E  5.5                                      -  -              B           0/0  blank (all tile 0)
+ 31 $01F  5.6                                      -  -              B           0/0  blank (all tile 0)
+ 32 $020  5.7                                      -  -              B           0/0  blank (all tile 0)
+ 33 $021  6.0                                     13  ground         -           0/0  destroyed wall (wallIcon $FFC234, map_destroy_wall)
+ 34 $022  6.1                                     11  ground         -          15/0  wall, neighbouring walls [0] (mask bits N=1 E=2 S=4 W=8)
+ 35 $023  6.2                                     11  ground         -        1357/0  wall, neighbouring walls [2, 8, 10] (mask bits N=1 E=2 S=4 W=8)
+ 36 $024  6.3                                     11  ground         -         141/0  wall, neighbouring walls [3] (mask bits N=1 E=2 S=4 W=8)
+ 37 $025  6.4                                     11  ground         -         904/0  wall, neighbouring walls [1, 4, 5] (mask bits N=1 E=2 S=4 W=8)
+ 38 $026  6.5                                     11  ground         -         147/0  wall, neighbouring walls [6] (mask bits N=1 E=2 S=4 W=8)
+ 39 $027  6.6                                     11  ground         -          40/0  wall, neighbouring walls [7] (mask bits N=1 E=2 S=4 W=8)
+ 40 $028  6.7                                     11  ground         -         147/0  wall, neighbouring walls [9] (mask bits N=1 E=2 S=4 W=8)
+ 41 $029  6.8                                     11  ground         -          56/0  wall, neighbouring walls [11] (mask bits N=1 E=2 S=4 W=8)
+ 42 $02A  6.9                                     11  ground         -         124/0  wall, neighbouring walls [12] (mask bits N=1 E=2 S=4 W=8)
+ 43 $02B  6.10                                    11  ground         -          58/0  wall, neighbouring walls [13] (mask bits N=1 E=2 S=4 W=8)
+ 44 $02C  6.11                                    11  ground         -          76/0  wall, neighbouring walls [14] (mask bits N=1 E=2 S=4 W=8)
+ 45 $02D  6.12                                    11  ground         -           5/0  wall, neighbouring walls [15] (mask bits N=1 E=2 S=4 W=8)
+ 46 $02E  6.13                                    12  ground         -           0/0  Turret firing, facing N (script 27, 9 frames)
+ 47 $02F  6.14                                    12  ground         -           0/0  Turret firing, facing NE (script 28, 9 frames)
+ 48 $030  6.15                                    12  ground         -           0/0  Turret firing, facing E (script 29, 9 frames)
+ 49 $031  6.16                                    12  ground         -           0/0  Turret firing, facing SE (script 30, 9 frames)
+ 50 $032  6.17                                    12  ground         -           0/0  Turret firing, facing S (script 31, 9 frames)
+ 51 $033  6.18                                    12  ground         -           0/0  Turret firing, facing SW (script 32, 9 frames)
+ 52 $034  6.19                                    12  ground         -           0/0  Turret firing, facing W (script 33, 9 frames)
+ 53 $035  6.20                                    12  ground         -           0/0  Turret firing, facing NW (script 34, 9 frames)
+ 54 $036  6.21                                    12  ground         -           0/0  an R-Turret picture facing N; no script, table or map names it (the firing set skips it)
+ 55 $037  6.22                                    12  ground         -           0/0  R-Turret firing, facing N (script 35, 9 frames)
+ 56 $038  6.23                                    12  ground         -           0/0  R-Turret firing, facing NE (script 36, 9 frames)
+ 57 $039  6.24                                    12  ground         -           0/0  R-Turret firing, facing E (script 37, 9 frames)
+ 58 $03A  6.25                                    12  ground         -           0/0  R-Turret firing, facing SE (script 38, 9 frames)
+ 59 $03B  6.26                                    12  ground         -           0/0  R-Turret firing, facing S (script 39, 9 frames)
+ 60 $03C  6.27                                     1  ground         -        1179/0  terrain transition (partial rock), in the stored maps
+ 61 $03D  6.28                                     1  ground         -        1200/0  terrain transition (partial rock), in the stored maps
+ 62 $03E  6.29                                     1  ground         -        1135/0  terrain transition (partial rock), in the stored maps
+ 63 $03F  6.30                                     1  ground         -        1238/0  terrain transition (partial rock), in the stored maps
+ 64 $040  6.31                                     8  ground         -         776/0  terrain transition (spice), in the stored maps
+ 65 $041  6.32                                     8  ground         -         774/0  terrain transition (spice), in the stored maps
+ 66 $042  6.33                                     8  ground         -         836/0  terrain transition (spice), in the stored maps
+ 67 $043  6.34                                     8  ground         -         721/0  terrain transition (spice), in the stored maps
+ 68 $044  6.35                                     9  ground         -         606/0  terrain transition (thick spice), in the stored maps
+ 69 $045  6.36                                     9  ground         -         640/0  terrain transition (thick spice), in the stored maps
+ 70 $046  6.37                                     9  ground         -         623/0  terrain transition (thick spice), in the stored maps
+ 71 $047  6.38                                     9  ground         -         573/0  terrain transition (thick spice), in the stored maps
+ 72 $048  6.39                                    12  ground         -           0/0  R-Turret firing, facing SW (script 40, 9 frames)
+ 73 $049  6.40                                    12  ground         -           0/0  R-Turret firing, facing W (script 41, 9 frames)
+ 74 $04A  6.41                                    12  ground         -           0/0  R-Turret firing, facing NW (script 42, 9 frames)
+ 75 $04B  6.42                                    11  -              B           0/0  blank (all tile 0); $005818 still calls it wall
+ 76 $04C  6.43                                    11  -              B           0/0  blank (all tile 0); $005818 still calls it wall
+ 77 $04D  6.44                                    11  -              B           0/0  blank (all tile 0); $005818 still calls it wall
+ 78 $04E  6.45                                    11  -              B           0/0  blank (all tile 0); $005818 still calls it wall
+ 79 $04F  6.46                                    11  -              B           0/0  blank (all tile 0); $005818 still calls it wall
+ 80 $050  6.47                                     3  ground         -          48/0  terrain transition (partial dune), in the stored maps
+ 81 $051  6.48                                     3  ground         -         121/0  terrain transition (partial dune), in the stored maps
+ 82 $052  6.49                                     3  ground         -         587/0  terrain transition (partial dune), in the stored maps
+ 83 $053  6.50                                     2  ground         -         161/0  terrain transition (entirely dune), in the stored maps
+ 84 $054  6.51                                     3  ground         -         201/0  terrain transition (partial dune), in the stored maps
+ 85 $055  6.52                                     3  ground         -         292/0  terrain transition (partial dune), in the stored maps
+ 86 $056  6.53                                     3  ground         -         748/0  terrain transition (partial dune), in the stored maps
+ 87 $057  6.54                                     3  ground         -         452/0  terrain transition (partial dune), in the stored maps
+ 88 $058  6.55                                     3  ground         -         405/0  terrain transition (partial dune), in the stored maps
+ 89 $059  6.56                                     3  ground         -         587/0  terrain transition (partial dune), in the stored maps
+ 90 $05A  6.57                                     3  ground         -         137/0  terrain transition (partial dune), in the stored maps
+ 91 $05B  6.58                                     3  ground         -         250/0  terrain transition (partial dune), in the stored maps
+ 92 $05C  6.59                                     3  ground         -         134/0  terrain transition (partial dune), in the stored maps
+ 93 $05D  6.60                                     3  ground         -         555/0  terrain transition (partial dune), in the stored maps
+ 94 $05E  6.61                                     3  ground         -         188/0  terrain transition (partial dune), in the stored maps
+ 95 $05F  6.62                                     3  ground         -         374/0  terrain transition (partial dune), in the stored maps
+ 96 $060  6.63                                     3  ground         -         299/0  terrain transition (partial dune), in the stored maps
+ 97 $061  6.64                                     3  ground         -         490/0  terrain transition (partial dune), in the stored maps
+ 98 $062  6.65                                     3  ground         -         426/0  terrain transition (partial dune), in the stored maps
+ 99 $063  6.66                                     3  ground         -           6/0  terrain transition (partial dune), in the stored maps
+100 $064  6.67                                     6  ground         -         122/0  terrain transition (entirely mountain), in the stored maps
+101 $065  6.68                                     3  ground         -         137/0  terrain transition (partial dune), in the stored maps
+102 $066  6.69                                     3  ground         -         773/0  terrain transition (partial dune), in the stored maps
+103 $067  6.70                                     -  -              B           0/0  blank (all tile 0)
+104 $068  6.71                                     -  -              B           0/0  blank (all tile 0)
+105 $069  6.72                                     -  -              B           0/0  blank (all tile 0)
+106 $06A  6.73                                     -  -              B           0/0  blank (all tile 0)
+107 $06B  6.74                                     -  -              B           0/0  blank (all tile 0)
+108 $06C  7.0                                      -  overlay        P           0/0  fog, fogged neighbours 0 (mask bits N=1 E=2 S=4 W=8)
+109 $06D  7.1                                      -  overlay        P         0/199  fog, fogged neighbours 1 (mask bits N=1 E=2 S=4 W=8)
+110 $06E  7.2                                      -  overlay        P         0/158  fog, fogged neighbours 2 (mask bits N=1 E=2 S=4 W=8)
+111 $06F  7.3                                      -  overlay        P         0/178  fog, fogged neighbours 3 (mask bits N=1 E=2 S=4 W=8)
+112 $070  7.4                                      -  overlay        P         0/185  fog, fogged neighbours 4 (mask bits N=1 E=2 S=4 W=8)
+113 $071  7.5                                      -  overlay        P           0/0  fog, fogged neighbours 5 (mask bits N=1 E=2 S=4 W=8)
+114 $072  7.6                                      -  overlay        P         0/199  fog, fogged neighbours 6 (mask bits N=1 E=2 S=4 W=8)
+115 $073  7.7                                      -  overlay        P          0/48  fog, fogged neighbours 7 (mask bits N=1 E=2 S=4 W=8)
+116 $074  7.8                                      -  overlay        P         0/174  fog, fogged neighbours 8 (mask bits N=1 E=2 S=4 W=8)
+117 $075  7.9                                      -  overlay        P         0/166  fog, fogged neighbours 9 (mask bits N=1 E=2 S=4 W=8)
+118 $076  7.10                                     -  overlay        P           0/0  fog, fogged neighbours 10 (mask bits N=1 E=2 S=4 W=8)
+119 $077  7.11                                     -  overlay        P          0/83  fog, fogged neighbours 11 (mask bits N=1 E=2 S=4 W=8)
+120 $078  7.12                                     -  overlay        P         0/177  fog, fogged neighbours 12 (mask bits N=1 E=2 S=4 W=8)
+121 $079  7.13                                     -  overlay        P          0/66  fog, fogged neighbours 13 (mask bits N=1 E=2 S=4 W=8)
+122 $07A  7.14                                     -  overlay        P          0/65  fog, fogged neighbours 14 (mask bits N=1 E=2 S=4 W=8)
+123 $07B  7.15                                     -  overlay        P      0/193342  fog, fogged neighbours 15 (mask bits N=1 E=2 S=4 W=8); the full fog, veiledIcon
+124 $07C  8.0                                      4  ground         -           0/0  rock, plain
+125 $07D  8.1                                     13  ground         -           0/0  rock with scattered debris
+126 $07E  8.2                                     10  ground         -        2187/0  concrete slab (builtSlabIcon $FFC230)
+127 $07F  9.0                                      0  ground         -       47656/0  sand (landscapeIcon $FFC22C)
+128 $080  9.1                                      1  ground         -        3056/0  rock, same-kind neighbours 0 (mask bits N=1 E=2 S=4 W=8)
+129 $081  9.2                                      1  ground         -        1322/0  rock, same-kind neighbours 1 (mask bits N=1 E=2 S=4 W=8)
+130 $082  9.3                                      1  ground         -         886/0  rock, same-kind neighbours 2 (mask bits N=1 E=2 S=4 W=8)
+131 $083  9.4                                      5  ground         -         698/0  rock, same-kind neighbours 3 (mask bits N=1 E=2 S=4 W=8)
+132 $084  9.5                                      1  ground         -        1245/0  rock, same-kind neighbours 4 (mask bits N=1 E=2 S=4 W=8)
+133 $085  9.6                                      5  ground         -         770/0  rock, same-kind neighbours 5 (mask bits N=1 E=2 S=4 W=8)
+134 $086  9.7                                      5  ground         -         778/0  rock, same-kind neighbours 6 (mask bits N=1 E=2 S=4 W=8)
+135 $087  9.8                                      5  ground         -        1925/0  rock, same-kind neighbours 7 (mask bits N=1 E=2 S=4 W=8)
+136 $088  9.9                                      1  ground         -         914/0  rock, same-kind neighbours 8 (mask bits N=1 E=2 S=4 W=8)
+137 $089  9.10                                     5  ground         -         710/0  rock, same-kind neighbours 9 (mask bits N=1 E=2 S=4 W=8)
+138 $08A  9.11                                     5  ground         -         868/0  rock, same-kind neighbours 10 (mask bits N=1 E=2 S=4 W=8)
+139 $08B  9.12                                     5  ground         -        2345/0  rock, same-kind neighbours 11 (mask bits N=1 E=2 S=4 W=8)
+140 $08C  9.13                                     5  ground         -         631/0  rock, same-kind neighbours 12 (mask bits N=1 E=2 S=4 W=8)
+141 $08D  9.14                                     5  ground         -        2086/0  rock, same-kind neighbours 13 (mask bits N=1 E=2 S=4 W=8)
+142 $08E  9.15                                     5  ground         -        2304/0  rock, same-kind neighbours 14 (mask bits N=1 E=2 S=4 W=8)
+143 $08F  9.16                                     5  ground         -       49692/0  rock, same-kind neighbours 15 (mask bits N=1 E=2 S=4 W=8)
+144 $090  9.17                                     3  ground         -         562/0  dunes, same-kind neighbours 0 (mask bits N=1 E=2 S=4 W=8)
+145 $091  9.18                                     3  ground         -         247/0  dunes, same-kind neighbours 1 (mask bits N=1 E=2 S=4 W=8)
+146 $092  9.19                                     3  ground         -         868/0  dunes, same-kind neighbours 2 (mask bits N=1 E=2 S=4 W=8)
+147 $093  9.20                                     3  ground         -         531/0  dunes, same-kind neighbours 3 (mask bits N=1 E=2 S=4 W=8)
+148 $094  9.21                                     3  ground         -         571/0  dunes, same-kind neighbours 4 (mask bits N=1 E=2 S=4 W=8)
+149 $095  9.22                                     3  ground         -         577/0  dunes, same-kind neighbours 5 (mask bits N=1 E=2 S=4 W=8)
+150 $096  9.23                                     2  ground         -        1096/0  dunes, same-kind neighbours 6 (mask bits N=1 E=2 S=4 W=8)
+151 $097  9.24                                     3  ground         -         463/0  dunes, same-kind neighbours 7 (mask bits N=1 E=2 S=4 W=8)
+152 $098  9.25                                     3  ground         -         425/0  dunes, same-kind neighbours 8 (mask bits N=1 E=2 S=4 W=8)
+153 $099  9.26                                     3  ground         -         501/0  dunes, same-kind neighbours 9 (mask bits N=1 E=2 S=4 W=8)
+154 $09A  9.27                                     2  ground         -         850/0  dunes, same-kind neighbours 10 (mask bits N=1 E=2 S=4 W=8)
+155 $09B  9.28                                     3  ground         -          88/0  dunes, same-kind neighbours 11 (mask bits N=1 E=2 S=4 W=8)
+156 $09C  9.29                                     3  ground         -         281/0  dunes, same-kind neighbours 12 (mask bits N=1 E=2 S=4 W=8)
+157 $09D  9.30                                     3  ground         -         911/0  dunes, same-kind neighbours 13 (mask bits N=1 E=2 S=4 W=8)
+158 $09E  9.31                                     3  ground         -        1704/0  dunes, same-kind neighbours 14 (mask bits N=1 E=2 S=4 W=8)
+159 $09F  9.32                                     2  ground         -        9370/0  dunes, same-kind neighbours 15 (mask bits N=1 E=2 S=4 W=8)
+160 $0A0  9.33                                     7  ground         -         628/0  mountain, same-kind neighbours 0 (mask bits N=1 E=2 S=4 W=8)
+161 $0A1  9.34                                     6  ground         -         638/0  mountain, same-kind neighbours 1 (mask bits N=1 E=2 S=4 W=8)
+162 $0A2  9.35                                     6  ground         -         221/0  mountain, same-kind neighbours 2 (mask bits N=1 E=2 S=4 W=8)
+163 $0A3  9.36                                     6  ground         -         221/0  mountain, same-kind neighbours 3 (mask bits N=1 E=2 S=4 W=8)
+164 $0A4  9.37                                     6  ground         -         636/0  mountain, same-kind neighbours 4 (mask bits N=1 E=2 S=4 W=8)
+165 $0A5  9.38                                     6  ground         -         221/0  mountain, same-kind neighbours 5 (mask bits N=1 E=2 S=4 W=8)
+166 $0A6  9.39                                     6  ground         -         221/0  mountain, same-kind neighbours 6 (mask bits N=1 E=2 S=4 W=8)
+167 $0A7  9.40                                     7  ground         -         993/0  mountain, same-kind neighbours 7 (mask bits N=1 E=2 S=4 W=8)
+168 $0A8  9.41                                     3  ground         -         167/0  mountain, same-kind neighbours 8 (mask bits N=1 E=2 S=4 W=8)
+169 $0A9  9.42                                     7  ground         -         638/0  mountain, same-kind neighbours 9 (mask bits N=1 E=2 S=4 W=8)
+170 $0AA  9.43                                     7  ground         -         411/0  mountain, same-kind neighbours 10 (mask bits N=1 E=2 S=4 W=8)
+171 $0AB  9.44                                     6  ground         -         415/0  mountain, same-kind neighbours 11 (mask bits N=1 E=2 S=4 W=8)
+172 $0AC  9.45                                     3  ground         -         242/0  mountain, same-kind neighbours 12 (mask bits N=1 E=2 S=4 W=8)
+173 $0AD  9.46                                     6  ground         -         249/0  mountain, same-kind neighbours 13 (mask bits N=1 E=2 S=4 W=8)
+174 $0AE  9.47                                     7  ground         -         371/0  mountain, same-kind neighbours 14 (mask bits N=1 E=2 S=4 W=8)
+175 $0AF  9.48                                     7  ground         -         772/0  mountain, same-kind neighbours 15 (mask bits N=1 E=2 S=4 W=8)
+176 $0B0  9.49                                     8  ground         -           0/0  spice, same-kind neighbours 0 (mask bits N=1 E=2 S=4 W=8)
+177 $0B1  9.50                                     8  ground         -        1215/0  spice, same-kind neighbours 1 (mask bits N=1 E=2 S=4 W=8)
+178 $0B2  9.51                                     8  ground         -         945/0  spice, same-kind neighbours 2 (mask bits N=1 E=2 S=4 W=8)
+179 $0B3  9.52                                     8  ground         -         489/0  spice, same-kind neighbours 3 (mask bits N=1 E=2 S=4 W=8)
+180 $0B4  9.53                                     8  ground         -        1341/0  spice, same-kind neighbours 4 (mask bits N=1 E=2 S=4 W=8)
+181 $0B5  9.54                                     8  ground         -         242/0  spice, same-kind neighbours 5 (mask bits N=1 E=2 S=4 W=8)
+182 $0B6  9.55                                     8  ground         -         566/0  spice, same-kind neighbours 6 (mask bits N=1 E=2 S=4 W=8)
+183 $0B7  9.56                                     8  ground         -        1083/0  spice, same-kind neighbours 7 (mask bits N=1 E=2 S=4 W=8)
+184 $0B8  9.57                                     8  ground         -         900/0  spice, same-kind neighbours 8 (mask bits N=1 E=2 S=4 W=8)
+185 $0B9  9.58                                     8  ground         -         540/0  spice, same-kind neighbours 9 (mask bits N=1 E=2 S=4 W=8)
+186 $0BA  9.59                                     8  ground         -         289/0  spice, same-kind neighbours 10 (mask bits N=1 E=2 S=4 W=8)
+187 $0BB  9.60                                     8  ground         -        1357/0  spice, same-kind neighbours 11 (mask bits N=1 E=2 S=4 W=8)
+188 $0BC  9.61                                     8  ground         -         395/0  spice, same-kind neighbours 12 (mask bits N=1 E=2 S=4 W=8)
+189 $0BD  9.62                                     8  ground         -        1106/0  spice, same-kind neighbours 13 (mask bits N=1 E=2 S=4 W=8)
+190 $0BE  9.63                                     8  ground         -        1386/0  spice, same-kind neighbours 14 (mask bits N=1 E=2 S=4 W=8)
+191 $0BF  9.64                                     8  ground         -        4953/0  spice, same-kind neighbours 15 (mask bits N=1 E=2 S=4 W=8)
+192 $0C0  9.65                                     9  ground         -           3/0  thick spice, same-kind neighbours 0 (mask bits N=1 E=2 S=4 W=8)
+193 $0C1  9.66                                     9  ground         -         470/0  thick spice, same-kind neighbours 1 (mask bits N=1 E=2 S=4 W=8)
+194 $0C2  9.67                                     9  ground         -         343/0  thick spice, same-kind neighbours 2 (mask bits N=1 E=2 S=4 W=8)
+195 $0C3  9.68                                     9  ground         -         328/0  thick spice, same-kind neighbours 3 (mask bits N=1 E=2 S=4 W=8)
+196 $0C4  9.69                                     9  ground         -         468/0  thick spice, same-kind neighbours 4 (mask bits N=1 E=2 S=4 W=8)
+197 $0C5  9.70                                     9  ground         -          98/0  thick spice, same-kind neighbours 5 (mask bits N=1 E=2 S=4 W=8)
+198 $0C6  9.71                                     9  ground         -         415/0  thick spice, same-kind neighbours 6 (mask bits N=1 E=2 S=4 W=8)
+199 $0C7  9.72                                     9  ground         -         522/0  thick spice, same-kind neighbours 7 (mask bits N=1 E=2 S=4 W=8)
+200 $0C8  9.73                                     9  ground         -         334/0  thick spice, same-kind neighbours 8 (mask bits N=1 E=2 S=4 W=8)
+201 $0C9  9.74                                     9  ground         -         339/0  thick spice, same-kind neighbours 9 (mask bits N=1 E=2 S=4 W=8)
+202 $0CA  9.75                                     9  ground         -         150/0  thick spice, same-kind neighbours 10 (mask bits N=1 E=2 S=4 W=8)
+203 $0CB  9.76                                     9  ground         -         696/0  thick spice, same-kind neighbours 11 (mask bits N=1 E=2 S=4 W=8)
+204 $0CC  9.77                                     9  ground         -         310/0  thick spice, same-kind neighbours 12 (mask bits N=1 E=2 S=4 W=8)
+205 $0CD  9.78                                     9  ground         -         643/0  thick spice, same-kind neighbours 13 (mask bits N=1 E=2 S=4 W=8)
+206 $0CE  9.79                                     9  ground         -         719/0  thick spice, same-kind neighbours 14 (mask bits N=1 E=2 S=4 W=8)
+207 $0CF  9.80                                     9  ground         -        4868/0  thick spice, same-kind neighbours 15 (mask bits N=1 E=2 S=4 W=8)
+208 $0D0  10.0                                    14  ground         -          99/0  spice bloom (bloomIcon $FFC228)
+209 $0D1  10.1                                    14  ground         -           0/0  spice bloom, a copy of $0D0 nothing names
+210 $0D2  10.2,11.18                              12  ground         -          13/0  Palace square 0
+211 $0D3  11.19                                   12  ground         -          13/0  Palace square 1
+212 $0D4  11.20                                   12  ground         -          13/0  Palace square 2
+213 $0D5  11.21                                   12  ground         -          13/0  Palace square 3
+214 $0D6  11.22                                   12  ground         -          13/0  Palace square 4
+215 $0D7  11.23                                   12  ground         -          13/0  Palace square 5
+216 $0D8  11.24                                   12  ground         -          13/0  Palace square 6
+217 $0D9  11.25                                   12  ground         -          13/0  Palace square 7
+218 $0DA  11.26                                   12  ground         -          13/0  Palace square 8
+219 $0DB  12.8                                     -  -              B           0/0  blank: the Light Factory's own ICON.MAP entries, but no structure type's script names them
+220 $0DC  12.9                                     -  -              B           0/0  blank: the Light Factory's own ICON.MAP entries, but no structure type's script names them
+221 $0DD  12.10                                    -  -              B           0/0  blank: the Light Factory's own ICON.MAP entries, but no structure type's script names them
+222 $0DE  12.11                                    -  -              B           0/0  blank: the Light Factory's own ICON.MAP entries, but no structure type's script names them
+223 $0DF  13.12                                   12  ground         -          96/0  Light Factory square 0; Heavy Factory square 0
+224 $0E0  13.13                                   12  ground         -          96/0  Light Factory square 1; Heavy Factory square 1
+225 $0E1  13.14                                   12  ground         -          96/0  Light Factory square 2; Heavy Factory square 2
+226 $0E2  13.15                                   12  ground         -          96/0  Light Factory square 3; Heavy Factory square 3
+227 $0E3  13.16                                   12  ground         -          96/0  Light Factory square 4; Heavy Factory square 4
+228 $0E4  13.17                                   12  ground         -          96/0  Light Factory square 5; Heavy Factory square 5
+229 $0E5  14.12                                   12  ground         -          26/0  Hi-Tech square 0
+230 $0E6  14.13                                   12  ground         -          26/0  Hi-Tech square 1
+231 $0E7  14.14                                   12  ground         -          26/0  Hi-Tech square 2
+232 $0E8  14.15                                   12  ground         -          26/0  Hi-Tech square 3
+233 $0E9  14.16                                    -  -              B           0/0  blank (all tile 0)
+234 $0EA  14.17                                    -  -              B           0/0  blank (all tile 0)
+235 $0EB  15.8                                     -  ground         B           0/0  IX square 0 - BLANK: the Mega Drive has no art here
+236 $0EC  15.9                                     -  ground         B           0/0  IX square 1 - BLANK: the Mega Drive has no art here
+237 $0ED  15.10                                    -  ground         B           0/0  IX square 2 - BLANK: the Mega Drive has no art here
+238 $0EE  15.11                                    -  ground         B           0/0  IX square 3 - BLANK: the Mega Drive has no art here
+239 $0EF  16.8                                     -  -              B           0/0  blank: the WOR's own ICON.MAP entries, but no structure type's script names them
+240 $0F0  16.9                                     -  -              B           0/0  blank: the WOR's own ICON.MAP entries, but no structure type's script names them
+241 $0F1  16.10                                    -  -              B           0/0  blank: the WOR's own ICON.MAP entries, but no structure type's script names them
+242 $0F2  16.11                                    -  -              B           0/0  blank: the WOR's own ICON.MAP entries, but no structure type's script names them
+243 $0F3  17.8                                    12  ground         -         108/0  Construction Yard square 0
+244 $0F4  17.9                                    12  ground         -         108/0  Construction Yard square 1
+245 $0F5  17.10                                   12  ground         -         108/0  Construction Yard square 2
+246 $0F6  17.11                                   12  ground         -         108/0  Construction Yard square 3
+247 $0F7  18.8                                    12  ground         -          59/0  WOR square 0; Barracks square 0
+248 $0F8  18.9                                    12  ground         -          59/0  WOR square 1; Barracks square 1
+249 $0F9  18.10                                   12  ground         -          59/0  WOR square 2; Barracks square 2
+250 $0FA  18.11                                   12  ground         -          59/0  WOR square 3; Barracks square 3
+251 $0FB  19.8                                    12  ground         -         212/0  Windtrap square 0
+252 $0FC  19.9                                    12  ground         -         212/0  Windtrap square 1
+253 $0FD  19.10                                   12  ground         -         212/0  Windtrap square 2
+254 $0FE  19.11                                   12  ground         -         212/0  Windtrap square 3
+255 $0FF  20.18                                   12  ground         -           0/0  Starport square 0
+256 $100  20.19                                   12  ground         -           0/0  Starport square 1
+257 $101  20.20                                   12  ground         -           0/0  Starport square 2
+258 $102  20.21                                   12  ground         -           0/0  Starport square 3
+259 $103  20.22                                   12  ground         -           0/0  Starport square 4
+260 $104  20.23                                   12  ground         -           0/0  Starport square 5
+261 $105  20.24                                   12  ground         -           0/0  Starport square 6
+262 $106  20.25                                   12  ground         -           0/0  Starport square 7
+263 $107  20.26                                   12  ground         -           0/0  Starport square 8
+264 $108  21.12                                   12  ground         -          80/0  Refinery square 0
+265 $109  21.13                                   12  ground         -          80/0  Refinery square 1
+266 $10A  21.14                                   12  ground         -          79/0  Refinery square 2
+267 $10B  21.15                                   12  ground         -          80/0  Refinery square 3
+268 $10C  21.16                                   12  ground         -          80/0  Refinery square 4
+269 $10D  21.17                                   12  ground         -          79/0  Refinery square 5
+270 $10E  22.12                                   12  ground         -          11/0  Repair Facility square 0
+271 $10F  22.13                                   12  ground         -          11/0  Repair Facility square 1
+272 $110  22.14                                   12  ground         -          11/0  Repair Facility square 2
+273 $111  22.15                                   12  ground         -          11/0  Repair Facility square 3
+274 $112  22.16                                   12  ground         -          11/0  Repair Facility square 4
+275 $113  22.17                                   12  ground         -          11/0  Repair Facility square 5
+276 $114  23.2                                    12  ground         -          14/0  Turret facing N
+277 $115  23.3                                    12  ground         -          18/0  Turret facing NE
+278 $116  23.4                                    12  ground         -          18/0  Turret facing E
+279 $117  23.5                                    12  ground         -          11/0  Turret facing SE
+280 $118  23.6                                    12  ground         -           4/0  Turret facing S
+281 $119  23.7                                    12  ground         -           5/0  Turret facing SW
+282 $11A  23.8                                    12  ground         -           8/0  Turret facing W
+283 $11B  23.9                                    12  ground         -          20/0  Turret facing NW
+284 $11C  24.2                                    12  ground         -          46/0  R-Turret facing N
+285 $11D  24.3                                    12  ground         -          37/0  R-Turret facing NE
+286 $11E  24.4                                    12  ground         -          30/0  R-Turret facing E
+287 $11F  24.5                                    12  ground         -          24/0  R-Turret facing SE
+288 $120  24.6                                    12  ground         -          11/0  R-Turret facing S
+289 $121  24.7                                    12  ground         -          18/0  R-Turret facing SW
+290 $122  24.8                                    12  ground         -          31/0  R-Turret facing W
+291 $123  24.9                                    12  ground         -          37/0  R-Turret facing NW
+292 $124  25.8                                    12  ground         -          77/0  Silo square 0
+293 $125  25.9                                    12  ground         -          77/0  Silo square 1
+294 $126  25.10                                   12  ground         -          77/0  Silo square 2
+295 $127  25.11                                   12  ground         -          77/0  Silo square 3
+296 $128  26.8                                    12  ground         -          61/0  Outpost square 0
+297 $129  26.9                                    12  ground         -          61/0  Outpost square 1
+298 $12A  26.10                                   12  ground         -          61/0  Outpost square 2
+299 $12B  26.11                                   12  ground         -          61/0  Outpost square 3
+300 $12C  -                                       12  ground         -           0/0  Starport square 4 (centre), lights frame 1
+301 $12D  -                                       12  ground         -           0/0  Starport square 5 (right), lights frame 1
+302 $12E  -                                       12  ground         -           0/0  Starport square 7 (bottom), lights frame 1
+303 $12F  -                                       12  ground         -           0/0  Starport square 8 (bottom right), lights frame 1
+304 $130  -                                       12  ground         -           0/0  Starport square 4 (centre), lights frame 2
+305 $131  -                                       12  ground         -           0/0  Starport square 5 (right), lights frame 2
+306 $132  -                                       12  ground         -           0/0  Starport square 7 (bottom), lights frame 2
+307 $133  -                                       12  ground         -           0/0  Starport square 8 (bottom right), lights frame 2
+308 $134  -                                       12  ground         -           0/0  Starport square 4 (centre), lights frame 3
+309 $135  -                                       12  ground         -           0/0  Starport square 5 (right), lights frame 3
+310 $136  -                                       12  ground         -           0/0  Starport square 7 (bottom), lights frame 3
+311 $137  -                                       12  ground         -           0/0  Starport square 8 (bottom right), lights frame 3
+312 $138  -                                       12  ground         -           0/0  Refinery square 2 (top right), lights frame 1
+313 $139  -                                       12  ground         -           0/0  Refinery square 5 (bottom right), lights frame 1
+314 $13A  -                                       12  ground         -           1/0  Refinery square 2 (top right), lights frame 2
+315 $13B  -                                       12  ground         -           1/0  Refinery square 5 (bottom right), lights frame 2
+316 $13C  -                                       12  ground         -           0/0  Refinery square 2 (top right), lights frame 3
+317 $13D  -                                       12  ground         -           0/0  Refinery square 5 (bottom right), lights frame 3
+318 $13E  11.0,20.0                               12  ground         -           1/0  under construction, 3x3 square 0
+319 $13F  11.1,20.1                               12  ground         -           1/0  under construction, 3x3 square 1
+320 $140  11.2,20.2                               12  ground         -           1/0  under construction, 3x3 square 2
+321 $141  11.3,20.3                               12  ground         -           1/0  under construction, 3x3 square 3
+322 $142  11.4,20.4                               12  ground         -           1/0  under construction, 3x3 square 4
+323 $143  11.5,20.5                               12  ground         -           1/0  under construction, 3x3 square 5
+324 $144  11.6,20.6                               12  ground         -           1/0  under construction, 3x3 square 6
+325 $145  11.7,20.7                               12  ground         -           1/0  under construction, 3x3 square 7
+326 $146  11.8,20.8                               12  ground         -           1/0  under construction, 3x3 square 8
+327 $147  13.0,14.0,21.0,22.0                     12  ground         -          12/0  under construction, 3x2 square 0
+328 $148  13.1,14.1,21.1,22.1                     12  ground         -          12/0  under construction, 3x2 square 1
+329 $149  13.2,14.2,21.2,22.2                     12  ground         -          12/0  under construction, 3x2 square 2
+330 $14A  13.3,14.3,21.3,22.3                     12  ground         -          12/0  under construction, 3x2 square 3
+331 $14B  13.4,14.4,21.4,22.4                     12  ground         -          12/0  under construction, 3x2 square 4
+332 $14C  13.5,14.5,21.5,22.5                     12  ground         -          12/0  under construction, 3x2 square 5
+333 $14D  12.0,15.0,16.0,17.0,18.0,19.0,25.0,26.0 12  ground         -          46/0  under construction, 2x2 square 0
+334 $14E  12.1,15.1,16.1,17.1,18.1,19.1,25.1,26.1 12  ground         -          46/0  under construction, 2x2 square 1
+335 $14F  12.2,15.2,16.2,17.2,18.2,19.2,25.2,26.2 12  ground         -          46/0  under construction, 2x2 square 2
+336 $150  12.3,15.3,16.3,17.3,18.3,19.3,25.3,26.3 12  ground         -          46/0  under construction, 2x2 square 3
+337 $151  23.0,24.0                               12  ground         -          10/0  under construction, 1x1 square 0
+338 $152  11.9,20.9                               13  ground         -           0/0  rubble, 3x3 square 0
+339 $153  11.10,20.10                             13  ground         -           0/0  rubble, 3x3 square 1
+340 $154  11.11,20.11                             13  ground         -           0/0  rubble, 3x3 square 2
+341 $155  11.12,20.12                             13  ground         -           0/0  rubble, 3x3 square 3
+342 $156  11.13,20.13                             13  ground         -           0/0  rubble, 3x3 square 4
+343 $157  11.14,20.14                             13  ground         -           0/0  rubble, 3x3 square 5
+344 $158  11.15,20.15                             13  ground         -           0/0  rubble, 3x3 square 6
+345 $159  11.16,20.16                             13  ground         -           0/0  rubble, 3x3 square 7
+346 $15A  11.17,20.17                             13  ground         -           0/0  rubble, 3x3 square 8
+347 $15B  13.6,14.6,21.6,22.6                     13  ground         -           0/0  rubble, 3x2 square 0
+348 $15C  13.7,14.7,21.7,22.7                     13  ground         -           0/0  rubble, 3x2 square 1
+349 $15D  13.8,14.8,21.8,22.8                     13  ground         -           0/0  rubble, 3x2 square 2
+350 $15E  13.9,14.9,21.9,22.9                     13  ground         -           0/0  rubble, 3x2 square 3
+351 $15F  13.10,14.10,21.10,22.10                 13  ground         -           0/0  rubble, 3x2 square 4
+352 $160  13.11,14.11,21.11,22.11                 13  ground         -           0/0  rubble, 3x2 square 5
+353 $161  12.4,15.4,16.4,17.4,18.4,19.4,25.4,26.4 13  ground         -           0/0  rubble, 2x2 square 0
+354 $162  12.5,15.5,16.5,17.5,18.5,19.5,25.5,26.5 13  ground         -           0/0  rubble, 2x2 square 1
+355 $163  12.6,15.6,16.6,17.6,18.6,19.6,25.6,26.6 13  ground         -           0/0  rubble, 2x2 square 2
+356 $164  12.7,15.7,16.7,17.7,18.7,19.7,25.7,26.7 13  ground         -           0/0  rubble, 2x2 square 3
+357 $165  23.1,24.1                               13  ground         -           0/0  rubble, 1x1 square 0
+358 $166  -                                        -  -              B           0/0  blank (all tile 0)
+359 $167  -                                        -  -              B           0/0  blank (all tile 0)

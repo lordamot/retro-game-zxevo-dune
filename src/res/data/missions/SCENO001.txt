@@ -1,0 +1,57 @@
+# SCENO001.txt - mission 1 of the Ordos.
+#
+# From orig/dune2.gen $05DB24, 374 bytes: SCENO001.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTBILD.WSA" 14
+BASIC WinPicture   "WIN1.WSA" 10 hex:0057
+BASIC BriefPicture "HARVEST.WSA" 12
+BASIC Timeout      0
+BASIC MapScale     1
+BASIC CursorPos    1491   ; x19 y23
+BASIC TacticalPos  1491   ; x19 y23
+BASIC LoseFlags    4
+BASIC WinFlags     6
+MAP   Seed  10
+HOUSE Harkonnen  Quota    0
+HOUSE Harkonnen  Credits  0
+HOUSE Harkonnen  Brain    C
+HOUSE Harkonnen  MaxUnit  25
+HOUSE Ordos      Quota    1000
+HOUSE Ordos      Credits  990
+HOUSE Ordos      Brain    H
+HOUSE Ordos      MaxUnit  25
+UNIT  1   Harkonnen  Soldier     256 0     S   Hunt      ; x0 y0
+UNIT  2   Harkonnen  Soldier     256 28    S   Hunt      ; x28 y0
+UNIT  3   Harkonnen  Trooper     256 529   S   Ambush    ; x17 y8
+UNIT  4   Harkonnen  Soldier     256 648   S   Ambush    ; x8 y10
+UNIT  5   Harkonnen  Soldier     256 786   S   Ambush    ; x18 y12
+UNIT  6   Harkonnen  Soldier     256 1090  S   Ambush    ; x2 y17
+UNIT  7   Harkonnen  Soldier     256 1100  S   Ambush    ; x12 y17
+UNIT  8   Harkonnen  Soldier     256 1110  S   Ambush    ; x22 y17
+UNIT  9   Harkonnen  Soldier     256 1180  S   Ambush    ; x28 y18
+UNIT  10  Ordos      Soldier     256 1366  S   Guard     ; x22 y21
+UNIT  11  Ordos      RaiderTrike 256 1425  NE  Guard     ; x17 y22
+UNIT  12  Ordos      Infantry    256 1495  S   Guard     ; x23 y23
+UNIT  13  Harkonnen  Soldier     256 1541  S   Ambush    ; x5 y24
+UNIT  14  Ordos      Soldier     256 1618  S   Guard     ; x18 y25
+UNIT  15  Ordos      RaiderTrike 256 1686  SW  Guard     ; x22 y26
+UNIT  16  Harkonnen  Trooper     256 1872  S   Ambush    ; x16 y29
+UNIT  17  Harkonnen  Soldier     256 1940  S   Ambush    ; x20 y30
+UNIT  18  Harkonnen  Soldier     256 2015  S   Hunt      ; x31 y31
+STRUCT 19  Ordos      ConstYard    256 1491  ; x19 y23
+END

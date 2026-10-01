@@ -1,0 +1,334 @@
+# structanims.txt - how the Mega Drive Dune II draws its structures
+#
+# Written by tools/sega/port_icons.py from the ROM tables the code
+# reads (addresses below).  Icons are the numbers of icons.txt /
+# icons.png.  Times are video frames (PAL, 49.7 a second): the
+# game's framesThisPass ($FFFFFE), which map_anim_tick and
+# struct_animate count down by.
+
+== map animations: map_anim_start $00AE58, map_anim_tick $00B1C2
+
+A script is (icon, delay) pairs from $06A9B4[n & $3F].  Starting it
+draws its first icon; when the delay has run out the next pair is
+read, and if that pair's delay is 0 or less the animation stops
+(that pair's icon is not drawn, and nothing is restored) - so the
+last icon drawn stays.  Starting one on a square stops the one
+already there (the record is keyed by the square).
+
+Drawing an icon (map_anim_draw $00B0A4):
+  icon 0          nothing is drawn (a pure wait)
+  icon >= 128, or flagged in $00B142 (46-53, 55-59, 72-74)
+                  stamped as GROUND over the structure's layout:
+                  square k (in the layout's offset order below) gets
+                  icon + k.  The square's overlay is cleared if it
+                  is 1-19 (craters, blanks) or $21, kept otherwise (fog,
+                  markers).
+  any other icon  goes in the start square's OVERLAY.
+Each square is redrawn at once.
+
+index  address  (icon,delay) ...                                  used by
+    0  $06AAB4  (0x000,1) (0x000,-1)
+               used by: struct_remove: a 2x1 structure destroyed; struct_remove: a 1x2 structure destroyed; struct_remove: a 2x3 structure destroyed
+    1  $06AAB4  = script 0
+    2  $06AAB4  = script 0
+    3  $06AAB4  = script 0
+    4  $06AAB4  = script 0
+    5  $06AAB4  = script 0
+    6  $06AAB4  = script 0   struct_place: Wall placed
+    7  $06AAB4  = script 0
+    8  $06AAB4  = script 0   struct_place: Slab placed; struct_place: 4-Slab placed
+    9  $06AAB4  = script 0
+   10  $06AAB4  = script 0
+   11  $06AAF4  (0x13e,90) (0x0d2,5) (0x13e,5) (0x0d2,5) (0x13e,5) (0x0d2,5) (0x13e,5) (0x0d2,5) (0x000,-1)
+               used by: struct_place: Palace placed
+   12  $06AB18  (0x147,90) (0x0db,5) (0x147,5) (0x0db,5) (0x147,5) (0x0db,5) (0x147,5) (0x0db,5) (0x000,-1)
+               used by: -
+   13  $06AB3C  (0x147,90) (0x0df,5) (0x147,5) (0x0df,5) (0x147,5) (0x0df,5) (0x147,5) (0x0df,5) (0x000,-1)
+               used by: struct_place: Light Factory placed; struct_place: Heavy Factory placed
+   14  $06AB60  (0x14d,90) (0x0e5,5) (0x14d,5) (0x0e5,5) (0x14d,5) (0x0e5,5) (0x14d,5) (0x0e5,5) (0x000,-1)
+               used by: struct_place: Hi-Tech placed
+   15  $06AB84  (0x14d,90) (0x0eb,5) (0x14d,5) (0x0eb,5) (0x14d,5) (0x0eb,5) (0x14d,5) (0x0eb,5) (0x000,-1)
+               used by: struct_place: IX placed
+   16  $06ABA8  (0x14d,90) (0x0f7,5) (0x14d,5) (0x0f7,5) (0x14d,5) (0x0f7,5) (0x14d,5) (0x0f7,5) (0x000,-1)
+               used by: -
+   17  $06ABCC  (0x14d,5) (0x14d,90) (0x0f3,5) (0x14d,5) (0x0f3,5) (0x14d,5) (0x0f3,5) (0x14d,5) (0x0f3,5) (0x000,-1)
+               used by: struct_place: Construction Yard placed
+   18  $06ABF4  (0x14d,90) (0x0f7,5) (0x14d,5) (0x0f7,5) (0x14d,5) (0x0f7,5) (0x14d,5) (0x0f7,5) (0x000,-1)
+               used by: struct_place: WOR placed; struct_place: Barracks placed
+   19  $06AC18  (0x14d,90) (0x0fb,5) (0x14d,5) (0x0fb,5) (0x14d,5) (0x0fb,5) (0x14d,5) (0x0fb,5) (0x000,-1)
+               used by: struct_place: Windtrap placed
+   20  $06AC3C  (0x13e,90) (0x0ff,5) (0x13e,5) (0x0ff,5) (0x13e,5) (0x0ff,5) (0x13e,5) (0x0ff,5) (0x000,-1)
+               used by: struct_place: Starport placed
+   21  $06AC60  (0x147,90) (0x108,5) (0x147,5) (0x108,5) (0x147,5) (0x108,5) (0x147,5) (0x108,5) (0x000,-1)
+               used by: struct_place: Refinery placed
+   22  $06AC84  (0x147,90) (0x10e,5) (0x147,5) (0x10e,5) (0x147,5) (0x10e,5) (0x147,5) (0x10e,5) (0x000,-1)
+               used by: struct_place: Repair Facility placed
+   23  $06ACA8  (0x151,90) (0x114,5) (0x151,5) (0x114,5) (0x151,5) (0x114,5) (0x151,5) (0x114,5) (0x000,-1)
+               used by: struct_place: Turret placed
+   24  $06ACCC  (0x151,90) (0x11c,5) (0x151,5) (0x11c,5) (0x151,5) (0x11c,5) (0x151,5) (0x11c,5) (0x000,-1)
+               used by: struct_place: R-Turret placed
+   25  $06ACF0  (0x14d,90) (0x124,5) (0x14d,5) (0x124,5) (0x14d,5) (0x124,5) (0x14d,5) (0x124,5) (0x000,-1)
+               used by: struct_place: Silo placed
+   26  $06AD14  (0x14d,90) (0x128,5) (0x14d,5) (0x128,5) (0x14d,5) (0x128,5) (0x14d,5) (0x128,5) (0x000,-1)
+               used by: struct_place: Outpost placed
+   27  $06AD38  (0x02e,9) (0x114,1) (0x000,-1)
+               used by: emc_build_fire: Turret fires facing N
+   28  $06AD44  (0x02f,9) (0x115,1) (0x000,-1)
+               used by: emc_build_fire: Turret fires facing NE
+   29  $06AD50  (0x030,9) (0x116,1) (0x000,-1)
+               used by: emc_build_fire: Turret fires facing E
+   30  $06AD5C  (0x031,9) (0x117,1) (0x000,-1)
+               used by: emc_build_fire: Turret fires facing SE
+   31  $06AD68  (0x032,9) (0x118,1) (0x000,-1)
+               used by: emc_build_fire: Turret fires facing S
+   32  $06AD74  (0x033,9) (0x119,1) (0x000,-1)
+               used by: emc_build_fire: Turret fires facing SW
+   33  $06AD80  (0x034,9) (0x11a,1) (0x000,-1)
+               used by: emc_build_fire: Turret fires facing W
+   34  $06AD8C  (0x035,9) (0x11b,1) (0x000,-1)
+               used by: emc_build_fire: Turret fires facing NW
+   35  $06AD98  (0x037,9) (0x11c,1) (0x000,-1)
+               used by: emc_build_fire: R-Turret fires facing N (target nearer than 3 squares)
+   36  $06ADA4  (0x038,9) (0x11d,1) (0x000,-1)
+               used by: emc_build_fire: R-Turret fires facing NE (target nearer than 3 squares)
+   37  $06ADB0  (0x039,9) (0x11e,1) (0x000,-1)
+               used by: emc_build_fire: R-Turret fires facing E (target nearer than 3 squares)
+   38  $06ADBC  (0x03a,9) (0x11f,1) (0x000,-1)
+               used by: emc_build_fire: R-Turret fires facing SE (target nearer than 3 squares)
+   39  $06ADC8  (0x03b,9) (0x120,1) (0x000,-1)
+               used by: emc_build_fire: R-Turret fires facing S (target nearer than 3 squares)
+   40  $06ADD4  (0x048,9) (0x121,1) (0x000,-1)
+               used by: emc_build_fire: R-Turret fires facing SW (target nearer than 3 squares)
+   41  $06ADE0  (0x049,9) (0x122,1) (0x000,-1)
+               used by: emc_build_fire: R-Turret fires facing W (target nearer than 3 squares)
+   42  $06ADEC  (0x04a,9) (0x123,1) (0x000,-1)
+               used by: emc_build_fire: R-Turret fires facing NW (target nearer than 3 squares)
+   43  $06ADF8  (0x000,40) (0x152,1) (0x000,-1)
+               used by: struct_remove: a 3x3 structure destroyed
+   44  $06AE04  (0x000,30) (0x15b,1) (0x000,-1)
+               used by: struct_remove: a 3x2 structure destroyed
+   45  $06AE10  (0x000,20) (0x161,1) (0x000,-1)
+               used by: struct_remove: a 2x2 structure destroyed
+   46  $06AE1C  (0x000,20) (0x165,1) (0x000,-1)
+               used by: struct_remove: a 1x1 structure destroyed
+   47  $06AAB4  = script 0
+   48  $06AAB4  = script 0
+   49  $06AAB4  = script 0
+   50  $06AAB4  = script 0
+   51  $06AAB4  = script 0
+   52  $06AAB4  = script 0
+   53  $06AAB4  = script 0
+   54  $06AAB4  = script 0
+   55  $06AAB4  = script 0
+   56  $06AAB4  = script 0
+   57  $06AAB4  = script 0
+   58  $06AAB4  = script 0
+   59  $06AAB4  = script 0
+   60  $06AAB4  = script 0
+   61  $06AAB4  = script 0
+   62  $06AAB4  = script 0
+   63  $06AAB4  = script 0
+
+Scripts 0-10 and 47-63 are one empty script ((0,1),(0,-1)): the
+Slab, 4-Slab and Wall start script 8 or 6 and nothing is drawn.
+Scripts 12 ($0DB, the Light Factory's own icons) and 16 ($0EF, the
+WOR's) are named by no structure type: the Light Factory draws the
+Heavy Factory's icons and the WOR the Barracks' (confirmed in the
+RAM maps of the recorded battles).  Icons $DB-$DE, $E9-$F2 are
+blank in the icon table: the Mega Drive has no art for them.
+
+== layouts: squares $06B826, offsets $06B738 (square = top-left + offset)
+
+  0 1x1  1 squares: 0   rubble script 46
+  1 2x1  2 squares: 0 1   rubble script 0
+  2 1x2  2 squares: 0 64   rubble script 0
+  3 2x2  4 squares: 0 1 64 65   rubble script 45
+  4 2x3  6 squares: 0 1 64 65 128 129   rubble script 0
+  5 3x2  6 squares: 0 1 2 64 65 66   rubble script 44
+  6 3x3  9 squares: 0 1 2 64 65 66 128 129 130   rubble script 43
+
+== the 19 structure types
+
+For each: the layout; the script struct_place starts (type +$3E);
+then the icons of its squares in every state, square k = the k-th
+offset of the layout.  'built' is what stays when the placing
+script ends; 'construction' is the first 90 frames (see the
+script: then 4 flashes of built/construction, 5 frames each, and
+it ends on built).  Every structure a mission places goes through
+struct_place too, so it also plays this.  'rubble' is stamped by
+struct_remove's script 20-40 frames after the structure is gone
+(until then the squares keep the structure's last icons).  There
+is no damaged state in the icons: a damaged structure looks the same.
+
+ 0 Slab: layout 0 (1x1), place script 8
+   each paved square: ground $07E (builtSlabIcon), owner in the square; a 4-Slab paves the squares it can.
+   no structure record stays; an explosion puts the square's mapGround back.
+ 1 4-Slab: layout 3 (2x2), place script 8
+   each paved square: ground $07E (builtSlabIcon), owner in the square; a 4-Slab paves the squares it can.
+   no structure record stays; an explosion puts the square's mapGround back.
+ 2 Palace: layout 6 (3x3), place script 11
+   built:        $0D2 $0D3 $0D4 $0D5 $0D6 $0D7 $0D8 $0D9 $0DA
+   construction: $13E $13F $140 $141 $142 $143 $144 $145 $146
+   rubble:       $152 $153 $154 $155 $156 $157 $158 $159 $15A   (script 43, after 40 frames)
+   house marker: see below.
+
+ 3 Light Factory: layout 5 (3x2), place script 13
+   built:        $0DF $0E0 $0E1 $0E2 $0E3 $0E4
+   construction: $147 $148 $149 $14A $14B $14C
+   rubble:       $15B $15C $15D $15E $15F $160   (script 44, after 30 frames)
+   house marker: see below.
+
+ 4 Heavy Factory: layout 5 (3x2), place script 13
+   built:        $0DF $0E0 $0E1 $0E2 $0E3 $0E4
+   construction: $147 $148 $149 $14A $14B $14C
+   rubble:       $15B $15C $15D $15E $15F $160   (script 44, after 30 frames)
+   house marker: see below.
+
+ 5 Hi-Tech: layout 3 (2x2), place script 14
+   built:        $0E5 $0E6 $0E7 $0E8
+   construction: $14D $14E $14F $150
+   rubble:       $161 $162 $163 $164   (script 45, after 20 frames)
+   house marker: see below.
+
+ 6 IX: layout 3 (2x2), place script 15
+   built:        $0EB $0EC $0ED $0EE
+   construction: $14D $14E $14F $150
+   rubble:       $161 $162 $163 $164   (script 45, after 20 frames)
+   house marker: see below.
+
+ 7 WOR: layout 3 (2x2), place script 18
+   built:        $0F7 $0F8 $0F9 $0FA
+   construction: $14D $14E $14F $150
+   rubble:       $161 $162 $163 $164   (script 45, after 20 frames)
+   house marker: see below.
+
+ 8 Construction Yard: layout 3 (2x2), place script 17
+   built:        $0F3 $0F4 $0F5 $0F6
+   construction: $14D $14E $14F $150
+   rubble:       $161 $162 $163 $164   (script 45, after 20 frames)
+   house marker: see below.
+
+ 9 Windtrap: layout 3 (2x2), place script 19
+   built:        $0FB $0FC $0FD $0FE
+   construction: $14D $14E $14F $150
+   rubble:       $161 $162 $163 $164   (script 45, after 20 frames)
+   house marker: see below.
+
+10 Barracks: layout 3 (2x2), place script 18
+   built:        $0F7 $0F8 $0F9 $0FA
+   construction: $14D $14E $14F $150
+   rubble:       $161 $162 $163 $164   (script 45, after 20 frames)
+   house marker: see below.
+
+11 Starport: layout 6 (3x3), place script 20
+   built:        $0FF $100 $101 $102 $103 $104 $105 $106 $107
+   construction: $13E $13F $140 $141 $142 $143 $144 $145 $146
+   rubble:       $152 $153 $154 $155 $156 $157 $158 $159 $15A   (script 43, after 40 frames)
+   lights (struct_animate $00D77A), as the Refinery's:
+     square 4 (+65):  $103 $12C $130 $134
+     square 5 (+66):  $104 $12D $131 $135
+     square 8 (+130): $107 $12F $133 $137
+     square 7 (+129): $106 $12E $132 $136
+   house marker: see below.
+
+12 Refinery: layout 5 (3x2), place script 21
+   built:        $108 $109 $10A $10B $10C $10D
+   construction: $147 $148 $149 $14A $14B $14C
+   rubble:       $15B $15C $15D $15E $15F $160   (script 44, after 30 frames)
+   lights (struct_animate $00D77A): while state (+$5C) is 1
+   (busy) - and on until back at frame 0 - every 20 frames
+   frame = (frame + 1) & 3 (timer and frame at $FFD4B8 + 2 * slot;
+   while +$0F is still negative the timer is set to random(72..84)):
+     square 2 (+2):  $10A $138 $13A $13C
+     square 5 (+66): $10D $139 $13B $13D
+   (frame 0 = the built icon); each changed square whose overlay
+   is 1-$7A has the fog lifted round it, radius 1.
+   house marker: see below.
+
+13 Repair Facility: layout 5 (3x2), place script 22
+   built:        $10E $10F $110 $111 $112 $113
+   construction: $147 $148 $149 $14A $14B $14C
+   rubble:       $15B $15C $15D $15E $15F $160   (script 44, after 30 frames)
+   house marker: see below.
+
+14 Wall: layout 0 (1x1), place script 6
+   the square's ground is the wall icon for the mask of its
+   four neighbours that are walls (type 11) - struct_connect_wall:
+   0:$022  1:$025  2:$023  3:$024  4:$025  5:$025  6:$026  7:$027  8:$023  9:$028  10:$023  11:$029  12:$02A  13:$02B  14:$02C  15:$02D  (mask bits N=1 E=2 S=4 W=8)
+   placing one re-joins the neighbouring walls; a new wall is
+   $022 before it is joined.  Destroyed: ground $021 (type 13),
+   overlay kept (map_destroy_wall $01B160).
+15 Turret: layout 0 (1x1), place script 23
+   built:        $114
+   construction: $151
+   rubble:       $165   (script 46, after 20 frames)
+   facing (ground icon = base + facing, 0 = N, clockwise):
+     N:$114 NE:$115 E:$116 SE:$117 S:$118 SW:$119 W:$11A NW:$11B
+   the facing IS the icon (icon - base); +$4E only mirrors it
+   (struct_create sets it to ICON.MAP[group][1] = $165, emc_build_aim
+   to 0-7; only the never-called emc_build_dir_to reads it).
+   A new turret ends its place script on the base icon: facing N.
+   aiming (emc_build_aim $00CB92, BUILD.EMC 9): one eighth a call
+     towards the target, the shorter way; the structure's +$0F = 30.
+   idle (struct_animate $00D6A4, unless flags2 bit 7 - it has a
+     target): every random(100..125) frames, facing += random(0..2) - 1.
+   firing (emc_build_fire $00CF54): script 27 + facing: ground
+     N:$02E NE:$02F E:$030 SE:$031 S:$032 SW:$033 W:$034 NW:$035 for 9 frames, then the facing icon again.
+
+16 R-Turret: layout 0 (1x1), place script 24
+   built:        $11C
+   construction: $151
+   rubble:       $165   (script 46, after 20 frames)
+   facing (ground icon = base + facing, 0 = N, clockwise):
+     N:$11C NE:$11D E:$11E SE:$11F S:$120 SW:$121 W:$122 NW:$123
+   the facing IS the icon (icon - base); +$4E only mirrors it
+   (struct_create sets it to ICON.MAP[group][1] = $165, emc_build_aim
+   to 0-7; only the never-called emc_build_dir_to reads it).
+   A new turret ends its place script on the base icon: facing N.
+   aiming (emc_build_aim $00CB92, BUILD.EMC 9): one eighth a call
+     towards the target, the shorter way; the structure's +$0F = 30.
+   idle (struct_animate $00D6A4, unless flags2 bit 7 - it has a
+     target): every random(100..125) frames, facing += random(0..2) - 1.
+   firing (emc_build_fire $00CF54): script 35 + facing, only if the target is nearer than 3 squares: ground
+     N:$037 NE:$038 E:$039 SE:$03A S:$03B SW:$048 W:$049 NW:$04A for 9 frames, then the facing icon again.
+
+17 Silo: layout 3 (2x2), place script 25
+   built:        $124 $125 $126 $127
+   construction: $14D $14E $14F $150
+   rubble:       $161 $162 $163 $164   (script 45, after 20 frames)
+   house marker: see below.
+
+18 Outpost: layout 3 (2x2), place script 26
+   built:        $128 $129 $12A $12B
+   construction: $14D $14E $14F $150
+   rubble:       $161 $162 $163 $164   (script 45, after 20 frames)
+   house marker: see below.
+
+== the house marker: struct_animate $00DB1A, struct_draw_house_marker $00B3E0
+
+Every structure but the Slabs, the Wall and the two turrets (their
+struct_animate cases end before it) is marked with its house, once
+(bit 4 of +$07).  Every 7 frames (timer $FFD54C + slot; the first
+time random(67..81)) the marker square is looked at: the square
+of the layout's bottom row, left column - top-left + $06B9FC[layout]
+(0, 0, 64, 64, 128, 64, 128).  The player's own structures are
+marked at once.  Another house's is marked only when that square's
+overlay is below $7B (not the full fog), and if the overlay is
+1-$7A the fog is first lifted round it, radius 1 (map_unfog_radius;
+so an enemy building half in sight reveals its corner).
+Marking sets the square's overlay to $16 + house - icons 22-26,
+whatever overlay was there - and writes the same 2x2 orb cells
+straight into plane A (cells 8, 9, 12, 13 of the square: the
+bottom-left quarter) in the house's palette line from $00B52C:
+Harkonnen 0, Atreides 1, Ordos 3, Fremen 1, Sardaukar 2.  Icon 25
+(Fremen) has line 0, so a Fremen marker changes colour when its
+square is next redrawn.  The orb is animated for all of them:
+icons_marker.png, 8 frames, the next every 8 video frames.
+
+== what is not an icon
+
+A damaged structure looks the same; smoke is a sprite (animations
+180-182, whose 6 tiles map_anim_tiles_b $00B028 cycles).  The
+selection box, the build progress and the ready/repair/upgrade
+markers are sprites too (struct_animate's tail, $009A62...).
+

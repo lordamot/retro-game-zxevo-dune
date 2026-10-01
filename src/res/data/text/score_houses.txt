@@ -1,0 +1,13 @@
+# score_houses.txt - the score page's three house names ($0A6974), 9 each, centred.
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source (tools/dune_data.py -> text.inc).
+# @id "text" [attr=value] is one string; @id [attr=value] then
+# lines then @end is a long one.  Escapes: \n \" \\ \xNN {cN}.
+# The characters are ASCII; charset.txt says which the fonts have.
+
+.join space
+
+@Harkonnen              "HARKONNEN"   ; $0A6974
+@Atreides               "ATREIDES "   ; $0A697D
+@Ordos                  "  ORDOS  "   ; $0A6986

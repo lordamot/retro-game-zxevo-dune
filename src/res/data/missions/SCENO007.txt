@@ -1,0 +1,184 @@
+# SCENO007.txt - mission 7 of the Ordos.
+#
+# From orig/dune2.gen $05F25A, 1554 bytes: SCENO007.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTVEHC.WSA" 14
+BASIC WinPicture   "WIN2.WSA" 10 hex:0057
+BASIC BriefPicture "ORDRTANK.WSA" 14
+BASIC Timeout      0
+BASIC MapScale     0
+BASIC CursorPos    2523   ; x27 y39
+BASIC TacticalPos  2523   ; x27 y39
+BASIC LoseFlags    1
+BASIC WinFlags     3
+MAP   Seed  16
+MAP   Bloom 131 156 3063 3865 2973   ; x3 y2, x28 y2, x55 y47, x25 y60, x29 y46
+HOUSE Ordos      Quota    0
+HOUSE Ordos      Credits  2000
+HOUSE Ordos      Brain    H
+HOUSE Ordos      MaxUnit  22
+HOUSE Harkonnen  Quota    0
+HOUSE Harkonnen  Credits  2000
+HOUSE Harkonnen  Brain    C
+HOUSE Harkonnen  MaxUnit  28
+CHOAM Trike        5
+CHOAM Quad         5
+CHOAM Tank         5
+CHOAM SiegeTank    3
+CHOAM Launcher     4
+CHOAM Harvester    2
+CHOAM MCV          2
+TEAM  1   Harkonnen  Kamikaze  Foot      5 7
+TEAM  2   Harkonnen  Kamikaze  Tracked   4 6
+TEAM  3   Harkonnen  Normal    Wheeled   3 5
+TEAM  4   Harkonnen  Normal    Foot      3 5
+TEAM  5   Harkonnen  Normal    Tracked   5 7
+TEAM  6   Harkonnen  Kamikaze  Tracked   7 9
+REINF 1   Harkonnen  Troopers    Enemybase 8+
+REINF 2   Harkonnen  Quad        Enemybase 8+
+REINF 3   Harkonnen  Troopers    Enemybase 12+
+REINF 4   Harkonnen  Devastator  Enemybase 12+
+REINF 5   Harkonnen  SiegeTank   Enemybase 15+
+REINF 6   Harkonnen  Tank        Enemybase 15+
+REINF 7   Ordos      Tank        Homebase  9
+REINF 8   Ordos      Troopers    Homebase  9
+REINF 9   Ordos      Deviator    Homebase  14
+REINF 10  Ordos      SiegeTank   Homebase  14
+UNIT  2   Harkonnen  Troopers    256 164   S   Guard     ; x36 y2
+UNIT  3   Harkonnen  Launcher    256 174   S   AreaGuard ; x46 y2
+UNIT  4   Harkonnen  SiegeTank   256 368   S   AreaGuard ; x48 y5
+UNIT  5   Harkonnen  Launcher    256 417   S   AreaGuard ; x33 y6
+UNIT  6   Harkonnen  SiegeTank   256 642   S   Ambush    ; x2 y10
+UNIT  7   Harkonnen  Devastator  256 673   S   Ambush    ; x33 y10
+UNIT  10  Harkonnen  Tank        256 749   S   AreaGuard ; x45 y11
+UNIT  12  Harkonnen  Tank        256 809   S   Ambush    ; x41 y12
+UNIT  13  Harkonnen  Quad        256 840   S   Ambush    ; x8 y13
+UNIT  14  Harkonnen  Devastator  256 870   S   AreaGuard ; x38 y13
+UNIT  17  Harkonnen  Launcher    256 1033  S   AreaGuard ; x9 y16
+UNIT  20  Harkonnen  Devastator  256 1291  S   Ambush    ; x11 y20
+UNIT  21  Harkonnen  Devastator  256 1417  S   AreaGuard ; x9 y22
+UNIT  22  Fremen     Sandworm    256 1578  S   Ambush    ; x42 y24
+UNIT  23  Harkonnen  Launcher    256 1607  S   AreaGuard ; x7 y25
+UNIT  24  Harkonnen  Devastator  256 1864  S   AreaGuard ; x8 y29
+UNIT  25  Fremen     Sandworm    256 2292  S   Ambush    ; x52 y35
+UNIT  26  Ordos      Tank        256 2396  S   Guard     ; x28 y37
+UNIT  27  Ordos      Quad        256 2459  S   Guard     ; x27 y38
+UNIT  28  Ordos      SiegeTank   256 2525  S   Guard     ; x29 y39
+UNIT  29  Ordos      SiegeTank   256 2586  S   Guard     ; x26 y40
+UNIT  30  Ordos      Troopers    256 2591  S   Guard     ; x31 y40
+UNIT  31  Ordos      Quad        256 2653  S   Guard     ; x29 y41
+UNIT  32  Ordos      Tank        256 2715  S   Guard     ; x27 y42
+GEN   102   Harkonnen  Wall   ; x38 y1
+STRUCT 33  Harkonnen  Windtrap     256 103   ; x39 y1
+STRUCT 34  Harkonnen  ConstYard    256 105   ; x41 y1
+GEN   107   Harkonnen  Wall   ; x43 y1
+GEN   166   Harkonnen  Wall   ; x38 y2
+GEN   171   Harkonnen  Wall   ; x43 y2
+GEN   230   Harkonnen  Wall   ; x38 y3
+STRUCT 35  Harkonnen  Windtrap     256 231   ; x39 y3
+STRUCT 36  Harkonnen  Outpost      256 233   ; x41 y3
+GEN   235   Harkonnen  Wall   ; x43 y3
+STRUCT 37  Harkonnen  RTurret      256 291   ; x35 y4
+GEN   292   Harkonnen  Wall   ; x36 y4
+GEN   293   Harkonnen  Wall   ; x37 y4
+GEN   294   Harkonnen  Wall   ; x38 y4
+STRUCT 38  Harkonnen  RTurret      256 299   ; x43 y4
+GEN   300   Harkonnen  Wall   ; x44 y4
+GEN   301   Harkonnen  Wall   ; x45 y4
+STRUCT 39  Harkonnen  RTurret      256 302   ; x46 y4
+GEN   355   Harkonnen  Slab   ; x35 y5
+STRUCT 40  Harkonnen  HeavyFactory 256 356   ; x36 y5
+STRUCT 41  Harkonnen  Refinery     256 359   ; x39 y5
+GEN   362   Harkonnen  Slab   ; x42 y5
+STRUCT 42  Harkonnen  LightFactory 256 363   ; x43 y5
+GEN   366   Harkonnen  Wall   ; x46 y5
+GEN   419   Harkonnen  Slab   ; x35 y6
+GEN   426   Harkonnen  Slab   ; x42 y6
+GEN   430   Harkonnen  Wall   ; x46 y6
+GEN   483   Harkonnen  Slab   ; x35 y7
+GEN   484   Harkonnen  Slab   ; x36 y7
+GEN   485   Harkonnen  Slab   ; x37 y7
+GEN   486   Harkonnen  Slab   ; x38 y7
+GEN   487   Harkonnen  Slab   ; x39 y7
+GEN   488   Harkonnen  Slab   ; x40 y7
+GEN   489   Harkonnen  Slab   ; x41 y7
+GEN   490   Harkonnen  Slab   ; x42 y7
+GEN   491   Harkonnen  Wall   ; x43 y7
+STRUCT 43  Harkonnen  Windtrap     256 492   ; x44 y7
+GEN   494   Harkonnen  Wall   ; x46 y7
+STRUCT 44  Harkonnen  RTurret      256 547   ; x35 y8
+GEN   548   Harkonnen  Wall   ; x36 y8
+GEN   549   Harkonnen  Wall   ; x37 y8
+GEN   550   Harkonnen  Wall   ; x38 y8
+GEN   551   Harkonnen  Wall   ; x39 y8
+GEN   552   Harkonnen  Wall   ; x40 y8
+GEN   553   Harkonnen  Slab   ; x41 y8
+GEN   554   Harkonnen  Slab   ; x42 y8
+GEN   555   Harkonnen  Wall   ; x43 y8
+GEN   558   Harkonnen  Wall   ; x46 y8
+STRUCT 46  Harkonnen  RTurret      256 619   ; x43 y9
+GEN   620   Harkonnen  Wall   ; x44 y9
+GEN   621   Harkonnen  Wall   ; x45 y9
+STRUCT 47  Harkonnen  RTurret      256 622   ; x46 y9
+STRUCT 50  Harkonnen  Turret       256 705   ; x1 y11
+GEN   769   Harkonnen  Wall   ; x1 y12
+GEN   770   Harkonnen  Slab   ; x2 y12
+GEN   771   Harkonnen  Slab   ; x3 y12
+STRUCT 51  Harkonnen  RTurret      256 774   ; x6 y12
+GEN   833   Harkonnen  Wall   ; x1 y13
+STRUCT 52  Harkonnen  WOR          256 834   ; x2 y13
+STRUCT 53  Harkonnen  HiTech       256 836   ; x4 y13
+GEN   838   Harkonnen  Wall   ; x6 y13
+GEN   897   Harkonnen  Wall   ; x1 y14
+GEN   902   Harkonnen  Wall   ; x6 y14
+GEN   903   Harkonnen  Wall   ; x7 y14
+STRUCT 54  Harkonnen  RTurret      256 904   ; x8 y14
+GEN   961   Harkonnen  Wall   ; x1 y15
+STRUCT 55  Harkonnen  Windtrap     256 962   ; x2 y15
+STRUCT 56  Harkonnen  Refinery     256 964   ; x4 y15
+GEN   967   Harkonnen  Slab   ; x7 y15
+GEN   1025  Harkonnen  Wall   ; x1 y16
+GEN   1031  Harkonnen  Slab   ; x7 y16
+GEN   1089  Harkonnen  Wall   ; x1 y17
+STRUCT 57  Harkonnen  Silo         256 1090  ; x2 y17
+STRUCT 58  Harkonnen  HeavyFactory 256 1092  ; x4 y17
+GEN   1095  Harkonnen  Slab   ; x7 y17
+GEN   1153  Harkonnen  Wall   ; x1 y18
+GEN   1159  Harkonnen  Slab   ; x7 y18
+GEN   1160  Harkonnen  Wall   ; x8 y18
+STRUCT 59  Harkonnen  RTurret      256 1161  ; x9 y18
+GEN   1217  Harkonnen  Wall   ; x1 y19
+GEN   1281  Harkonnen  Wall   ; x1 y20
+STRUCT 60  Harkonnen  Windtrap     256 1218  ; x2 y19
+STRUCT 61  Harkonnen  Silo         256 1220  ; x4 y19
+GEN   1222  Harkonnen  Slab   ; x6 y19
+GEN   1223  Harkonnen  Slab   ; x7 y19
+GEN   1224  Harkonnen  Wall   ; x8 y19
+GEN   1286  Harkonnen  Wall   ; x6 y20
+GEN   1287  Harkonnen  Wall   ; x7 y20
+GEN   1288  Harkonnen  Wall   ; x8 y20
+GEN   1345  Harkonnen  Wall   ; x1 y21
+GEN   1346  Harkonnen  Wall   ; x2 y21
+GEN   1347  Harkonnen  Wall   ; x3 y21
+GEN   1348  Harkonnen  Wall   ; x4 y21
+GEN   1349  Harkonnen  Wall   ; x5 y21
+GEN   1350  Harkonnen  Wall   ; x6 y21
+GEN   1351  Harkonnen  Wall   ; x7 y21
+GEN   1352  Harkonnen  Wall   ; x8 y21
+STRUCT 70  Ordos      ConstYard    256 2523  ; x27 y39
+END

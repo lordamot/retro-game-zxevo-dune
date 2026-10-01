@@ -1,0 +1,248 @@
+# credits.txt - the closing credits ($01192C, $0117B4 scrolls them): one text,
+# a block's lines joined by new lines ($0A).  {cN} is the
+# cartridge's $FF N - a colour, 2 heading, 3 name; the port
+# writes it as $FE N, since $FF ends a string there.
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source (tools/dune_data.py -> text.inc).
+# @id "text" [attr=value] is one string; @id [attr=value] then
+# lines then @end is a long one.  Escapes: \n \" \\ \xNN {cN}.
+# The characters are ASCII; charset.txt says which the fonts have.
+
+.join newline
+
+@credits   ; $01192C
+{c3}The End
+
+
+
+
+{c3}Dune
+
+The Battle for Arrakis
+
+
+
+
+{c2}Executive producer
+
+{c3}Christopher D. Yates
+
+
+
+
+{c2}Producers
+
+{c3}Aaron E. Powell
+
+David Pokorny
+
+
+
+
+{c2}Product Coordinators
+
+{c3}Robb Alvey
+
+Ken Love
+
+Matthew Spall
+
+
+
+
+{c2}Designers
+
+{c3}Aaron E. Powell
+
+Joe Bostic
+
+
+
+
+{c2}Programmers
+
+{c3}Leroy Wing
+
+Denzil E. Long Jr.
+
+Rob Povey
+
+
+
+
+{c2}Writer
+
+{c3}Rick Gush
+
+
+
+
+{c2}Artists
+
+{c3}Matthew Hansel
+
+Sandy Dobbs
+
+
+
+
+{c2}Music and Sound
+
+{c3}Paul Mudra
+
+Frank Klepacki
+
+Dwight Okahara
+
+
+
+
+{c2}Voices
+
+{c3}Frank Klepacki - House voices
+
+Glenn Sperry - Units
+
+
+
+
+{c2}Quality Assurance
+
+{c3}Glenn Sperry
+
+Kenny Dunne
+
+William Baca
+
+Jesse Clemit
+
+Jeff Fillhaber
+
+Scott Fleming
+
+Bill Foster
+
+Mike Lightner
+
+Tim Fritz
+
+Ronnie Balducci
+
+John P Fincher
+
+Mike McCaa
+
+Adam Ryan
+
+Paul Shoener
+
+Jared Brinkley
+
+Mitch Feldman
+
+Chris McFarland
+
+Scott Manning
+
+David Fries
+
+Chris Rausch
+
+Nick Camerota
+
+Bijan Shaheer
+
+Paul Welton
+
+John Martin
+
+
+
+
+{c2}Special thanks to
+
+{c3}Brett W. Sperry
+
+Lyle J. Hall, II
+
+
+
+
+
+
+
+{c2}DUNE is a trademark of
+
+Dino De Laurentiis Corporation
+
+and licensed by
+
+MCA/Universal Merchandising, Inc.
+
+@ 1984 Dino De Laurentiis Corporation.
+
+All rights reserved.
+
+
+
+
+@ 1994 Westwood Studios, Inc.
+
+All rights reserved.
+
+
+
+
+Virgin is a registered trademark of
+
+Virgin Enterprises, LTD.
+
+
+
+
+{c3}Thank you for playing
+
+DUNE - The battle for arrakis
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@end
+

@@ -1,0 +1,3103 @@
+; unit.emc - UNIT.EMC, the 2676 words of its
+; DATA chunk (27 entry points), from orig/dune2.gen $04E180.
+;
+; Written once by tools/sega/port_data.py; this text is now the source.
+; tools/dune_data.py assembles it back to the cartridge's bytecode
+; exactly (port_data.py check proves it) and writes scripts.inc.
+; S7 is the reference for the machine and for every routine.
+;
+; .functions N         the size of the script's call table
+; .func I NAME         call index I, the 68000 routine it reaches
+; .entry I LABEL       ORDR entry I (a unit, a building, a behaviour)
+; LABEL:               a word offset; wNNN labels keep the offsets of
+;                      orig/sega/res/data/scripts/*.txt
+;
+; One instruction a line; the encoding is fixed per instruction:
+;   goto L        $8000 | L                  (1 word)
+;   goto-if L     $2F00, $8000 | L: pops, jumps if it was zero (2 words)
+;   push.w n      $2300, n                   (2 words)
+;   everything else $4000 | op << 8 | byte   (1 word):
+;   setret push.ret push.pc push.b push.var push.loc push.arg
+;   pop.ret ret pop.var pop.loc pop.arg drop reserve call unary
+;   binary return;   .word $XXXX is a raw word.
+
+.script unit
+.functions 64
+.func 0   get           ; $04500C twenty properties of the unit and its type - see PROPERTY below
+.func 1   act           ; $044F2E give the unit action n, through $0436A0
+.func 2   print         ; $011014 print string n of the script's own text with three more arguments, into $FFC5B0; never called
+.func 3   distance      ; $01110C how far the reference is from me, or -1
+.func 4   explode       ; $045808 the death animation and the sound that goes with it
+.func 5   go.to         ; $044D7E set where the unit is headed ($5C); a Harvester gets a spice field rather than a thing
+.func 6   dir.to        ; $044D2E which way the reference is, or my own facing if it is stale
+.func 7   turn          ; $044C44 turn towards n and answer the facing reached
+.func 8   fire          ; $0447E2 shoot at $5A, if the gun is lined up on it
+.func 9   deploy        ; $045E2C an MCV becomes a Construction Yard: $00E580 makes structure 8 on my square or one of the three up and left of it ($0FEE20), and the unit is removed; 0 if none fits
+.func 10  act.default   ; $044F78 give the unit the action its type names at +$28
+.func 11  zero11        ; $045F82 returns 0 and nothing else
+.func 12  step          ; $0452C2 one step of the way towards $5C
+.func 13  enemy?        ; $0113AC the reference belongs to another house
+.func 14  blast.stub    ; $0446C4 returns 0 and nothing else - called with 4, 6 or 9 as a unit dies
+.func 15  die           ; $0445EE the unit is destroyed: the score moves, a Saboteur takes 500 points of everything with it
+.func 16  delay         ; $01108A wait n/5 ticks - writes the countdown the tick loop at $043BCC decrements
+.func 17  friend?       ; $011358 the reference is an active thing of my own house
+.func 18  explode.big   ; $0446C8 the blast of Destruct and of a dying Devastator: explosion 11 where I stand and seven of type 6 round it ($00A934); the argument is not read
+.func 19  frame         ; $0443F8 show frame n of the unit's own animation: $73 = -n, and ask for a redraw
+.func 20  deliver       ; $043D80 put down the unit I am carrying at $5C - into a structure (a Starport takes the whole load) or on the ground where I am
+.func 21  zero21        ; $043CEC returns 0 and nothing else
+.func 22  fly.to        ; $04442A fly straight at $5C (a Refinery's or a Starport's pad), sliding the last $80; answers 1 on arrival and until then waits and runs the call again
+.func 23  random        ; $0110D8 a random number between the two arguments
+.func 24  fn24          ; $01143E a structure of my house that is idle: the one the reference names, or the first of type n; never called
+.func 25  head.for      ; $044F92 point the hull at the reference, keeping it in $4E as where I am going
+.func 26  stop          ; $044358 speed 0, and ask for a redraw
+.func 27  speed         ; $044380 set the speed, clamped to 0-255 and cut to three quarters if $4 bit 9 is set
+.func 28  find.target   ; $043D60 the best thing for me to attack, as a reference: the best unit ($04730C) and structure ($01072C) weighed against each other; n=4 takes a structure first, and a Deviator never looks at structures
+.func 29  fn29          ; $043CF0 how much I want to attack the reference - $047166 for a unit, $010688 for a structure; never called
+.func 30  seek.dock     ; $0456B8 an idle structure of type n to go to - the one the unit I carry came from ($52) if it is free, else the first of my house - claimed and put in $5C, as a reference
+.func 31  fn31          ; $0457EE bit 8 of the unit's flags; never called
+.func 32  amount        ; $0457C2 the spice ($5E) in the unit I am carrying, or in me if I carry nothing
+.func 33  survivor      ; $04587C with the chance at +$E of my type (64 in 256, a Harvester 128) a Soldier of my house is made near me and given order n
+.func 34  pick.up       ; $043FE0 take on board the unit $5C names, or the one waiting in the structure it names, and choose where to carry it
+.func 35  call.unit     ; $045912 a free unit of type n of my house is claimed and sent for me ($5C = me) - the one I have already, or 0 if my type cannot be carried
+.func 36  dismiss       ; $0459D8 if what I have claimed is a Carryall, clear its $5C and let it go
+.func 37  find.struct   ; $045A16 a structure of my house and of type n that is idle, empty and unclaimed, as a reference
+.func 38  zero38        ; $0112EE returns 0 and nothing else
+.func 39  rts.stub      ; $045A88 a bare rts
+.func 40  unfog         ; $045A8A clear the fog round me, as far as +$12 of my type says ($019FFE) - only the player's own
+.func 41  find.spice    ; $0112F2 the nearest square of spice (ground type 8 or 9) within $20 of me, from $01A146, as a place - or 0, and remember there was none; the argument is not read
+.func 42  harvest       ; $045A9C a Harvester on spice with room ($5E < 100) takes a little more; answers 1 while it should keep at it, and now and then the square loses its spice ($01A518)
+.func 43  zero43        ; $043CEC returns 0 and nothing else
+.func 44  linked.type   ; $0112C4 the type of the unit I am carrying ($3), or -1
+.func 45  kind          ; $011292 the reference's kind: 1 unit, 2 structure, 3 a place; -1 if it is stale
+.func 46  fn46          ; $011260 the reference's value - a packed square for a place, the index otherwise ($02E3B2), or -1; never called
+.func 47  blocked?      ; $045B6A 1 when what I carry cannot be set down at the reference ($046F68 refuses the square, or the structure is not ours or will not take it), 0 when it can - once read the other way round, as 'clear?'
+.func 48  nearby        ; $045C48 a random square close to me ($011688, $50), as a place - only if the argument is a place, else 0
+.func 49  fidget        ; $045CD8 a foot unit shuffles on the spot
+.func 50  count         ; $011212 how many units of type n my house has (the unit pool, through $04321C)
+.func 51  go.nearest    ; $045D6E order Move to the nearest idle, empty, unclaimed structure of my house of type n; 1 if there is one
+.func 52  zero52        ; $043CEC returns 0 and nothing else
+.func 53  zero53        ; $043CEC returns 0 and nothing else
+.func 54  find.prey     ; $045EC6 the unit the Sandworm most wants: every unit scored by $04754E, the best as a reference
+.func 55  claim.ok?     ; $045EF2 1 if what I have claimed still claims me and is of my house; otherwise break the claim, clear a unit's $5C, and answer 0
+.func 56  facing.of     ; $0111E6 the hull facing ($6A) of the unit the reference names, or $80 if it names no unit
+.func 57  zero57        ; $043CEC returns 0 and nothing else
+.func 58  aim           ; $044E04 set what the unit is shooting at ($5A), and turn the hull too if it has no turret
+.func 59  not.unit?     ; $01118A 1 unless the reference names a unit - a structure, a place or nothing all answer 1
+.func 60  delay.rnd     ; $0110A6 the same, but a random fraction of n
+.func 61  turning?      ; $044C78 turn the gun towards $5A; answer whether it still has further to go
+.func 62  distance.to   ; $011152 the same, but to the near edge of a structure rather than its middle ($02E0A8), or -1
+.func 63  zero63        ; $043CEC returns 0 and nothing else
+
+.entry 0   unit_carryall
+.entry 1   unit_thopter
+.entry 2   unit_infantry
+.entry 3   unit_troopers
+.entry 4   unit_soldier
+.entry 5   unit_trooper
+.entry 6   unit_saboteur
+.entry 7   unit_launcher
+.entry 8   unit_deviator
+.entry 9   unit_tank
+.entry 10  unit_siegetank
+.entry 11  unit_devastator
+.entry 12  unit_sonictank
+.entry 13  unit_trike
+.entry 14  unit_raidertrike
+.entry 15  unit_quad
+.entry 16  unit_harvester
+.entry 17  unit_mcv
+.entry 18  unit_deathhand
+.entry 19  unit_rocket
+.entry 20  unit_arocket
+.entry 21  unit_grocket
+.entry 22  unit_minirocket
+.entry 23  unit_bullet
+.entry 24  unit_sonicblast
+.entry 25  unit_sandworm
+.entry 26  unit_frigate
+    push.b   4                  ; 0
+    call     get                ; 1
+    drop     1                  ; 2
+    push.ret                    ; 3
+    push.arg 1                  ; 4
+    binary   !=                 ; 5
+    goto-if  w22                ; 6
+    call     stop               ; 8
+    push.arg 1                  ; 9
+    call     turn               ; 10
+    drop     1                  ; 11
+
+w12:
+    push.b   10                 ; 12
+    call     get                ; 13
+    drop     1                  ; 14
+    push.ret                    ; 15
+    goto-if  w22                ; 16
+    push.b   10                 ; 18
+    call     delay              ; 19
+    drop     1                  ; 20
+    goto     w12                ; 21
+
+w22:
+    ret                         ; 22
+
+w23:
+    push.arg 1                  ; 23
+    call     step               ; 24
+    drop     1                  ; 25
+    push.ret                    ; 26
+    goto-if  w76                ; 27
+    push.b   10                 ; 29
+    call     get                ; 30
+    drop     1                  ; 31
+    push.ret                    ; 32
+    goto-if  w61                ; 33
+
+w35:
+    push.b   10                 ; 35
+    call     get                ; 36
+    drop     1                  ; 37
+    push.ret                    ; 38
+    goto-if  w45                ; 39
+    push.b   10                 ; 41
+    call     delay              ; 42
+    drop     1                  ; 43
+    goto     w35                ; 44
+
+w45:
+    push.arg 1                  ; 45
+    call     step               ; 46
+    drop     1                  ; 47
+    push.ret                    ; 48
+    goto-if  w61                ; 49
+
+w51:
+    push.b   11                 ; 51
+    call     get                ; 52
+    drop     1                  ; 53
+    push.ret                    ; 54
+    goto-if  w61                ; 55
+    push.b   10                 ; 57
+    call     delay              ; 58
+    drop     1                  ; 59
+    goto     w51                ; 60
+
+w61:
+    push.b   11                 ; 61
+    call     get                ; 62
+    drop     1                  ; 63
+    push.ret                    ; 64
+    goto-if  w71                ; 65
+    push.b   10                 ; 67
+    call     delay              ; 68
+    drop     1                  ; 69
+    goto     w61                ; 70
+
+w71:
+    call     unfog              ; 71
+    push.b   1                  ; 72
+    pop.ret                     ; 73
+    ret                         ; 74
+    goto     w82                ; 75
+
+w76:
+    push.b   10                 ; 76
+    call     delay              ; 77
+    drop     1                  ; 78
+    push.b   0                  ; 79
+    pop.ret                     ; 80
+    ret                         ; 81
+
+w82:
+    ret                         ; 82
+
+w83:
+    push.b   1                  ; 83
+    goto-if  w246               ; 84
+    push.b   5                  ; 86
+    call     get                ; 87
+    drop     1                  ; 88
+    push.ret                    ; 89
+    goto-if  w229               ; 90
+    call     fire               ; 92
+    push.b   5                  ; 93
+    call     get                ; 94
+    drop     1                  ; 95
+    push.ret                    ; 96
+    push.b   1                  ; 97
+    call     get                ; 98
+    drop     1                  ; 99
+    push.ret                    ; 100
+    binary   ==                 ; 101
+    goto-if  w136               ; 102
+    push.b   5                  ; 104
+    call     get                ; 105
+    drop     1                  ; 106
+    push.ret                    ; 107
+    call     distance.to        ; 108
+    drop     1                  ; 109
+    push.ret                    ; 110
+    push.b   2                  ; 111
+    call     get                ; 112
+    drop     1                  ; 113
+    push.ret                    ; 114
+    binary   <=                 ; 115
+    goto-if  w120               ; 116
+    call     turning?           ; 118
+    goto     w135               ; 119
+
+w120:
+    push.b   1                  ; 120
+    call     get                ; 121
+    drop     1                  ; 122
+    push.ret                    ; 123
+    call     step               ; 124
+    drop     1                  ; 125
+    push.b   11                 ; 126
+    call     get                ; 127
+    drop     1                  ; 128
+    push.ret                    ; 129
+    goto-if  w135               ; 130
+    push.b   10                 ; 132
+    call     delay              ; 133
+    drop     1                  ; 134
+
+w135:
+    goto     w228               ; 135
+
+w136:
+    push.b   18                 ; 136
+    call     get                ; 137
+    drop     1                  ; 138
+    push.ret                    ; 139
+    goto-if  w197               ; 140
+    push.b   1                  ; 142
+    call     get                ; 143
+    drop     1                  ; 144
+    push.ret                    ; 145
+    unary    !                  ; 146
+    goto-if  w155               ; 147
+    push.b   5                  ; 149
+    call     get                ; 150
+    drop     1                  ; 151
+    push.ret                    ; 152
+    call     go.to              ; 153
+    drop     1                  ; 154
+
+w155:
+    push.b   5                  ; 155
+    call     get                ; 156
+    drop     1                  ; 157
+    push.ret                    ; 158
+    call     distance.to        ; 159
+    drop     1                  ; 160
+    push.ret                    ; 161
+    push.b   2                  ; 162
+    call     get                ; 163
+    drop     1                  ; 164
+    push.ret                    ; 165
+    binary   >                  ; 166
+    goto-if  w179               ; 167
+    push.b   1                  ; 169
+    call     get                ; 170
+    drop     1                  ; 171
+    push.ret                    ; 172
+    call     step               ; 173
+    drop     1                  ; 174
+    push.b   10                 ; 175
+    call     delay              ; 176
+    drop     1                  ; 177
+    goto     w196               ; 178
+
+w179:
+    push.b   5                  ; 179
+    call     get                ; 180
+    drop     1                  ; 181
+    push.ret                    ; 182
+    push.b   1                  ; 183
+    call     get                ; 184
+    drop     1                  ; 185
+    push.ret                    ; 186
+    binary   !=                 ; 187
+    goto-if  w196               ; 188
+    push.b   1                  ; 190
+    call     get                ; 191
+    drop     1                  ; 192
+    push.ret                    ; 193
+    call     step               ; 194
+    drop     1                  ; 195
+
+w196:
+    goto     w228               ; 196
+
+w197:
+    push.b   5                  ; 197
+    call     get                ; 198
+    drop     1                  ; 199
+    push.ret                    ; 200
+    call     distance.to        ; 201
+    drop     1                  ; 202
+    push.ret                    ; 203
+    push.b   2                  ; 204
+    call     get                ; 205
+    drop     1                  ; 206
+    push.ret                    ; 207
+    binary   <=                 ; 208
+    goto-if  w213               ; 209
+    call     turning?           ; 211
+    goto     w228               ; 212
+
+w213:
+    push.b   5                  ; 213
+    call     get                ; 214
+    drop     1                  ; 215
+    push.ret                    ; 216
+    call     step               ; 217
+    drop     1                  ; 218
+    push.b   11                 ; 219
+    call     get                ; 220
+    drop     1                  ; 221
+    push.ret                    ; 222
+    goto-if  w228               ; 223
+    push.b   10                 ; 225
+    call     delay              ; 226
+    drop     1                  ; 227
+
+w228:
+    goto     w245               ; 228
+
+w229:
+    push.b   0                  ; 229
+    call     aim                ; 230
+    drop     1                  ; 231
+    push.b   1                  ; 232
+    call     get                ; 233
+    drop     1                  ; 234
+    push.ret                    ; 235
+    goto-if  w242               ; 236
+    push.b   1                  ; 238
+    call     act                ; 239
+    drop     1                  ; 240
+    goto     w245               ; 241
+
+w242:
+    push.b   3                  ; 242
+    call     act                ; 243
+    drop     1                  ; 244
+
+w245:
+    goto     w83                ; 245
+
+w246:
+    ret                         ; 246
+
+w247:
+    push.b   1                  ; 247
+    goto-if  w266               ; 248
+    push.b   19                 ; 250
+    call     get                ; 251
+    drop     1                  ; 252
+    push.ret                    ; 253
+    goto-if  w259               ; 254
+    push.b   11                 ; 256
+    call     act                ; 257
+    drop     1                  ; 258
+
+w259:
+    push.b   60                 ; 259
+    call     delay              ; 260
+    drop     1                  ; 261
+    push.b   60                 ; 262
+    call     delay.rnd          ; 263
+    drop     1                  ; 264
+    goto     w247               ; 265
+
+w266:
+    ret                         ; 266
+
+w267:
+    push.b   1                  ; 267
+    goto-if  w407               ; 268
+    push.b   5                  ; 270
+    call     get                ; 271
+    drop     1                  ; 272
+    push.ret                    ; 273
+    call     enemy?             ; 274
+    drop     1                  ; 275
+    push.ret                    ; 276
+    goto-if  w391               ; 277
+    call     fire               ; 279
+    push.b   5                  ; 280
+    call     get                ; 281
+    drop     1                  ; 282
+    push.ret                    ; 283
+    push.b   1                  ; 284
+    call     get                ; 285
+    drop     1                  ; 286
+    push.ret                    ; 287
+    binary   ==                 ; 288
+    goto-if  w323               ; 289
+    push.b   5                  ; 291
+    call     get                ; 292
+    drop     1                  ; 293
+    push.ret                    ; 294
+    call     distance.to        ; 295
+    drop     1                  ; 296
+    push.ret                    ; 297
+    push.b   2                  ; 298
+    call     get                ; 299
+    drop     1                  ; 300
+    push.ret                    ; 301
+    binary   <=                 ; 302
+    goto-if  w307               ; 303
+    call     turning?           ; 305
+    goto     w322               ; 306
+
+w307:
+    push.b   1                  ; 307
+    call     get                ; 308
+    drop     1                  ; 309
+    push.ret                    ; 310
+    call     step               ; 311
+    drop     1                  ; 312
+    push.b   11                 ; 313
+    call     get                ; 314
+    drop     1                  ; 315
+    push.ret                    ; 316
+    goto-if  w322               ; 317
+    push.b   10                 ; 319
+    call     delay              ; 320
+    drop     1                  ; 321
+
+w322:
+    goto     w390               ; 322
+
+w323:
+    push.b   5                  ; 323
+    call     get                ; 324
+    drop     1                  ; 325
+    push.ret                    ; 326
+    call     go.to              ; 327
+    drop     1                  ; 328
+    push.b   18                 ; 329
+    call     get                ; 330
+    drop     1                  ; 331
+    push.ret                    ; 332
+    goto-if  w359               ; 333
+    push.b   1                  ; 335
+    call     get                ; 336
+    drop     1                  ; 337
+    push.ret                    ; 338
+    call     step               ; 339
+    drop     1                  ; 340
+    push.b   5                  ; 341
+    call     get                ; 342
+    drop     1                  ; 343
+    push.ret                    ; 344
+    call     distance.to        ; 345
+    drop     1                  ; 346
+    push.ret                    ; 347
+    push.b   2                  ; 348
+    call     get                ; 349
+    drop     1                  ; 350
+    push.ret                    ; 351
+    binary   >                  ; 352
+    goto-if  w358               ; 353
+    push.b   10                 ; 355
+    call     delay              ; 356
+    drop     1                  ; 357
+
+w358:
+    goto     w390               ; 358
+
+w359:
+    push.b   1                  ; 359
+    call     get                ; 360
+    drop     1                  ; 361
+    push.ret                    ; 362
+    call     distance.to        ; 363
+    drop     1                  ; 364
+    push.ret                    ; 365
+    push.b   2                  ; 366
+    call     get                ; 367
+    drop     1                  ; 368
+    push.ret                    ; 369
+    binary   <=                 ; 370
+    goto-if  w375               ; 371
+    call     turning?           ; 373
+    goto     w390               ; 374
+
+w375:
+    push.b   1                  ; 375
+    call     get                ; 376
+    drop     1                  ; 377
+    push.ret                    ; 378
+    call     step               ; 379
+    drop     1                  ; 380
+    push.b   11                 ; 381
+    call     get                ; 382
+    drop     1                  ; 383
+    push.ret                    ; 384
+    goto-if  w390               ; 385
+    push.b   10                 ; 387
+    call     delay              ; 388
+    drop     1                  ; 389
+
+w390:
+    goto     w406               ; 390
+
+w391:
+    push.b   120                ; 391
+    call     delay              ; 392
+    drop     1                  ; 393
+    push.b   0                  ; 394
+    call     find.target        ; 395
+    drop     1                  ; 396
+    push.ret                    ; 397
+    call     aim                ; 398
+    drop     1                  ; 399
+    push.b   5                  ; 400
+    call     get                ; 401
+    drop     1                  ; 402
+    push.ret                    ; 403
+    call     go.to              ; 404
+    drop     1                  ; 405
+
+w406:
+    goto     w267               ; 406
+
+w407:
+    ret                         ; 407
+
+w408:
+    push.b   1                  ; 408
+    goto-if  w452               ; 409
+    push.b   5                  ; 411
+    call     get                ; 412
+    drop     1                  ; 413
+    push.ret                    ; 414
+    call     enemy?             ; 415
+    drop     1                  ; 416
+    push.ret                    ; 417
+    goto-if  w436               ; 418
+    push.b   1                  ; 420
+    call     get                ; 421
+    drop     1                  ; 422
+    push.ret                    ; 423
+    call     step               ; 424
+    drop     1                  ; 425
+    push.b   11                 ; 426
+    call     get                ; 427
+    drop     1                  ; 428
+    push.ret                    ; 429
+    goto-if  w435               ; 430
+    push.b   5                  ; 432
+    call     delay              ; 433
+    drop     1                  ; 434
+
+w435:
+    goto     w451               ; 435
+
+w436:
+    push.b   120                ; 436
+    call     delay              ; 437
+    drop     1                  ; 438
+    push.b   4                  ; 439
+    call     find.target        ; 440
+    drop     1                  ; 441
+    push.ret                    ; 442
+    call     aim                ; 443
+    drop     1                  ; 444
+    push.b   5                  ; 445
+    call     get                ; 446
+    drop     1                  ; 447
+    push.ret                    ; 448
+    call     go.to              ; 449
+    drop     1                  ; 450
+
+w451:
+    goto     w408               ; 451
+
+w452:
+    ret                         ; 452
+
+w453:
+    push.b   1                  ; 453
+    goto-if  w639               ; 454
+    push.b   5                  ; 456
+    call     get                ; 457
+    drop     1                  ; 458
+    push.ret                    ; 459
+    goto-if  w540               ; 460
+    call     fire               ; 462
+    push.b   5                  ; 463
+    call     get                ; 464
+    drop     1                  ; 465
+    push.ret                    ; 466
+    call     distance.to        ; 467
+    drop     1                  ; 468
+    push.ret                    ; 469
+    push.b   2                  ; 470
+    call     get                ; 471
+    drop     1                  ; 472
+    push.ret                    ; 473
+    binary   <=                 ; 474
+    goto-if  w482               ; 475
+    push.b   0                  ; 477
+    call     go.to              ; 478
+    drop     1                  ; 479
+    call     turning?           ; 480
+    goto     w536               ; 481
+
+w482:
+    push.b   6                  ; 482
+    call     get                ; 483
+    drop     1                  ; 484
+    push.ret                    ; 485
+    call     distance           ; 486
+    drop     1                  ; 487
+    push.ret                    ; 488
+    push.b   2                  ; 489
+    call     get                ; 490
+    drop     1                  ; 491
+    push.ret                    ; 492
+    push.b   2                  ; 493
+    binary   *                  ; 494
+    binary   >                  ; 495
+    goto-if  w508               ; 496
+    push.b   0                  ; 498
+    call     aim                ; 499
+    drop     1                  ; 500
+    push.b   6                  ; 501
+    call     get                ; 502
+    drop     1                  ; 503
+    push.ret                    ; 504
+    call     go.to              ; 505
+    drop     1                  ; 506
+    goto     w521               ; 507
+
+w508:
+    push.b   1                  ; 508
+    call     get                ; 509
+    drop     1                  ; 510
+    push.ret                    ; 511
+    unary    !                  ; 512
+    goto-if  w521               ; 513
+    push.b   5                  ; 515
+    call     get                ; 516
+    drop     1                  ; 517
+    push.ret                    ; 518
+    call     go.to              ; 519
+    drop     1                  ; 520
+
+w521:
+    push.b   1                  ; 521
+    call     get                ; 522
+    drop     1                  ; 523
+    push.ret                    ; 524
+    call     step               ; 525
+    drop     1                  ; 526
+    push.b   11                 ; 527
+    call     get                ; 528
+    drop     1                  ; 529
+    push.ret                    ; 530
+    goto-if  w536               ; 531
+    push.b   10                 ; 533
+    call     delay              ; 534
+    drop     1                  ; 535
+
+w536:
+    push.b   10                 ; 536
+    call     delay              ; 537
+    drop     1                  ; 538
+    goto     w638               ; 539
+
+w540:
+    push.b   6                  ; 540
+    call     get                ; 541
+    drop     1                  ; 542
+    push.b   2                  ; 543
+    call     find.target        ; 544
+    drop     1                  ; 545
+    push.ret                    ; 546
+    call     aim                ; 547
+    drop     1                  ; 548
+    push.b   5                  ; 549
+    call     get                ; 550
+    drop     1                  ; 551
+    push.ret                    ; 552
+    goto-if  w589               ; 553
+    push.b   5                  ; 555
+    call     get                ; 556
+    drop     1                  ; 557
+    push.ret                    ; 558
+    call     distance.to        ; 559
+    drop     1                  ; 560
+    push.ret                    ; 561
+    push.b   2                  ; 562
+    call     get                ; 563
+    drop     1                  ; 564
+    push.ret                    ; 565
+    binary   >                  ; 566
+    goto-if  w588               ; 567
+    push.b   1                  ; 569
+    call     get                ; 570
+    drop     1                  ; 571
+    push.ret                    ; 572
+    goto-if  w582               ; 573
+    push.b   1                  ; 575
+    call     get                ; 576
+    drop     1                  ; 577
+    push.ret                    ; 578
+    call     step               ; 579
+    drop     1                  ; 580
+    goto     w588               ; 581
+
+w582:
+    push.b   5                  ; 582
+    call     get                ; 583
+    drop     1                  ; 584
+    push.ret                    ; 585
+    call     go.to              ; 586
+    drop     1                  ; 587
+
+w588:
+    goto     w638               ; 588
+
+w589:
+    push.b   60                 ; 589
+    call     delay              ; 590
+    drop     1                  ; 591
+    push.b   6                  ; 592
+    call     get                ; 593
+    drop     1                  ; 594
+    push.ret                    ; 595
+    call     distance           ; 596
+    drop     1                  ; 597
+    push.ret                    ; 598
+    push.w   256                ; 599
+    binary   >                  ; 601
+    goto-if  w620               ; 602
+    push.b   0                  ; 604
+    call     aim                ; 605
+    drop     1                  ; 606
+    push.b   6                  ; 607
+    call     get                ; 608
+    drop     1                  ; 609
+    push.ret                    ; 610
+    call     go.to              ; 611
+    drop     1                  ; 612
+    push.b   1                  ; 613
+    call     get                ; 614
+    drop     1                  ; 615
+    push.ret                    ; 616
+    call     step               ; 617
+    drop     1                  ; 618
+    goto     w638               ; 619
+
+w620:
+    push.b   6                  ; 620
+    call     get                ; 621
+    drop     1                  ; 622
+    push.ret                    ; 623
+    call     distance           ; 624
+    drop     1                  ; 625
+    push.ret                    ; 626
+    push.w   256                ; 627
+    binary   <=                 ; 629
+    goto-if  w635               ; 630
+    push.b   0                  ; 632
+    call     go.to              ; 633
+    drop     1                  ; 634
+
+w635:
+    push.b   120                ; 635
+    call     delay              ; 636
+    drop     1                  ; 637
+
+w638:
+    goto     w453               ; 638
+
+w639:
+    ret                         ; 639
+
+w640:
+    push.var 4                  ; 640
+    call     dismiss            ; 641
+    drop     1                  ; 642
+
+w643:
+    push.b   1                  ; 643
+    goto-if  w750               ; 644
+    call     fire               ; 646
+    push.b   11                 ; 647
+    call     get                ; 648
+    drop     1                  ; 649
+    push.ret                    ; 650
+    unary    !                  ; 651
+    goto-if  w746               ; 652
+    push.b   1                  ; 654
+    call     get                ; 655
+    drop     1                  ; 656
+    push.ret                    ; 657
+    call     distance           ; 658
+    drop     1                  ; 659
+    push.ret                    ; 660
+    push.w   256                ; 661
+    binary   <                  ; 663
+    goto-if  w740               ; 664
+    push.b   1                  ; 666
+    call     get                ; 667
+    drop     1                  ; 668
+    push.ret                    ; 669
+    call     not.unit?          ; 670
+    drop     1                  ; 671
+    push.ret                    ; 672
+    unary    !                  ; 673
+    goto-if  w714               ; 674
+    push.b   7                  ; 676
+    call     get                ; 677
+    drop     1                  ; 678
+    push.ret                    ; 679
+    push.b   16                 ; 680
+    binary   ==                 ; 681
+    goto-if  w712               ; 682
+    call     harvest            ; 684
+    push.ret                    ; 685
+    goto-if  w692               ; 686
+    push.b   5                  ; 688
+    call     act                ; 689
+    drop     1                  ; 690
+    goto     w711               ; 691
+
+w692:
+    push.b   14                 ; 692
+    call     get                ; 693
+    drop     1                  ; 694
+    push.ret                    ; 695
+    push.var 3                  ; 696
+    binary   ==                 ; 697
+    goto-if  w702               ; 698
+    call     act.default        ; 700
+    goto     w711               ; 701
+
+w702:
+    push.b   0                  ; 702
+    call     go.to              ; 703
+    drop     1                  ; 704
+    push.b   0                  ; 705
+    call     aim                ; 706
+    drop     1                  ; 707
+    push.b   5                  ; 708
+    call     act                ; 709
+    drop     1                  ; 710
+
+w711:
+    goto     w713               ; 711
+
+w712:
+    call     act.default        ; 712
+
+w713:
+    goto     w740               ; 713
+
+w714:
+    push.b   14                 ; 714
+    call     get                ; 715
+    drop     1                  ; 716
+    push.ret                    ; 717
+    push.var 3                  ; 718
+    binary   ==                 ; 719
+    push.b   7                  ; 720
+    call     get                ; 721
+    drop     1                  ; 722
+    push.ret                    ; 723
+    push.b   16                 ; 724
+    binary   !=                 ; 725
+    binary   ||                 ; 726
+    goto-if  w731               ; 727
+    call     act.default        ; 729
+    goto     w740               ; 730
+
+w731:
+    push.b   0                  ; 731
+    call     go.to              ; 732
+    drop     1                  ; 733
+    push.b   0                  ; 734
+    call     aim                ; 735
+    drop     1                  ; 736
+    push.b   5                  ; 737
+    call     act                ; 738
+    drop     1                  ; 739
+
+w740:
+    push.b   1                  ; 740
+    call     get                ; 741
+    drop     1                  ; 742
+    push.ret                    ; 743
+    call     step               ; 744
+    drop     1                  ; 745
+
+w746:
+    push.b   10                 ; 746
+    call     delay              ; 747
+    drop     1                  ; 748
+    goto     w643               ; 749
+
+w750:
+    ret                         ; 750
+
+w751:
+    call     claim.ok?          ; 751
+    push.var 4                  ; 752
+    goto-if  w760               ; 753
+    push.var 4                  ; 755
+    call     dismiss            ; 756
+    drop     1                  ; 757
+    push.b   0                  ; 758
+    pop.var  4                  ; 759
+
+w760:
+    call     amount             ; 760
+    push.ret                    ; 761
+    push.b   100                ; 762
+    binary   <                  ; 763
+    goto-if  w873               ; 764
+
+w766:
+    call     amount             ; 766
+    push.ret                    ; 767
+    push.b   100                ; 768
+    binary   <                  ; 769
+    goto-if  w873               ; 770
+    push.b   1                  ; 772
+    call     get                ; 773
+    drop     1                  ; 774
+    push.ret                    ; 775
+    unary    !                  ; 776
+    goto-if  w862               ; 777
+    call     harvest            ; 779
+    push.ret                    ; 780
+    unary    !                  ; 781
+    goto-if  w858               ; 782
+    push.b   3                  ; 784
+    call     find.spice         ; 785
+    drop     1                  ; 786
+    push.ret                    ; 787
+    call     go.to              ; 788
+    drop     1                  ; 789
+    push.b   1                  ; 790
+    call     get                ; 791
+    drop     1                  ; 792
+    push.ret                    ; 793
+    unary    !                  ; 794
+    push.b   14                 ; 795
+    call     get                ; 796
+    drop     1                  ; 797
+    push.ret                    ; 798
+    push.var 3                  ; 799
+    binary   !=                 ; 800
+    binary   &&                 ; 801
+    goto-if  w836               ; 802
+    push.b   20                 ; 804
+    call     find.spice         ; 805
+    drop     1                  ; 806
+    push.ret                    ; 807
+    call     go.to              ; 808
+    drop     1                  ; 809
+    push.b   1                  ; 810
+    call     get                ; 811
+    drop     1                  ; 812
+    push.ret                    ; 813
+    unary    !                  ; 814
+    goto-if  w836               ; 815
+    push.b   40                 ; 817
+    call     find.spice         ; 818
+    drop     1                  ; 819
+    push.ret                    ; 820
+    call     go.to              ; 821
+    drop     1                  ; 822
+    push.b   1                  ; 823
+    call     get                ; 824
+    drop     1                  ; 825
+    push.ret                    ; 826
+    unary    !                  ; 827
+    goto-if  w836               ; 828
+    push.b   60                 ; 830
+    call     find.spice         ; 831
+    drop     1                  ; 832
+    push.ret                    ; 833
+    call     go.to              ; 834
+    drop     1                  ; 835
+
+w836:
+    push.b   1                  ; 836
+    call     get                ; 837
+    drop     1                  ; 838
+    push.ret                    ; 839
+    unary    !                  ; 840
+    goto-if  w857               ; 841
+    call     amount             ; 843
+    push.ret                    ; 844
+    goto-if  w854               ; 845
+    push.b   0                  ; 847
+    call     go.to              ; 848
+    drop     1                  ; 849
+    push.b   6                  ; 850
+    call     act                ; 851
+    drop     1                  ; 852
+    goto     w857               ; 853
+
+w854:
+    push.b   7                  ; 854
+    call     act                ; 855
+    drop     1                  ; 856
+
+w857:
+    goto     w861               ; 857
+
+w858:
+    push.b   5                  ; 858
+    call     delay              ; 859
+    drop     1                  ; 860
+
+w861:
+    goto     w869               ; 861
+
+w862:
+    push.b   1                  ; 862
+    call     get                ; 863
+    drop     1                  ; 864
+    push.ret                    ; 865
+    push.pc                     ; 866
+    goto     w23                ; 867
+    drop     1                  ; 868
+
+w869:
+    push.b   10                 ; 869
+    call     delay              ; 870
+    drop     1                  ; 871
+    goto     w766               ; 872
+
+w873:
+    push.b   0                  ; 873
+    call     go.to              ; 874
+    drop     1                  ; 875
+    push.b   6                  ; 876
+    call     act                ; 877
+    drop     1                  ; 878
+    ret                         ; 879
+
+w880:
+    push.b   1                  ; 880
+    goto-if  w966               ; 881
+    push.var 4                  ; 883
+    call     kind               ; 884
+    drop     1                  ; 885
+    push.ret                    ; 886
+    push.b   2                  ; 887
+    binary   ==                 ; 888
+    goto-if  w894               ; 889
+    push.b   1                  ; 891
+    call     act                ; 892
+    drop     1                  ; 893
+
+w894:
+    call     claim.ok?          ; 894
+    push.var 4                  ; 895
+    goto-if  w915               ; 896
+    push.arg 1                  ; 898
+    call     find.struct        ; 899
+    drop     1                  ; 900
+    push.ret                    ; 901
+    goto-if  w909               ; 902
+    call     harvest            ; 904
+    push.b   30                 ; 905
+    call     delay              ; 906
+    drop     1                  ; 907
+    goto     w914               ; 908
+
+w909:
+    push.var 4                  ; 909
+    call     dismiss            ; 910
+    drop     1                  ; 911
+    push.b   0                  ; 912
+    pop.var  4                  ; 913
+
+w914:
+    goto     w965               ; 914
+
+w915:
+    push.arg 1                  ; 915
+    call     find.struct        ; 916
+    drop     1                  ; 917
+    push.ret                    ; 918
+    goto-if  w962               ; 919
+    push.b   7                  ; 921
+    call     get                ; 922
+    drop     1                  ; 923
+    push.ret                    ; 924
+    push.b   16                 ; 925
+    binary   ==                 ; 926
+    goto-if  w953               ; 927
+    push.b   0                  ; 929
+    call     count              ; 930
+    drop     1                  ; 931
+    push.ret                    ; 932
+    goto-if  w949               ; 933
+    push.b   0                  ; 935
+    call     call.unit          ; 936
+    drop     1                  ; 937
+    push.ret                    ; 938
+    pop.var  4                  ; 939
+    push.var 4                  ; 940
+    goto-if  w945               ; 941
+    call     harvest            ; 943
+    goto     w948               ; 944
+
+w945:
+    push.arg 1                  ; 945
+    call     go.nearest         ; 946
+    drop     1                  ; 947
+
+w948:
+    goto     w952               ; 948
+
+w949:
+    push.arg 1                  ; 949
+    call     go.nearest         ; 950
+    drop     1                  ; 951
+
+w952:
+    goto     w958               ; 952
+
+w953:
+    push.b   0                  ; 953
+    call     call.unit          ; 954
+    drop     1                  ; 955
+    push.ret                    ; 956
+    pop.var  4                  ; 957
+
+w958:
+    push.b   60                 ; 958
+    call     delay              ; 959
+    drop     1                  ; 960
+    goto     w965               ; 961
+
+w962:
+    push.b   60                 ; 962
+    call     delay              ; 963
+    drop     1                  ; 964
+
+w965:
+    goto     w880               ; 965
+
+w966:
+    ret                         ; 966
+
+w967:
+    push.b   0                  ; 967
+    call     go.to              ; 968
+    drop     1                  ; 969
+    push.b   0                  ; 970
+    call     aim                ; 971
+    drop     1                  ; 972
+
+w973:
+    push.b   1                  ; 973
+    goto-if  w1099              ; 974
+    push.var 4                  ; 976
+    goto-if  w1018              ; 977
+    push.b   13                 ; 979
+    call     find.struct        ; 980
+    drop     1                  ; 981
+    push.ret                    ; 982
+    goto-if  w989               ; 983
+    push.b   30                 ; 985
+    call     delay              ; 986
+    drop     1                  ; 987
+    goto     w994               ; 988
+
+w989:
+    push.var 4                  ; 989
+    call     dismiss            ; 990
+    drop     1                  ; 991
+    push.b   0                  ; 992
+    pop.var  4                  ; 993
+
+w994:
+    call     fidget             ; 994
+    push.b   5                  ; 995
+    call     get                ; 996
+    drop     1                  ; 997
+    push.ret                    ; 998
+    unary    !                  ; 999
+    goto-if  w1008              ; 1000
+    push.b   1                  ; 1002
+    call     find.target        ; 1003
+    drop     1                  ; 1004
+    push.ret                    ; 1005
+    call     aim                ; 1006
+    drop     1                  ; 1007
+
+w1008:
+    call     turning?           ; 1008
+    push.ret                    ; 1009
+    unary    !                  ; 1010
+    goto-if  w1014              ; 1011
+    call     fire               ; 1013
+
+w1014:
+    push.b   60                 ; 1014
+    call     delay.rnd          ; 1015
+    drop     1                  ; 1016
+    goto     w1098              ; 1017
+
+w1018:
+    push.b   0                  ; 1018
+    call     get                ; 1019
+    drop     1                  ; 1020
+    push.ret                    ; 1021
+    push.w   128                ; 1022
+    binary   <                  ; 1024
+    push.b   13                 ; 1025
+    call     find.struct        ; 1026
+    drop     1                  ; 1027
+    push.ret                    ; 1028
+    push.b   0                  ; 1029
+    binary   !=                 ; 1030
+    binary   &&                 ; 1031
+    goto-if  w1043              ; 1032
+    push.b   0                  ; 1034
+    call     call.unit          ; 1035
+    drop     1                  ; 1036
+    push.ret                    ; 1037
+    pop.var  4                  ; 1038
+    push.w   180                ; 1039
+    call     delay.rnd          ; 1041
+    drop     1                  ; 1042
+
+w1043:
+    push.b   5                  ; 1043
+    call     get                ; 1044
+    drop     1                  ; 1045
+    push.ret                    ; 1046
+    unary    !                  ; 1047
+    goto-if  w1075              ; 1048
+    push.b   1                  ; 1050
+    call     find.target        ; 1051
+    drop     1                  ; 1052
+    push.ret                    ; 1053
+    call     aim                ; 1054
+    drop     1                  ; 1055
+    push.b   5                  ; 1056
+    call     get                ; 1057
+    drop     1                  ; 1058
+    push.ret                    ; 1059
+    unary    !                  ; 1060
+    goto-if  w1071              ; 1061
+    call     fidget             ; 1063
+    push.b   120                ; 1064
+    call     delay              ; 1065
+    drop     1                  ; 1066
+    push.w   180                ; 1067
+    call     delay.rnd          ; 1069
+    drop     1                  ; 1070
+
+w1071:
+    push.b   60                 ; 1071
+    call     delay              ; 1072
+    drop     1                  ; 1073
+    goto     w1092              ; 1074
+
+w1075:
+    push.b   5                  ; 1075
+    call     get                ; 1076
+    drop     1                  ; 1077
+    push.ret                    ; 1078
+    call     distance.to        ; 1079
+    drop     1                  ; 1080
+    push.ret                    ; 1081
+    push.b   2                  ; 1082
+    call     get                ; 1083
+    drop     1                  ; 1084
+    push.ret                    ; 1085
+    binary   >                  ; 1086
+    goto-if  w1092              ; 1087
+    push.b   0                  ; 1089
+    call     aim                ; 1090
+    drop     1                  ; 1091
+
+w1092:
+    call     turning?           ; 1092
+    push.ret                    ; 1093
+    goto-if  w1097              ; 1094
+    goto     w1092              ; 1096
+
+w1097:
+    call     fire               ; 1097
+
+w1098:
+    goto     w973               ; 1098
+
+w1099:
+    ret                         ; 1099
+    ret                         ; 1100
+
+w1101:
+    reserve  1                  ; 1101
+    push.b   4                  ; 1102
+    call     get                ; 1103
+    drop     1                  ; 1104
+    push.ret                    ; 1105
+    pop.loc  1                  ; 1106
+
+w1107:
+    push.arg 1                  ; 1107
+    goto-if  w1129              ; 1108
+    push.w   200                ; 1110
+    call     speed              ; 1112
+    drop     1                  ; 1113
+    push.loc 1                  ; 1114
+    push.b   10                 ; 1115
+    binary   +                  ; 1116
+    pop.loc  1                  ; 1117
+    push.loc 1                  ; 1118
+    call     turn               ; 1119
+    drop     1                  ; 1120
+    push.b   25                 ; 1121
+    call     delay              ; 1122
+    drop     1                  ; 1123
+    push.arg 1                  ; 1124
+    push.b   1                  ; 1125
+    binary   -                  ; 1126
+    pop.arg  1                  ; 1127
+    goto     w1107              ; 1128
+
+w1129:
+    call     unfog              ; 1129
+    drop     1                  ; 1130
+    ret                         ; 1131
+
+w1132:
+    push.b   30                 ; 1132
+    call     delay              ; 1133
+    drop     1                  ; 1134
+    push.b   1                  ; 1135
+    call     get                ; 1136
+    drop     1                  ; 1137
+    push.ret                    ; 1138
+    goto-if  w1151              ; 1139
+    push.b   1                  ; 1141
+    call     get                ; 1142
+    drop     1                  ; 1143
+    push.ret                    ; 1144
+    call     dir.to             ; 1145
+    drop     1                  ; 1146
+    push.ret                    ; 1147
+    call     turn               ; 1148
+    drop     1                  ; 1149
+    goto     w1159              ; 1150
+
+w1151:
+    push.w   255                ; 1151
+    push.b   0                  ; 1153
+    call     random             ; 1154
+    drop     2                  ; 1155
+    push.ret                    ; 1156
+    call     turn               ; 1157
+    drop     1                  ; 1158
+
+w1159:
+    push.w   255                ; 1159
+    call     speed              ; 1161
+    drop     1                  ; 1162
+    push.b   30                 ; 1163
+    call     delay              ; 1164
+    drop     1                  ; 1165
+    ret                         ; 1166
+
+w1167:
+    push.arg 1                  ; 1167
+    call     friend?            ; 1168
+    drop     1                  ; 1169
+    push.ret                    ; 1170
+    unary    !                  ; 1171
+    goto-if  w1177              ; 1172
+    push.b   0                  ; 1174
+    pop.ret                     ; 1175
+    ret                         ; 1176
+
+w1177:
+    call     fly.to             ; 1177
+    push.b   1                  ; 1178
+    call     get                ; 1179
+    drop     1                  ; 1180
+    push.ret                    ; 1181
+    goto-if  w1203              ; 1182
+    push.arg 1                  ; 1184
+    call     facing.of          ; 1185
+    drop     1                  ; 1186
+    push.ret                    ; 1187
+    call     turn               ; 1188
+    drop     1                  ; 1189
+
+w1190:
+    push.b   10                 ; 1190
+    call     get                ; 1191
+    drop     1                  ; 1192
+    push.ret                    ; 1193
+    goto-if  w1200              ; 1194
+    push.b   3                  ; 1196
+    call     delay              ; 1197
+    drop     1                  ; 1198
+    goto     w1190              ; 1199
+
+w1200:
+    push.b   1                  ; 1200
+    pop.ret                     ; 1201
+    ret                         ; 1202
+
+w1203:
+    push.b   0                  ; 1203
+    pop.ret                     ; 1204
+    ret                         ; 1205
+    ret                         ; 1206
+
+w1207:
+    reserve  1                  ; 1207
+    push.arg 1                  ; 1208
+    call     head.for           ; 1209
+    drop     1                  ; 1210
+
+w1211:
+    push.b   10                 ; 1211
+    call     get                ; 1212
+    drop     1                  ; 1213
+    push.ret                    ; 1214
+    push.b   32                 ; 1215
+    binary   >                  ; 1216
+    goto-if  w1246              ; 1217
+    push.b   64                 ; 1219
+    call     speed              ; 1220
+    drop     1                  ; 1221
+    push.b   10                 ; 1222
+    call     delay              ; 1223
+    drop     1                  ; 1224
+    push.arg 1                  ; 1225
+    call     head.for           ; 1226
+    drop     1                  ; 1227
+    push.arg 1                  ; 1228
+    call     blocked?           ; 1229
+    drop     1                  ; 1230
+    push.ret                    ; 1231
+    goto-if  w1245              ; 1232
+    push.arg 1                  ; 1234
+    call     nearby             ; 1235
+    drop     1                  ; 1236
+    push.ret                    ; 1237
+    pop.arg  1                  ; 1238
+    push.arg 1                  ; 1239
+    call     go.to              ; 1240
+    drop     1                  ; 1241
+    push.arg 1                  ; 1242
+    call     head.for           ; 1243
+    drop     1                  ; 1244
+
+w1245:
+    goto     w1211              ; 1245
+
+w1246:
+    push.b   1                  ; 1246
+    goto-if  w1361              ; 1247
+    push.arg 1                  ; 1249
+    call     blocked?           ; 1250
+    drop     1                  ; 1251
+    push.ret                    ; 1252
+    goto-if  w1266              ; 1253
+    push.arg 1                  ; 1255
+    call     nearby             ; 1256
+    drop     1                  ; 1257
+    push.ret                    ; 1258
+    pop.arg  1                  ; 1259
+    push.arg 1                  ; 1260
+    call     go.to              ; 1261
+    drop     1                  ; 1262
+    push.arg 1                  ; 1263
+    call     head.for           ; 1264
+    drop     1                  ; 1265
+
+w1266:
+    push.arg 1                  ; 1266
+    call     distance           ; 1267
+    drop     1                  ; 1268
+    push.ret                    ; 1269
+    pop.loc  1                  ; 1270
+    push.loc 1                  ; 1271
+    push.w   128                ; 1272
+    binary   >                  ; 1274
+    goto-if  w1280              ; 1275
+    push.arg 1                  ; 1277
+    call     head.for           ; 1278
+    drop     1                  ; 1279
+
+w1280:
+    push.loc 1                  ; 1280
+    push.w   2560               ; 1281
+    binary   >                  ; 1283
+    goto-if  w1299              ; 1284
+    push.w   255                ; 1286
+    push.b   10                 ; 1288
+    call     get                ; 1289
+    drop     1                  ; 1290
+    push.ret                    ; 1291
+    binary   -                  ; 1292
+    call     speed              ; 1293
+    drop     1                  ; 1294
+    push.b   60                 ; 1295
+    call     delay              ; 1296
+    drop     1                  ; 1297
+    goto     w1338              ; 1298
+
+w1299:
+    push.loc 1                  ; 1299
+    push.w   768                ; 1300
+    binary   >                  ; 1302
+    goto-if  w1320              ; 1303
+    push.w   128                ; 1305
+    push.b   10                 ; 1307
+    call     get                ; 1308
+    drop     1                  ; 1309
+    push.ret                    ; 1310
+    push.b   1                  ; 1311
+    binary   >>                 ; 1312
+    binary   -                  ; 1313
+    call     speed              ; 1314
+    drop     1                  ; 1315
+    push.b   30                 ; 1316
+    call     delay              ; 1317
+    drop     1                  ; 1318
+    goto     w1338              ; 1319
+
+w1320:
+    push.loc 1                  ; 1320
+    push.b   127                ; 1321
+    binary   >                  ; 1322
+    goto-if  w1338              ; 1323
+    push.b   64                 ; 1325
+    push.b   10                 ; 1326
+    call     get                ; 1327
+    drop     1                  ; 1328
+    push.ret                    ; 1329
+    push.b   2                  ; 1330
+    binary   >>                 ; 1331
+    binary   -                  ; 1332
+    call     speed              ; 1333
+    drop     1                  ; 1334
+    push.b   10                 ; 1335
+    call     delay              ; 1336
+    drop     1                  ; 1337
+
+w1338:
+    push.loc 1                  ; 1338
+    push.w   256                ; 1339
+    binary   <                  ; 1341
+    goto-if  w1349              ; 1342
+    push.b   1                  ; 1344
+    pop.ret                     ; 1345
+    drop     1                  ; 1346
+    ret                         ; 1347
+    goto     w1360              ; 1348
+
+w1349:
+    push.b   9                  ; 1349
+    call     get                ; 1350
+    drop     1                  ; 1351
+    push.ret                    ; 1352
+    push.b   10                 ; 1353
+    binary   <                  ; 1354
+    goto-if  w1360              ; 1355
+    push.b   10                 ; 1357
+    call     speed              ; 1358
+    drop     1                  ; 1359
+
+w1360:
+    goto     w1246              ; 1360
+
+w1361:
+    drop     1                  ; 1361
+    ret                         ; 1362
+
+w1363:
+    push.w   6000               ; 1363
+    call     delay              ; 1365
+    drop     1                  ; 1366
+    call     die                ; 1367
+    ret                         ; 1368
+
+w1369:
+    call     unfog              ; 1369
+    push.var 0                  ; 1370
+    push.b   9                  ; 1371
+    binary   ==                 ; 1372
+    goto-if  w1377              ; 1373
+    push.pc                     ; 1375
+    goto     w408               ; 1376
+
+w1377:
+    push.var 0                  ; 1377
+    push.b   0                  ; 1378
+    binary   ==                 ; 1379
+    goto-if  w1384              ; 1380
+    push.pc                     ; 1382
+    goto     w83                ; 1383
+
+w1384:
+    push.var 0                  ; 1384
+    push.b   8                  ; 1385
+    binary   ==                 ; 1386
+    goto-if  w1391              ; 1387
+    push.pc                     ; 1389
+    goto     w247               ; 1390
+
+w1391:
+    push.var 0                  ; 1391
+    push.b   11                 ; 1392
+    binary   ==                 ; 1393
+    goto-if  w1398              ; 1394
+    push.pc                     ; 1396
+    goto     w267               ; 1397
+
+w1398:
+    push.var 0                  ; 1398
+    push.b   4                  ; 1399
+    binary   ==                 ; 1400
+    goto-if  w1405              ; 1401
+    push.pc                     ; 1403
+    goto     w453               ; 1404
+
+w1405:
+    push.var 0                  ; 1405
+    push.b   1                  ; 1406
+    binary   ==                 ; 1407
+    goto-if  w1412              ; 1408
+    push.pc                     ; 1410
+    goto     w640               ; 1411
+
+w1412:
+    push.var 0                  ; 1412
+    push.b   2                  ; 1413
+    binary   ==                 ; 1414
+    goto-if  w1428              ; 1415
+    push.b   0                  ; 1417
+    call     aim                ; 1418
+    drop     1                  ; 1419
+    push.b   6                  ; 1420
+    call     get                ; 1421
+    drop     1                  ; 1422
+    push.ret                    ; 1423
+    call     go.to              ; 1424
+    drop     1                  ; 1425
+    push.pc                     ; 1426
+    goto     w640               ; 1427
+
+w1428:
+    push.var 0                  ; 1428
+    push.b   3                  ; 1429
+    binary   ==                 ; 1430
+    goto-if  w1435              ; 1431
+    push.pc                     ; 1433
+    goto     w967               ; 1434
+
+w1435:
+    push.var 0                  ; 1435
+    push.b   10                 ; 1436
+    binary   ==                 ; 1437
+    goto-if  w1508              ; 1438
+    call     stop               ; 1440
+    push.var 1                  ; 1441
+    push.b   -1                 ; 1442
+    binary   ==                 ; 1443
+    goto-if  w1450              ; 1444
+    push.b   30                 ; 1446
+    call     delay              ; 1447
+    drop     1                  ; 1448
+    goto     w1506              ; 1449
+
+w1450:
+    push.b   13                 ; 1450
+    call     get                ; 1451
+    drop     1                  ; 1452
+    push.ret                    ; 1453
+    goto-if  w1506              ; 1454
+    push.b   3                  ; 1456
+    push.b   1                  ; 1457
+    call     random             ; 1458
+    drop     2                  ; 1459
+    push.ret                    ; 1460
+    push.b   1                  ; 1461
+    binary   ==                 ; 1462
+    goto-if  w1487              ; 1463
+    push.b   9                  ; 1465
+    call     blast.stub         ; 1466
+    drop     1                  ; 1467
+    push.b   1                  ; 1468
+    call     frame              ; 1469
+    drop     1                  ; 1470
+    push.b   20                 ; 1471
+    call     delay              ; 1472
+    drop     1                  ; 1473
+    push.b   2                  ; 1474
+    call     frame              ; 1475
+    drop     1                  ; 1476
+    push.b   30                 ; 1477
+    call     delay              ; 1478
+    drop     1                  ; 1479
+    push.b   3                  ; 1480
+    call     frame              ; 1481
+    drop     1                  ; 1482
+    push.b   45                 ; 1483
+    call     delay              ; 1484
+    drop     1                  ; 1485
+    goto     w1503              ; 1486
+
+w1487:
+    push.b   2                  ; 1487
+    push.b   1                  ; 1488
+    call     random             ; 1489
+    drop     2                  ; 1490
+    push.ret                    ; 1491
+    push.b   2                  ; 1492
+    binary   ==                 ; 1493
+    goto-if  w1500              ; 1494
+    push.b   4                  ; 1496
+    call     blast.stub         ; 1497
+    drop     1                  ; 1498
+    goto     w1503              ; 1499
+
+w1500:
+    push.b   6                  ; 1500
+    call     blast.stub         ; 1501
+    drop     1                  ; 1502
+
+w1503:
+    push.b   0                  ; 1503
+    call     survivor           ; 1504
+    drop     1                  ; 1505
+
+w1506:
+    call     rts.stub           ; 1506
+    call     die                ; 1507
+
+w1508:
+    push.var 0                  ; 1508
+    push.b   13                 ; 1509
+    binary   ==                 ; 1510
+    goto-if  w1525              ; 1511
+    call     stop               ; 1513
+    call     zero11             ; 1514
+    push.b   60                 ; 1515
+    call     delay              ; 1516
+    drop     1                  ; 1517
+    push.b   32                 ; 1518
+    call     explode.big        ; 1519
+    drop     1                  ; 1520
+    push.b   30                 ; 1521
+    call     delay              ; 1522
+    drop     1                  ; 1523
+    call     die                ; 1524
+
+w1525:
+    ret                         ; 1525
+
+unit_infantry:
+    push.var 0                  ; 1526
+    push.b   10                 ; 1527
+    binary   ==                 ; 1528
+    goto-if  w1542              ; 1529
+    call     stop               ; 1531
+    push.b   30                 ; 1532
+    call     zero38             ; 1533
+    drop     1                  ; 1534
+    push.var 1                  ; 1535
+    push.b   -1                 ; 1536
+    binary   !=                 ; 1537
+    goto-if  w1541              ; 1538
+    call     explode            ; 1540
+
+w1541:
+    call     die                ; 1541
+
+w1542:
+    push.pc                     ; 1542
+    goto     w1369              ; 1543
+    ret                         ; 1544
+
+unit_troopers:
+    push.var 0                  ; 1545
+    push.b   10                 ; 1546
+    binary   ==                 ; 1547
+    goto-if  w1561              ; 1548
+    call     stop               ; 1550
+    push.b   30                 ; 1551
+    call     zero38             ; 1552
+    drop     1                  ; 1553
+    push.var 1                  ; 1554
+    push.b   -1                 ; 1555
+    binary   !=                 ; 1556
+    goto-if  w1560              ; 1557
+    call     explode            ; 1559
+
+w1560:
+    call     die                ; 1560
+
+w1561:
+    push.pc                     ; 1561
+    goto     w1369              ; 1562
+    ret                         ; 1563
+
+unit_soldier:
+    push.var 0                  ; 1564
+    push.b   10                 ; 1565
+    binary   ==                 ; 1566
+    goto-if  w1580              ; 1567
+    call     stop               ; 1569
+    push.b   30                 ; 1570
+    call     zero38             ; 1571
+    drop     1                  ; 1572
+    push.var 1                  ; 1573
+    push.b   -1                 ; 1574
+    binary   !=                 ; 1575
+    goto-if  w1579              ; 1576
+    call     explode            ; 1578
+
+w1579:
+    call     die                ; 1579
+
+w1580:
+    push.pc                     ; 1580
+    goto     w1369              ; 1581
+    ret                         ; 1582
+
+unit_trooper:
+    push.var 0                  ; 1583
+    push.b   10                 ; 1584
+    binary   ==                 ; 1585
+    goto-if  w1599              ; 1586
+    call     stop               ; 1588
+    push.b   30                 ; 1589
+    call     zero38             ; 1590
+    drop     1                  ; 1591
+    push.var 1                  ; 1592
+    push.b   -1                 ; 1593
+    binary   !=                 ; 1594
+    goto-if  w1598              ; 1595
+    call     explode            ; 1597
+
+w1598:
+    call     die                ; 1598
+
+w1599:
+    push.pc                     ; 1599
+    goto     w1369              ; 1600
+    ret                         ; 1601
+
+unit_thopter:
+    reserve  3                  ; 1602
+    push.var 0                  ; 1603
+    push.b   10                 ; 1604
+    binary   ==                 ; 1605
+    goto-if  w1624              ; 1606
+    push.b   4                  ; 1608
+    call     get                ; 1609
+    drop     1                  ; 1610
+    push.ret                    ; 1611
+    call     turn               ; 1612
+    drop     1                  ; 1613
+    push.b   15                 ; 1614
+    call     delay              ; 1615
+    drop     1                  ; 1616
+    push.b   60                 ; 1617
+    call     delay.rnd          ; 1618
+    drop     1                  ; 1619
+    push.b   16                 ; 1620
+    call     blast.stub         ; 1621
+    drop     1                  ; 1622
+    call     die                ; 1623
+
+w1624:
+    push.b   1                  ; 1624
+    pop.loc  1                  ; 1625
+
+w1626:
+    push.b   1                  ; 1626
+    goto-if  w1735              ; 1627
+    push.b   5                  ; 1629
+    call     get                ; 1630
+    drop     1                  ; 1631
+    push.ret                    ; 1632
+    call     enemy?             ; 1633
+    drop     1                  ; 1634
+    push.ret                    ; 1635
+    goto-if  w1710              ; 1636
+    push.loc 1                  ; 1638
+    goto-if  w1675              ; 1639
+    push.w   200                ; 1641
+    call     speed              ; 1643
+    drop     1                  ; 1644
+    push.b   5                  ; 1645
+    call     get                ; 1646
+    drop     1                  ; 1647
+    push.ret                    ; 1648
+    call     dir.to             ; 1649
+    drop     1                  ; 1650
+    push.ret                    ; 1651
+    push.w   128                ; 1652
+    binary   +                  ; 1654
+    call     turn               ; 1655
+    drop     1                  ; 1656
+    push.b   5                  ; 1657
+    call     get                ; 1658
+    drop     1                  ; 1659
+    push.ret                    ; 1660
+    call     distance           ; 1661
+    drop     1                  ; 1662
+    push.ret                    ; 1663
+    push.w   1792               ; 1664
+    binary   >                  ; 1666
+    goto-if  w1671              ; 1667
+    push.b   0                  ; 1669
+    pop.loc  1                  ; 1670
+
+w1671:
+    push.b   30                 ; 1671
+    call     delay              ; 1672
+    drop     1                  ; 1673
+    goto     w1709              ; 1674
+
+w1675:
+    push.w   255                ; 1675
+    call     speed              ; 1677
+    drop     1                  ; 1678
+    push.b   5                  ; 1679
+    call     delay              ; 1680
+    drop     1                  ; 1681
+    push.b   5                  ; 1682
+    call     get                ; 1683
+    drop     1                  ; 1684
+    push.ret                    ; 1685
+    call     distance           ; 1686
+    drop     1                  ; 1687
+    push.ret                    ; 1688
+    pop.loc  2                  ; 1689
+    push.loc 2                  ; 1690
+    push.w   1536               ; 1691
+    binary   >                  ; 1693
+    goto-if  w1703              ; 1694
+    push.b   5                  ; 1696
+    call     get                ; 1697
+    drop     1                  ; 1698
+    push.ret                    ; 1699
+    call     head.for           ; 1700
+    drop     1                  ; 1701
+    goto     w1709              ; 1702
+
+w1703:
+    call     fire               ; 1703
+    push.ret                    ; 1704
+    goto-if  w1709              ; 1705
+    push.b   1                  ; 1707
+    pop.loc  1                  ; 1708
+
+w1709:
+    goto     w1734              ; 1709
+
+w1710:
+    push.w   200                ; 1710
+    call     speed              ; 1712
+    drop     1                  ; 1713
+    push.b   3                  ; 1714
+    push.pc                     ; 1715
+    goto     w1101              ; 1716
+    drop     1                  ; 1717
+    push.b   0                  ; 1718
+    call     find.target        ; 1719
+    drop     1                  ; 1720
+    push.ret                    ; 1721
+    call     aim                ; 1722
+    drop     1                  ; 1723
+    push.b   5                  ; 1724
+    call     get                ; 1725
+    drop     1                  ; 1726
+    push.ret                    ; 1727
+    unary    !                  ; 1728
+    goto-if  w1734              ; 1729
+    push.b   60                 ; 1731
+    call     delay              ; 1732
+    drop     1                  ; 1733
+
+w1734:
+    goto     w1626              ; 1734
+
+w1735:
+    drop     3                  ; 1735
+    ret                         ; 1736
+
+unit_launcher:
+    push.pc                     ; 1737
+    goto     w1369              ; 1738
+    ret                         ; 1739
+
+unit_deviator:
+    push.pc                     ; 1740
+    goto     w1369              ; 1741
+    ret                         ; 1742
+
+unit_carryall:
+    reserve  2                  ; 1743
+    push.b   10                 ; 1744
+    pop.loc  2                  ; 1745
+    push.var 0                  ; 1746
+    push.b   10                 ; 1747
+    binary   ==                 ; 1748
+    goto-if  w1767              ; 1749
+    push.b   4                  ; 1751
+    call     get                ; 1752
+    drop     1                  ; 1753
+    push.ret                    ; 1754
+    call     turn               ; 1755
+    drop     1                  ; 1756
+    push.b   10                 ; 1757
+    call     delay              ; 1758
+    drop     1                  ; 1759
+    push.b   60                 ; 1760
+    call     delay.rnd          ; 1761
+    drop     1                  ; 1762
+    push.b   17                 ; 1763
+    call     blast.stub         ; 1764
+    drop     1                  ; 1765
+    call     die                ; 1766
+
+w1767:
+    push.b   1                  ; 1767
+    goto-if  w2003              ; 1768
+    push.w   255                ; 1770
+    call     speed              ; 1772
+    drop     1                  ; 1773
+    call     claim.ok?          ; 1774
+    call     linked.type        ; 1775
+    push.ret                    ; 1776
+    push.b   -1                 ; 1777
+    binary   !=                 ; 1778
+    goto-if  w1906              ; 1779
+    push.b   1                  ; 1781
+    call     get                ; 1782
+    drop     1                  ; 1783
+    push.ret                    ; 1784
+    goto-if  w1838              ; 1785
+    push.b   1                  ; 1787
+    call     get                ; 1788
+    drop     1                  ; 1789
+    push.ret                    ; 1790
+    call     kind               ; 1791
+    drop     1                  ; 1792
+    push.ret                    ; 1793
+    push.b   3                  ; 1794
+    binary   ==                 ; 1795
+    goto-if  w1808              ; 1796
+    push.b   1                  ; 1798
+    call     get                ; 1799
+    drop     1                  ; 1800
+    push.ret                    ; 1801
+    push.pc                     ; 1802
+    goto     w1207              ; 1803
+    drop     1                  ; 1804
+    push.ret                    ; 1805
+    pop.loc  1                  ; 1806
+    goto     w1817              ; 1807
+
+w1808:
+    push.b   1                  ; 1808
+    call     get                ; 1809
+    drop     1                  ; 1810
+    push.ret                    ; 1811
+    push.pc                     ; 1812
+    goto     w1167              ; 1813
+    drop     1                  ; 1814
+    push.ret                    ; 1815
+    pop.loc  1                  ; 1816
+
+w1817:
+    push.loc 1                  ; 1817
+    goto-if  w1834              ; 1818
+    call     deliver            ; 1820
+    call     linked.type        ; 1821
+    push.ret                    ; 1822
+    push.b   -1                 ; 1823
+    binary   ==                 ; 1824
+    goto-if  w1830              ; 1825
+    push.pc                     ; 1827
+    goto     w1132              ; 1828
+    goto     w1833              ; 1829
+
+w1830:
+    push.b   40                 ; 1830
+    call     speed              ; 1831
+    drop     1                  ; 1832
+
+w1833:
+    goto     w1837              ; 1833
+
+w1834:
+    push.b   0                  ; 1834
+    call     go.to              ; 1835
+    drop     1                  ; 1836
+
+w1837:
+    goto     w1905              ; 1837
+
+w1838:
+    call     linked.type        ; 1838
+    push.ret                    ; 1839
+    push.b   16                 ; 1840
+    binary   ==                 ; 1841
+    goto-if  w1883              ; 1842
+    call     amount             ; 1844
+    push.ret                    ; 1845
+    goto-if  w1859              ; 1846
+    push.b   3                  ; 1848
+    push.pc                     ; 1849
+    goto     w1101              ; 1850
+    drop     1                  ; 1851
+    push.b   12                 ; 1852
+    call     seek.dock          ; 1853
+    drop     1                  ; 1854
+    push.ret                    ; 1855
+    call     go.to              ; 1856
+    drop     1                  ; 1857
+    goto     w1882              ; 1858
+
+w1859:
+    push.w   128                ; 1859
+    call     speed              ; 1861
+    drop     1                  ; 1862
+    push.b   4                  ; 1863
+    call     get                ; 1864
+    drop     1                  ; 1865
+    push.ret                    ; 1866
+    push.b   45                 ; 1867
+    binary   +                  ; 1868
+    push.w   128                ; 1869
+    push.b   0                  ; 1871
+    call     random             ; 1872
+    drop     2                  ; 1873
+    push.ret                    ; 1874
+    binary   -                  ; 1875
+    call     turn               ; 1876
+    drop     1                  ; 1877
+    call     deliver            ; 1878
+    push.b   60                 ; 1879
+    call     delay              ; 1880
+    drop     1                  ; 1881
+
+w1882:
+    goto     w1905              ; 1882
+
+w1883:
+    push.w   128                ; 1883
+    call     speed              ; 1885
+    drop     1                  ; 1886
+    push.b   4                  ; 1887
+    call     get                ; 1888
+    drop     1                  ; 1889
+    push.ret                    ; 1890
+    push.b   45                 ; 1891
+    binary   +                  ; 1892
+    push.w   128                ; 1893
+    push.b   0                  ; 1895
+    call     random             ; 1896
+    drop     2                  ; 1897
+    push.ret                    ; 1898
+    binary   -                  ; 1899
+    call     turn               ; 1900
+    drop     1                  ; 1901
+    call     deliver            ; 1902
+    push.pc                     ; 1903
+    goto     w1132              ; 1904
+
+w1905:
+    goto     w2002              ; 1905
+
+w1906:
+    push.var 4                  ; 1906
+    call     friend?            ; 1907
+    drop     1                  ; 1908
+    push.ret                    ; 1909
+    goto-if  w1926              ; 1910
+    push.b   1                  ; 1912
+    call     get                ; 1913
+    drop     1                  ; 1914
+    push.ret                    ; 1915
+    push.pc                     ; 1916
+    goto     w1167              ; 1917
+    drop     1                  ; 1918
+    push.ret                    ; 1919
+    goto-if  w1925              ; 1920
+    call     pick.up            ; 1922
+    push.pc                     ; 1923
+    goto     w1132              ; 1924
+
+w1925:
+    goto     w2002              ; 1925
+
+w1926:
+    push.b   1                  ; 1926
+    call     get                ; 1927
+    drop     1                  ; 1928
+    push.ret                    ; 1929
+    call     dismiss            ; 1930
+    drop     1                  ; 1931
+    push.b   0                  ; 1932
+    call     go.to              ; 1933
+    drop     1                  ; 1934
+    push.b   0                  ; 1935
+    pop.var  4                  ; 1936
+    push.b   15                 ; 1937
+    call     get                ; 1938
+    drop     1                  ; 1939
+    push.ret                    ; 1940
+    goto-if  w1972              ; 1941
+    push.loc 2                  ; 1943
+    push.b   1                  ; 1944
+    binary   -                  ; 1945
+    pop.loc  2                  ; 1946
+    push.loc 2                  ; 1947
+    push.b   0                  ; 1948
+    binary   ==                 ; 1949
+    goto-if  w1972              ; 1950
+    push.w   255                ; 1952
+    call     speed              ; 1954
+    drop     1                  ; 1955
+    push.w   128                ; 1956
+    push.b   0                  ; 1958
+    call     random             ; 1959
+    drop     2                  ; 1960
+    push.ret                    ; 1961
+    call     turn               ; 1962
+    drop     1                  ; 1963
+
+w1964:
+    push.var 4                  ; 1964
+    unary    !                  ; 1965
+    goto-if  w1972              ; 1966
+    push.b   60                 ; 1968
+    call     delay              ; 1969
+    drop     1                  ; 1970
+    goto     w1964              ; 1971
+
+w1972:
+    push.b   6                  ; 1972
+    call     get                ; 1973
+    drop     1                  ; 1974
+    push.ret                    ; 1975
+    call     distance           ; 1976
+    drop     1                  ; 1977
+    push.ret                    ; 1978
+    push.w   2560               ; 1979
+    binary   >                  ; 1981
+    goto-if  w1998              ; 1982
+    push.w   255                ; 1984
+    call     speed              ; 1986
+    drop     1                  ; 1987
+    push.b   6                  ; 1988
+    call     get                ; 1989
+    drop     1                  ; 1990
+    push.ret                    ; 1991
+    call     head.for           ; 1992
+    drop     1                  ; 1993
+    push.b   60                 ; 1994
+    call     delay              ; 1995
+    drop     1                  ; 1996
+    goto     w2002              ; 1997
+
+w1998:
+    push.b   3                  ; 1998
+    push.pc                     ; 1999
+    goto     w1101              ; 2000
+    drop     1                  ; 2001
+
+w2002:
+    goto     w1767              ; 2002
+
+w2003:
+    drop     2                  ; 2003
+    ret                         ; 2004
+
+unit_tank:
+    push.pc                     ; 2005
+    goto     w1369              ; 2006
+    ret                         ; 2007
+
+unit_siegetank:
+    push.pc                     ; 2008
+    goto     w1369              ; 2009
+    ret                         ; 2010
+
+unit_devastator:
+    push.var 0                  ; 2011
+    push.b   10                 ; 2012
+    binary   ==                 ; 2013
+    goto-if  w2024              ; 2014
+    call     stop               ; 2016
+    push.b   32                 ; 2017
+    call     explode.big        ; 2018
+    drop     1                  ; 2019
+    push.b   30                 ; 2020
+    call     delay              ; 2021
+    drop     1                  ; 2022
+    call     die                ; 2023
+
+w2024:
+    push.pc                     ; 2024
+    goto     w1369              ; 2025
+    ret                         ; 2026
+
+unit_saboteur:
+    push.var 0                  ; 2027
+    push.b   10                 ; 2028
+    binary   ==                 ; 2029
+    goto-if  w2037              ; 2030
+    call     stop               ; 2032
+    push.b   30                 ; 2033
+    call     zero38             ; 2034
+    drop     1                  ; 2035
+    call     die                ; 2036
+
+w2037:
+    push.pc                     ; 2037
+    goto     w1369              ; 2038
+    ret                         ; 2039
+
+unit_sonictank:
+    push.pc                     ; 2040
+    goto     w1369              ; 2041
+    ret                         ; 2042
+
+unit_trike:
+    push.var 0                  ; 2043
+    push.b   10                 ; 2044
+    binary   ==                 ; 2045
+    goto-if  w2059              ; 2046
+    call     stop               ; 2048
+    push.var 1                  ; 2049
+    push.b   -1                 ; 2050
+    binary   !=                 ; 2051
+    goto-if  w2057              ; 2052
+    push.b   10                 ; 2054
+    call     blast.stub         ; 2055
+    drop     1                  ; 2056
+
+w2057:
+    call     rts.stub           ; 2057
+    call     die                ; 2058
+
+w2059:
+    push.pc                     ; 2059
+    goto     w1369              ; 2060
+    ret                         ; 2061
+
+unit_raidertrike:
+    push.var 0                  ; 2062
+    push.b   10                 ; 2063
+    binary   ==                 ; 2064
+    goto-if  w2078              ; 2065
+    call     stop               ; 2067
+    push.var 1                  ; 2068
+    push.b   -1                 ; 2069
+    binary   !=                 ; 2070
+    goto-if  w2076              ; 2071
+    push.b   10                 ; 2073
+    call     blast.stub         ; 2074
+    drop     1                  ; 2075
+
+w2076:
+    call     rts.stub           ; 2076
+    call     die                ; 2077
+
+w2078:
+    push.pc                     ; 2078
+    goto     w1369              ; 2079
+    ret                         ; 2080
+
+unit_quad:
+    push.var 0                  ; 2081
+    push.b   10                 ; 2082
+    binary   ==                 ; 2083
+    goto-if  w2096              ; 2084
+    call     stop               ; 2086
+    push.var 1                  ; 2087
+    push.b   -1                 ; 2088
+    binary   !=                 ; 2089
+    goto-if  w2095              ; 2090
+    push.b   10                 ; 2092
+    call     blast.stub         ; 2093
+    drop     1                  ; 2094
+
+w2095:
+    call     die                ; 2095
+
+w2096:
+    push.pc                     ; 2096
+    goto     w1369              ; 2097
+    ret                         ; 2098
+
+unit_harvester:
+    call     unfog              ; 2099
+    push.var 0                  ; 2100
+    push.b   5                  ; 2101
+    binary   ==                 ; 2102
+    goto-if  w2107              ; 2103
+    push.pc                     ; 2105
+    goto     w751               ; 2106
+
+w2107:
+    push.var 0                  ; 2107
+    push.b   1                  ; 2108
+    binary   ==                 ; 2109
+    goto-if  w2114              ; 2110
+    push.pc                     ; 2112
+    goto     w640               ; 2113
+
+w2114:
+    push.var 0                  ; 2114
+    push.b   6                  ; 2115
+    binary   ==                 ; 2116
+    goto-if  w2135              ; 2117
+    push.var 4                  ; 2119
+    goto-if  w2125              ; 2120
+    push.var 4                  ; 2122
+    call     dismiss            ; 2123
+    drop     1                  ; 2124
+
+w2125:
+    push.b   6                  ; 2125
+    call     get                ; 2126
+    drop     1                  ; 2127
+    push.b   0                  ; 2128
+    call     go.to              ; 2129
+    drop     1                  ; 2130
+    push.b   12                 ; 2131
+    push.pc                     ; 2132
+    goto     w880               ; 2133
+    drop     1                  ; 2134
+
+w2135:
+    push.var 0                  ; 2135
+    push.b   7                  ; 2136
+    binary   ==                 ; 2137
+    push.var 0                  ; 2138
+    push.b   3                  ; 2139
+    binary   ==                 ; 2140
+    binary   ||                 ; 2141
+    goto-if  w2151              ; 2142
+
+w2144:
+    push.b   1                  ; 2144
+    goto-if  w2151              ; 2145
+    push.b   60                 ; 2147
+    call     delay              ; 2148
+    drop     1                  ; 2149
+    goto     w2144              ; 2150
+
+w2151:
+    push.var 0                  ; 2151
+    push.b   10                 ; 2152
+    binary   ==                 ; 2153
+    goto-if  w2219              ; 2154
+    call     stop               ; 2156
+    push.b   13                 ; 2157
+    call     get                ; 2158
+    drop     1                  ; 2159
+    push.ret                    ; 2160
+    push.var 1                  ; 2161
+    push.b   -1                 ; 2162
+    binary   !=                 ; 2163
+    binary   &&                 ; 2164
+    goto-if  w2217              ; 2165
+    push.b   3                  ; 2167
+    push.b   1                  ; 2168
+    call     random             ; 2169
+    drop     2                  ; 2170
+    push.ret                    ; 2171
+    push.b   1                  ; 2172
+    binary   ==                 ; 2173
+    goto-if  w2198              ; 2174
+    push.b   9                  ; 2176
+    call     blast.stub         ; 2177
+    drop     1                  ; 2178
+    push.b   1                  ; 2179
+    call     frame              ; 2180
+    drop     1                  ; 2181
+    push.b   15                 ; 2182
+    call     delay              ; 2183
+    drop     1                  ; 2184
+    push.b   2                  ; 2185
+    call     frame              ; 2186
+    drop     1                  ; 2187
+    push.b   20                 ; 2188
+    call     delay              ; 2189
+    drop     1                  ; 2190
+    push.b   3                  ; 2191
+    call     frame              ; 2192
+    drop     1                  ; 2193
+    push.b   25                 ; 2194
+    call     delay              ; 2195
+    drop     1                  ; 2196
+    goto     w2214              ; 2197
+
+w2198:
+    push.b   2                  ; 2198
+    push.b   1                  ; 2199
+    call     random             ; 2200
+    drop     2                  ; 2201
+    push.ret                    ; 2202
+    push.b   2                  ; 2203
+    binary   ==                 ; 2204
+    goto-if  w2211              ; 2205
+    push.b   4                  ; 2207
+    call     blast.stub         ; 2208
+    drop     1                  ; 2209
+    goto     w2214              ; 2210
+
+w2211:
+    push.b   6                  ; 2211
+    call     blast.stub         ; 2212
+    drop     1                  ; 2213
+
+w2214:
+    push.b   0                  ; 2214
+    call     survivor           ; 2215
+    drop     1                  ; 2216
+
+w2217:
+    call     rts.stub           ; 2217
+    call     die                ; 2218
+
+w2219:
+    push.b   7                  ; 2219
+    call     act                ; 2220
+    drop     1                  ; 2221
+    ret                         ; 2222
+
+unit_mcv:
+    reserve  1                  ; 2223
+    call     unfog              ; 2224
+    push.var 4                  ; 2225
+    goto-if  w2233              ; 2226
+    push.var 4                  ; 2228
+    call     dismiss            ; 2229
+    drop     1                  ; 2230
+    push.b   0                  ; 2231
+    pop.var  4                  ; 2232
+
+w2233:
+    push.var 0                  ; 2233
+    push.b   12                 ; 2234
+    binary   ==                 ; 2235
+    goto-if  w2242              ; 2236
+    call     deploy             ; 2238
+    push.b   7                  ; 2239
+    call     act                ; 2240
+    drop     1                  ; 2241
+
+w2242:
+    push.var 0                  ; 2242
+    push.b   1                  ; 2243
+    binary   ==                 ; 2244
+    goto-if  w2249              ; 2245
+    push.pc                     ; 2247
+    goto     w640               ; 2248
+
+w2249:
+    push.var 0                  ; 2249
+    push.b   2                  ; 2250
+    binary   ==                 ; 2251
+    goto-if  w2254              ; 2252
+
+w2254:
+    push.var 0                  ; 2254
+    push.b   3                  ; 2255
+    binary   ==                 ; 2256
+    push.var 0                  ; 2257
+    push.b   7                  ; 2258
+    binary   ==                 ; 2259
+    binary   ||                 ; 2260
+    goto-if  w2270              ; 2261
+
+w2263:
+    push.b   1                  ; 2263
+    goto-if  w2270              ; 2264
+    push.b   60                 ; 2266
+    call     delay              ; 2267
+    drop     1                  ; 2268
+    goto     w2263              ; 2269
+
+w2270:
+    push.var 0                  ; 2270
+    push.b   10                 ; 2271
+    binary   ==                 ; 2272
+    goto-if  w2336              ; 2273
+    call     stop               ; 2275
+    push.b   13                 ; 2276
+    call     get                ; 2277
+    drop     1                  ; 2278
+    push.ret                    ; 2279
+    push.var 1                  ; 2280
+    push.b   -1                 ; 2281
+    binary   !=                 ; 2282
+    binary   &&                 ; 2283
+    goto-if  w2334              ; 2284
+    push.b   3                  ; 2286
+    push.b   1                  ; 2287
+    call     random             ; 2288
+    drop     2                  ; 2289
+    push.ret                    ; 2290
+    pop.loc  1                  ; 2291
+    push.loc 1                  ; 2292
+    push.b   1                  ; 2293
+    binary   ==                 ; 2294
+    goto-if  w2319              ; 2295
+    push.b   9                  ; 2297
+    call     blast.stub         ; 2298
+    drop     1                  ; 2299
+    push.b   1                  ; 2300
+    call     frame              ; 2301
+    drop     1                  ; 2302
+    push.b   15                 ; 2303
+    call     delay              ; 2304
+    drop     1                  ; 2305
+    push.b   2                  ; 2306
+    call     frame              ; 2307
+    drop     1                  ; 2308
+    push.b   20                 ; 2309
+    call     delay              ; 2310
+    drop     1                  ; 2311
+    push.b   3                  ; 2312
+    call     frame              ; 2313
+    drop     1                  ; 2314
+    push.b   25                 ; 2315
+    call     delay              ; 2316
+    drop     1                  ; 2317
+    goto     w2331              ; 2318
+
+w2319:
+    push.loc 1                  ; 2319
+    push.b   2                  ; 2320
+    binary   ==                 ; 2321
+    goto-if  w2328              ; 2322
+    push.b   4                  ; 2324
+    call     blast.stub         ; 2325
+    drop     1                  ; 2326
+    goto     w2331              ; 2327
+
+w2328:
+    push.b   6                  ; 2328
+    call     blast.stub         ; 2329
+    drop     1                  ; 2330
+
+w2331:
+    push.b   0                  ; 2331
+    call     survivor           ; 2332
+    drop     1                  ; 2333
+
+w2334:
+    call     rts.stub           ; 2334
+    call     die                ; 2335
+
+w2336:
+    push.b   3                  ; 2336
+    call     act                ; 2337
+    drop     1                  ; 2338
+    drop     1                  ; 2339
+    ret                         ; 2340
+
+unit_deathhand:
+    push.pc                     ; 2341
+    goto     w1363              ; 2342
+    ret                         ; 2343
+
+unit_rocket:
+    push.pc                     ; 2344
+    goto     w1363              ; 2345
+    ret                         ; 2346
+
+unit_arocket:
+    push.pc                     ; 2347
+    goto     w1363              ; 2348
+    ret                         ; 2349
+
+unit_grocket:
+    push.pc                     ; 2350
+    goto     w1363              ; 2351
+    ret                         ; 2352
+
+unit_bullet:
+    push.w   6000               ; 2353
+    call     delay              ; 2355
+    drop     1                  ; 2356
+    call     die                ; 2357
+    ret                         ; 2358
+
+unit_minirocket:
+    push.pc                     ; 2359
+    goto     w1363              ; 2360
+    ret                         ; 2361
+
+unit_sonicblast:
+    push.w   1800               ; 2362
+    call     delay              ; 2364
+    drop     1                  ; 2365
+    call     die                ; 2366
+    ret                         ; 2367
+
+unit_frigate:
+    reserve  1                  ; 2368
+    push.var 0                  ; 2369
+    push.b   10                 ; 2370
+    binary   ==                 ; 2371
+    goto-if  w2390              ; 2372
+    push.b   4                  ; 2374
+    call     get                ; 2375
+    drop     1                  ; 2376
+    push.ret                    ; 2377
+    call     turn               ; 2378
+    drop     1                  ; 2379
+    push.b   10                 ; 2380
+    call     delay              ; 2381
+    drop     1                  ; 2382
+    push.b   60                 ; 2383
+    call     delay.rnd          ; 2384
+    drop     1                  ; 2385
+    push.b   17                 ; 2386
+    call     blast.stub         ; 2387
+    drop     1                  ; 2388
+    call     die                ; 2389
+
+w2390:
+    push.b   1                  ; 2390
+    goto-if  w2506              ; 2391
+    push.w   255                ; 2393
+    call     speed              ; 2395
+    drop     1                  ; 2396
+    call     claim.ok?          ; 2397
+    call     linked.type        ; 2398
+    push.ret                    ; 2399
+    push.b   -1                 ; 2400
+    binary   !=                 ; 2401
+    goto-if  w2497              ; 2402
+    push.b   1                  ; 2404
+    call     get                ; 2405
+    drop     1                  ; 2406
+    push.ret                    ; 2407
+    goto-if  w2461              ; 2408
+    push.b   1                  ; 2410
+    call     get                ; 2411
+    drop     1                  ; 2412
+    push.ret                    ; 2413
+    call     kind               ; 2414
+    drop     1                  ; 2415
+    push.ret                    ; 2416
+    push.b   3                  ; 2417
+    binary   ==                 ; 2418
+    goto-if  w2431              ; 2419
+    push.b   1                  ; 2421
+    call     get                ; 2422
+    drop     1                  ; 2423
+    push.ret                    ; 2424
+    push.pc                     ; 2425
+    goto     w1207              ; 2426
+    drop     1                  ; 2427
+    push.ret                    ; 2428
+    pop.loc  1                  ; 2429
+    goto     w2440              ; 2430
+
+w2431:
+    push.b   1                  ; 2431
+    call     get                ; 2432
+    drop     1                  ; 2433
+    push.ret                    ; 2434
+    push.pc                     ; 2435
+    goto     w1167              ; 2436
+    drop     1                  ; 2437
+    push.ret                    ; 2438
+    pop.loc  1                  ; 2439
+
+w2440:
+    push.loc 1                  ; 2440
+    goto-if  w2457              ; 2441
+    call     deliver            ; 2443
+    call     linked.type        ; 2444
+    push.ret                    ; 2445
+    push.b   -1                 ; 2446
+    binary   ==                 ; 2447
+    goto-if  w2453              ; 2448
+    push.pc                     ; 2450
+    goto     w1132              ; 2451
+    goto     w2456              ; 2452
+
+w2453:
+    push.b   40                 ; 2453
+    call     speed              ; 2454
+    drop     1                  ; 2455
+
+w2456:
+    goto     w2460              ; 2456
+
+w2457:
+    push.b   0                  ; 2457
+    call     go.to              ; 2458
+    drop     1                  ; 2459
+
+w2460:
+    goto     w2496              ; 2460
+
+w2461:
+    push.b   11                 ; 2461
+    call     seek.dock          ; 2462
+    drop     1                  ; 2463
+    push.ret                    ; 2464
+    call     go.to              ; 2465
+    drop     1                  ; 2466
+    push.b   1                  ; 2467
+    call     get                ; 2468
+    drop     1                  ; 2469
+    push.ret                    ; 2470
+    unary    !                  ; 2471
+    goto-if  w2496              ; 2472
+    push.w   128                ; 2474
+    call     speed              ; 2476
+    drop     1                  ; 2477
+    push.b   4                  ; 2478
+    call     get                ; 2479
+    drop     1                  ; 2480
+    push.ret                    ; 2481
+    push.b   45                 ; 2482
+    binary   +                  ; 2483
+    push.w   128                ; 2484
+    push.b   0                  ; 2486
+    call     random             ; 2487
+    drop     2                  ; 2488
+    push.ret                    ; 2489
+    binary   -                  ; 2490
+    call     turn               ; 2491
+    drop     1                  ; 2492
+    call     deliver            ; 2493
+    push.pc                     ; 2494
+    goto     w1132              ; 2495
+
+w2496:
+    goto     w2505              ; 2496
+
+w2497:
+    push.w   255                ; 2497
+    call     speed              ; 2499
+    drop     1                  ; 2500
+    push.w   30000              ; 2501
+    call     delay              ; 2503
+    drop     1                  ; 2504
+
+w2505:
+    goto     w2390              ; 2505
+
+w2506:
+    drop     1                  ; 2506
+    ret                         ; 2507
+
+unit_sandworm:
+    push.var 0                  ; 2508
+    push.b   10                 ; 2509
+    binary   ==                 ; 2510
+    goto-if  w2515              ; 2511
+    call     stop               ; 2513
+    call     die                ; 2514
+
+w2515:
+    push.var 0                  ; 2515
+    push.b   8                  ; 2516
+    binary   ==                 ; 2517
+    goto-if  w2522              ; 2518
+    push.pc                     ; 2520
+    goto     w247               ; 2521
+
+w2522:
+    push.b   120                ; 2522
+    call     delay              ; 2523
+    drop     1                  ; 2524
+    push.var 0                  ; 2525
+    push.b   4                  ; 2526
+    binary   ==                 ; 2527
+    goto-if  w2623              ; 2528
+
+w2530:
+    push.b   1                  ; 2530
+    goto-if  w2623              ; 2531
+    push.b   5                  ; 2533
+    call     get                ; 2534
+    drop     1                  ; 2535
+    push.ret                    ; 2536
+    goto-if  w2608              ; 2537
+    push.b   5                  ; 2539
+    call     get                ; 2540
+    drop     1                  ; 2541
+    push.ret                    ; 2542
+    call     distance           ; 2543
+    drop     1                  ; 2544
+    push.ret                    ; 2545
+    push.b   2                  ; 2546
+    call     get                ; 2547
+    drop     1                  ; 2548
+    push.ret                    ; 2549
+    binary   <=                 ; 2550
+    goto-if  w2568              ; 2551
+    push.b   5                  ; 2553
+    call     get                ; 2554
+    drop     1                  ; 2555
+    push.ret                    ; 2556
+    call     enemy?             ; 2557
+    drop     1                  ; 2558
+    push.ret                    ; 2559
+    goto-if  w2564              ; 2560
+    call     fire               ; 2562
+    goto     w2567              ; 2563
+
+w2564:
+    push.b   0                  ; 2564
+    call     aim                ; 2565
+    drop     1                  ; 2566
+
+w2567:
+    goto     w2575              ; 2567
+
+w2568:
+    push.b   5                  ; 2568
+    call     get                ; 2569
+    drop     1                  ; 2570
+    push.ret                    ; 2571
+    push.pc                     ; 2572
+    goto     w23                ; 2573
+    drop     1                  ; 2574
+
+w2575:
+    push.b   6                  ; 2575
+    call     get                ; 2576
+    drop     1                  ; 2577
+    push.ret                    ; 2578
+    call     distance           ; 2579
+    drop     1                  ; 2580
+    push.ret                    ; 2581
+    push.w   2560               ; 2582
+    binary   >                  ; 2584
+    goto-if  w2594              ; 2585
+    push.b   6                  ; 2587
+    call     get                ; 2588
+    drop     1                  ; 2589
+    push.ret                    ; 2590
+    call     aim                ; 2591
+    drop     1                  ; 2592
+    goto     w2607              ; 2593
+
+w2594:
+    push.b   5                  ; 2594
+    call     get                ; 2595
+    drop     1                  ; 2596
+    push.ret                    ; 2597
+    call     enemy?             ; 2598
+    drop     1                  ; 2599
+    push.ret                    ; 2600
+    goto-if  w2607              ; 2601
+    call     find.prey          ; 2603
+    push.ret                    ; 2604
+    call     aim                ; 2605
+    drop     1                  ; 2606
+
+w2607:
+    goto     w2622              ; 2607
+
+w2608:
+    call     find.prey          ; 2608
+    push.ret                    ; 2609
+    call     aim                ; 2610
+    drop     1                  ; 2611
+    push.b   5                  ; 2612
+    call     get                ; 2613
+    drop     1                  ; 2614
+    push.ret                    ; 2615
+    unary    !                  ; 2616
+    goto-if  w2622              ; 2617
+    push.b   60                 ; 2619
+    call     delay              ; 2620
+    drop     1                  ; 2621
+
+w2622:
+    goto     w2530              ; 2622
+
+w2623:
+    push.b   1                  ; 2623
+    goto-if  w2675              ; 2624
+    push.b   5                  ; 2626
+    call     get                ; 2627
+    drop     1                  ; 2628
+    push.ret                    ; 2629
+    goto-if  w2660              ; 2630
+    push.b   5                  ; 2632
+    call     get                ; 2633
+    drop     1                  ; 2634
+    push.ret                    ; 2635
+    call     distance           ; 2636
+    drop     1                  ; 2637
+    push.ret                    ; 2638
+    push.b   2                  ; 2639
+    call     get                ; 2640
+    drop     1                  ; 2641
+    push.ret                    ; 2642
+    binary   <=                 ; 2643
+    goto-if  w2648              ; 2644
+    call     fire               ; 2646
+    goto     w2655              ; 2647
+
+w2648:
+    push.b   5                  ; 2648
+    call     get                ; 2649
+    drop     1                  ; 2650
+    push.ret                    ; 2651
+    push.pc                     ; 2652
+    goto     w23                ; 2653
+    drop     1                  ; 2654
+
+w2655:
+    call     find.prey          ; 2655
+    push.ret                    ; 2656
+    call     aim                ; 2657
+    drop     1                  ; 2658
+    goto     w2674              ; 2659
+
+w2660:
+    call     find.prey          ; 2660
+    push.ret                    ; 2661
+    call     aim                ; 2662
+    drop     1                  ; 2663
+    push.b   5                  ; 2664
+    call     get                ; 2665
+    drop     1                  ; 2666
+    push.ret                    ; 2667
+    unary    !                  ; 2668
+    goto-if  w2674              ; 2669
+    push.b   60                 ; 2671
+    call     delay              ; 2672
+    drop     1                  ; 2673
+
+w2674:
+    goto     w2623              ; 2674
+
+w2675:
+    ret                         ; 2675

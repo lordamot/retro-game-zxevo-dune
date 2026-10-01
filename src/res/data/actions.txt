@@ -1,0 +1,109 @@
+# actions.txt - the fourteen orders, the table at $06CEF4
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source, compiled by tools/dune_data.py.
+# The format is in the header of src/res/data/tables.txt.
+
+table actions
+# The fourteen orders (actions.txt).  The code reads records at
+# $06CEF8 + 12n; the name of order n is the longword 4 bytes before.
+# tbl_actions is that $06CEF8, so ACT_name is -4; tbl_actions_start
+# is the name of order 0.
+rom $06CEF4
+count 14
+size $0C
+prefix ACT_
+idprefix ORDER_
+anchor $06CEF8
+field $00 str    name                   ; the name is the longword 4 bytes before $06CEF8 + 12n
+field $04 w      f00                    ; 1: may interrupt a unit already busy (Die, Destruct); PC switchType
+field $06 w      f02                    ; 1 Attack/Move, 3 the rest; PC selectionType
+field $08 w      f04                    ; PC soundID (a feedback voice id)
+field $0A hw     f06                    ; PC stringID
+
+records
+record 0 Attack
+  name = "Attack"
+  f00 = 0
+  f02 = 1
+  f04 = 21
+  f06 = $0002
+record 1 Move
+  name = "Move"
+  f00 = 0
+  f02 = 1
+  f04 = 22
+  f06 = $0003
+record 2 Retreat
+  name = "Retreat"
+  f00 = 0
+  f02 = 3
+  f04 = 21
+  f06 = $0004
+record 3 Guard
+  name = "Guard"
+  f00 = 0
+  f02 = 3
+  f04 = 21
+  f06 = $0005
+record 4 AreaGuard
+  name = "Area Guard"
+  f00 = 0
+  f02 = 3
+  f04 = 20
+  f06 = $0006
+record 5 Harvest
+  name = "Harvest"
+  f00 = 0
+  f02 = 1
+  f04 = 20
+  f06 = $0007
+record 6 Return
+  name = "Return"
+  f00 = 0
+  f02 = 3
+  f04 = 21
+  f06 = $0025
+record 7 Stop
+  name = "Stop"
+  f00 = 0
+  f02 = 3
+  f04 = 21
+  f06 = $0009
+record 8 Ambush
+  name = "Ambush"
+  f00 = 0
+  f02 = 3
+  f04 = 20
+  f06 = $000A
+record 9 Sabotage
+  name = "Sabotage"
+  f00 = 0
+  f02 = 3
+  f04 = 20
+  f06 = $000B
+record 10 Die
+  name = "Die"
+  f00 = 1
+  f02 = 3
+  f04 = 65535
+  f06 = $000C
+record 11 Hunt
+  name = "Hunt"
+  f00 = 0
+  f02 = 3
+  f04 = 20
+  f06 = $001F
+record 12 Deploy
+  name = "Deploy"
+  f00 = 0
+  f02 = 3
+  f04 = 20
+  f06 = $0099
+record 13 Destruct
+  name = "Destruct"
+  f00 = 1
+  f02 = 3
+  f04 = 20
+  f06 = $0000
+end

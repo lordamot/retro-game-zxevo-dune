@@ -1,0 +1,120 @@
+# houses.txt - the six houses, the table at $06C750
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source, compiled by tools/dune_data.py.
+# The format is in the header of src/res/data/tables.txt.
+
+table house_info
+# The six houses (S4, S9).
+rom $06C750
+count 6
+size $1E
+prefix HI_
+idprefix HOUSE_
+field $00 w      f00
+field $02 str    name                   ; S9: the first letter names the SCEN file
+field $06 w      toughness              ; S4
+field $08 w      degradingChance        ; S2/S4
+field $0A w      degradingAmount        ; S4
+field $0C w      f0C                    ; houses.txt 'colour'; PC minimapColour
+field $0E w      specialCountDown       ; S4
+field $10 w      starportDeliveryTime   ; S4/S6
+field $12 w      prefixChar             ; houses.txt 'prefix'
+field $14 w      specialWeapon          ; S4: 1 Death Hand, 2 Fremen, 3 Saboteur
+field $16 w      f16
+field $18 w      f18
+field $1A sw     f1A                    ; houses.txt 'mentat': the mentat's music track, -1 none
+field $1C w      f1C
+
+records
+record 0 Harkonnen
+  f00 = 0
+  name = "Harkonnen"
+  toughness = 200
+  degradingChance = 85
+  degradingAmount = 2
+  f0C = 144
+  specialCountDown = 400
+  starportDeliveryTime = 10
+  prefixChar = 72
+  specialWeapon = 1
+  f16 = 6
+  f18 = 3
+  f1A = 24
+  f1C = 0
+record 1 Atreides
+  f00 = 0
+  name = "Atreides"
+  toughness = 77
+  degradingChance = 0
+  degradingAmount = 0
+  f0C = 160
+  specialCountDown = 50
+  starportDeliveryTime = 10
+  prefixChar = 65
+  specialWeapon = 2
+  f16 = 7
+  f18 = 4
+  f1A = 25
+  f1C = 0
+record 2 Ordos
+  f00 = 0
+  name = "Ordos"
+  toughness = 128
+  degradingChance = 10
+  degradingAmount = 1
+  f0C = 176
+  specialCountDown = 125
+  starportDeliveryTime = 10
+  prefixChar = 79
+  specialWeapon = 3
+  f16 = 5
+  f18 = 2
+  f1A = 26
+  f1C = 0
+record 3 Fremen
+  f00 = 0
+  name = "Fremen"
+  toughness = 10
+  degradingChance = 0
+  degradingAmount = 0
+  f0C = 192
+  specialCountDown = 300
+  starportDeliveryTime = 0
+  prefixChar = 79
+  specialWeapon = 2
+  f16 = 5
+  f18 = 2
+  f1A = -1
+  f1C = 0
+record 4 Sardaukar
+  f00 = 0
+  name = "Sardaukar"
+  toughness = 128
+  degradingChance = 0
+  degradingAmount = 0
+  f0C = 208
+  specialCountDown = 600
+  starportDeliveryTime = 0
+  prefixChar = 72
+  specialWeapon = 1
+  f16 = 6
+  f18 = 3
+  f1A = -1
+  f1C = 0
+record 5 Mercenary
+  f00 = 0
+  name = "Mercenary"
+  toughness = 0
+  degradingChance = 0
+  degradingAmount = 0
+  f0C = 224
+  specialCountDown = 300
+  starportDeliveryTime = 0
+  prefixChar = 77
+  specialWeapon = 3
+  f16 = 7
+  f18 = 4
+  f1A = -1
+  f1C = 0
+end

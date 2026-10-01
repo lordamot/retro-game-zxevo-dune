@@ -1,0 +1,173 @@
+# SCENA005.txt - mission 5 of the Atreides.
+#
+# From orig/dune2.gen $057A8E, 1454 bytes: SCENA005.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTVEHC.WSA" 14
+BASIC WinPicture   "WIN2.WSA" 10 hex:0057
+BASIC BriefPicture "REPAIR.WSA" 12 hex:0041
+BASIC Timeout      0
+BASIC MapScale     0
+BASIC CursorPos    1011   ; x51 y15
+BASIC TacticalPos  1011   ; x51 y15
+BASIC LoseFlags    1
+BASIC WinFlags     3
+MAP   Bloom 218 1807 2034 3185   ; x26 y3, x15 y28, x50 y31, x49 y49
+MAP   Seed  5
+HOUSE Atreides   Quota    0
+HOUSE Atreides   Credits  1500
+HOUSE Atreides   Brain    H
+HOUSE Atreides   MaxUnit  18
+HOUSE Ordos      Quota    0
+HOUSE Ordos      Credits  1000
+HOUSE Ordos      Brain    C
+HOUSE Ordos      MaxUnit  23
+TEAM  1   Ordos      Normal    Foot      3 6
+TEAM  2   Ordos      Normal    Tracked   3 7
+TEAM  3   Ordos      Kamikaze  Wheeled   3 6
+TEAM  4   Ordos      Kamikaze  Foot      3 5
+TEAM  5   Ordos      Normal    Wheeled   3 6
+TEAM  6   Ordos      Kamikaze  Tracked   3 7
+UNIT  1   Fremen     Sandworm    256 346   E   Ambush    ; x26 y5
+UNIT  2   Atreides   Tank        256 882   S   Guard     ; x50 y13
+UNIT  4   Atreides   Infantry    256 945   S   Guard     ; x49 y14
+UNIT  5   Atreides   Quad        256 949   S   Guard     ; x53 y14
+UNIT  6   Atreides   Quad        256 1073  S   Guard     ; x49 y16
+UNIT  7   Atreides   Tank        256 1078  S   Guard     ; x54 y16
+UNIT  8   Atreides   Tank        256 1202  S   Guard     ; x50 y18
+UNIT  9   Atreides   Quad        256 1206  S   Guard     ; x54 y18
+UNIT  10  Atreides   Soldier     256 1268  S   Guard     ; x52 y19
+UNIT  11  Fremen     Sandworm    256 1951  SE  Ambush    ; x31 y30
+UNIT  12  Ordos      Tank        256 2250  S   AreaGuard ; x10 y35
+UNIT  13  Ordos      Tank        256 2373  S   AreaGuard ; x5 y37
+UNIT  16  Ordos      Tank        256 2576  S   Guard     ; x16 y40
+UNIT  17  Ordos      Troopers    256 2705  S   AreaGuard ; x17 y42
+UNIT  18  Ordos      Quad        256 2856  S   Ambush    ; x40 y44
+UNIT  19  Ordos      Tank        256 2894  S   AreaGuard ; x14 y45
+UNIT  20  Ordos      Tank        256 2923  S   AreaGuard ; x43 y45
+UNIT  23  Ordos      Tank        256 3023  S   AreaGuard ; x15 y47
+UNIT  24  Ordos      Tank        256 3110  S   AreaGuard ; x38 y48
+UNIT  25  Ordos      Tank        256 3206  S   AreaGuard ; x6 y50
+UNIT  26  Ordos      Troopers    256 3972  S   Hunt      ; x4 y62
+UNIT  27  Ordos      Tank        256 3278  S   AreaGuard ; x14 y51
+UNIT  28  Ordos      Tank        256 3437  S   AreaGuard ; x45 y53
+UNIT  29  Ordos      Quad        256 3564  S   Ambush    ; x44 y55
+STRUCT 30  Atreides   ConstYard    256 1011  ; x51 y15
+STRUCT 31  Ordos      Turret       256 2311  ; x7 y36
+STRUCT 32  Ordos      Turret       256 2315  ; x11 y36
+STRUCT 33  Ordos      Turret       256 2381  ; x13 y37
+GEN   2439  Ordos      Wall   ; x7 y38
+GEN   2440  Ordos      Wall   ; x8 y38
+GEN   2441  Ordos      Wall   ; x9 y38
+GEN   2442  Ordos      Wall   ; x10 y38
+GEN   2443  Ordos      Wall   ; x11 y38
+GEN   2444  Ordos      Wall   ; x12 y38
+GEN   2503  Ordos      Wall   ; x7 y39
+STRUCT 34  Ordos      Windtrap     256 2504  ; x8 y39
+STRUCT 35  Ordos      Windtrap     256 2506  ; x10 y39
+GEN   2508  Ordos      Wall   ; x12 y39
+GEN   2567  Ordos      Wall   ; x7 y40
+GEN   2572  Ordos      Wall   ; x12 y40
+GEN   2630  Ordos      Wall   ; x6 y41
+GEN   2631  Ordos      Wall   ; x7 y41
+GEN   2632  Ordos      Wall   ; x8 y41
+GEN   2633  Ordos      Wall   ; x9 y41
+GEN   2634  Ordos      Wall   ; x10 y41
+GEN   2635  Ordos      Wall   ; x11 y41
+GEN   2636  Ordos      Wall   ; x12 y41
+GEN   2637  Ordos      Wall   ; x13 y41
+GEN   2638  Ordos      Wall   ; x14 y41
+GEN   2639  Ordos      Wall   ; x15 y41
+GEN   2694  Ordos      Wall   ; x6 y42
+STRUCT 36  Ordos      Outpost      256 3048  ; x40 y47
+GEN   2697  Ordos      Slab   ; x9 y42
+STRUCT 37  Ordos      HeavyFactory 256 2698  ; x10 y42
+STRUCT 38  Ordos      Windtrap     256 3014  ; x6 y47
+GEN   2703  Ordos      Wall   ; x15 y42
+GEN   2756  Ordos      Wall   ; x4 y43
+GEN   2757  Ordos      Wall   ; x5 y43
+GEN   2758  Ordos      Wall   ; x6 y43
+GEN   2761  Ordos      Slab   ; x9 y43
+GEN   2767  Ordos      Wall   ; x15 y43
+GEN   2820  Ordos      Wall   ; x4 y44
+STRUCT 39  Ordos      Repair       256 2821  ; x5 y44
+GEN   2824  Ordos      Slab   ; x8 y44
+GEN   2825  Ordos      Slab   ; x9 y44
+GEN   2826  Ordos      Slab   ; x10 y44
+GEN   2827  Ordos      Slab   ; x11 y44
+GEN   2828  Ordos      Slab   ; x12 y44
+STRUCT 40  Ordos      Turret       256 2829  ; x13 y44
+STRUCT 41  Ordos      Refinery     256 2888  ; x8 y45
+STRUCT 42  Ordos      Turret       256 2891  ; x11 y45
+GEN   2949  Ordos      Wall   ; x5 y46
+GEN   2950  Ordos      Wall   ; x6 y46
+GEN   2951  Ordos      Wall   ; x7 y46
+GEN   2955  Ordos      Slab   ; x11 y46
+STRUCT 43  Ordos      Turret       256 2980  ; x36 y46
+GEN   2984  Ordos      Wall   ; x40 y46
+GEN   2985  Ordos      Wall   ; x41 y46
+GEN   2986  Ordos      Wall   ; x42 y46
+GEN   3013  Ordos      Wall   ; x5 y47
+STRUCT 44  Ordos      HiTech       256 2701  ; x13 y42
+STRUCT 45  Ordos      Windtrap     256 3016  ; x8 y47
+STRUCT 46  Ordos      Silo         256 3018  ; x10 y47
+GEN   3020  Ordos      Wall   ; x12 y47
+GEN   3044  Ordos      Slab   ; x36 y47
+STRUCT 47  Ordos      ConstYard    256 2695  ; x7 y42
+GEN   3050  Ordos      Wall   ; x42 y47
+GEN   3077  Ordos      Wall   ; x5 y48
+GEN   3084  Ordos      Wall   ; x12 y48
+GEN   3111  Ordos      Slab   ; x39 y48
+GEN   3114  Ordos      Wall   ; x42 y48
+GEN   3141  Ordos      Wall   ; x5 y49
+GEN   3142  Ordos      Wall   ; x6 y49
+GEN   3143  Ordos      Wall   ; x7 y49
+GEN   3144  Ordos      Wall   ; x8 y49
+GEN   3145  Ordos      Wall   ; x9 y49
+GEN   3146  Ordos      Wall   ; x10 y49
+GEN   3147  Ordos      Wall   ; x11 y49
+GEN   3148  Ordos      Wall   ; x12 y49
+STRUCT 48  Ordos      WOR          256 3175  ; x39 y49
+GEN   3177  Ordos      Wall   ; x41 y49
+GEN   3178  Ordos      Wall   ; x42 y49
+GEN   3241  Ordos      Wall   ; x41 y50
+STRUCT 49  Ordos      Turret       256 3242  ; x42 y50
+GEN   3303  Ordos      Slab   ; x39 y51
+GEN   3304  Ordos      Slab   ; x40 y51
+GEN   3305  Ordos      Slab   ; x41 y51
+STRUCT 50  Ordos      Refinery     256 3366  ; x38 y52
+GEN   3369  Ordos      Wall   ; x41 y52
+STRUCT 51  Ordos      Turret       256 3370  ; x42 y52
+GEN   3433  Ordos      Wall   ; x41 y53
+GEN   3434  Ordos      Slab   ; x42 y53
+GEN   3435  Ordos      Slab   ; x43 y53
+GEN   3494  Ordos      Slab   ; x38 y54
+STRUCT 52  Ordos      Windtrap     256 3495  ; x39 y54
+GEN   3497  Ordos      Wall   ; x41 y54
+GEN   3498  Ordos      Slab   ; x42 y54
+GEN   3499  Ordos      Slab   ; x43 y54
+GEN   3561  Ordos      Wall   ; x41 y55
+GEN   3623  Ordos      Wall   ; x39 y56
+GEN   3624  Ordos      Wall   ; x40 y56
+GEN   3625  Ordos      Wall   ; x41 y56
+GEN   2375  Ordos      Slab   ; x7 y37
+GEN   2379  Ordos      Slab   ; x11 y37
+GEN   2380  Ordos      Slab   ; x12 y37
+GEN   3108  Ordos      Slab   ; x36 y48
+GEN   3109  Ordos      Slab   ; x37 y48
+GEN   3110  Ordos      Slab   ; x38 y48
+END

@@ -1,0 +1,192 @@
+# SCENO006.txt - mission 6 of the Ordos.
+#
+# From orig/dune2.gen $05EBFE, 1628 bytes: SCENO006.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTBILD.WSA" 14
+BASIC WinPicture   "WIN1.WSA" 10 hex:0057
+BASIC BriefPicture "HVYFTRY.WSA" 12
+BASIC Timeout      0
+BASIC MapScale     0
+BASIC CursorPos    2778   ; x26 y43
+BASIC TacticalPos  2778   ; x26 y43
+BASIC LoseFlags    1
+BASIC WinFlags     3
+MAP   Seed  15
+MAP   Bloom 554 1921 2938 2952   ; x42 y8, x1 y30, x58 y45, x8 y46
+HOUSE Atreides   Quota    0
+HOUSE Atreides   Credits  1800
+HOUSE Atreides   Brain    C
+HOUSE Atreides   MaxUnit  26
+HOUSE Ordos      Quota    0
+HOUSE Ordos      Credits  1700
+HOUSE Ordos      Brain    H
+HOUSE Ordos      MaxUnit  20
+CHOAM Trike        5
+CHOAM Quad         5
+CHOAM Tank         4
+CHOAM Launcher     3
+CHOAM Harvester    2
+CHOAM MCV          2
+TEAM  1   Atreides   Kamikaze  Foot      3 6
+TEAM  2   Atreides   Kamikaze  Tracked   3 8
+TEAM  3   Atreides   Normal    Wheeled   3 7
+TEAM  4   Atreides   Normal    Foot      3 5
+TEAM  5   Atreides   Normal    Tracked   3 7
+TEAM  6   Atreides   Kamikaze  Tracked   3 9
+REINF 1   Atreides   Troopers    Enemybase 12+
+REINF 2   Atreides   Quad        Enemybase 8+
+REINF 3   Atreides   Tank        Enemybase 8+
+REINF 4   Atreides   Launcher    Enemybase 12+
+REINF 5   Atreides   SiegeTank   Enemybase 12+
+REINF 6   Ordos      Tank        Homebase  9
+REINF 7   Ordos      Troopers    Homebase  9
+REINF 8   Ordos      SiegeTank   Homebase  13
+REINF 9   Ordos      SiegeTank   Homebase  13
+UNIT  4   Atreides   Launcher    256 367   S   AreaGuard ; x47 y5
+UNIT  5   Atreides   SiegeTank   256 560   S   Ambush    ; x48 y8
+UNIT  6   Atreides   SiegeTank   256 571   S   Ambush    ; x59 y8
+UNIT  7   Atreides   Tank        256 697   S   AreaGuard ; x57 y10
+UNIT  9   Atreides   SiegeTank   256 760   S   AreaGuard ; x56 y11
+UNIT  10  Atreides   Tank        256 817   S   AreaGuard ; x49 y12
+UNIT  11  Atreides   SiegeTank   256 820   S   Ambush    ; x52 y12
+UNIT  12  Atreides   Launcher    256 825   S   AreaGuard ; x57 y12
+UNIT  13  Atreides   Launcher    256 1162  S   AreaGuard ; x10 y18
+UNIT  15  Atreides   SiegeTank   256 1173  S   AreaGuard ; x21 y18
+UNIT  16  Atreides   SiegeTank   256 1220  S   Ambush    ; x4 y19
+UNIT  17  Atreides   Launcher    256 1364  S   AreaGuard ; x20 y21
+UNIT  18  Atreides   SiegeTank   256 1491  S   AreaGuard ; x19 y23
+UNIT  19  Atreides   Quad        256 1617  S   AreaGuard ; x17 y25
+UNIT  21  Atreides   SiegeTank   256 1739  S   Ambush    ; x11 y27
+UNIT  22  Atreides   Launcher    256 1799  S   AreaGuard ; x7 y28
+UNIT  23  Fremen     Sandworm    256 1958  S   Ambush    ; x38 y30
+UNIT  24  Fremen     Sandworm    256 2122  S   Ambush    ; x10 y33
+UNIT  25  Ordos      Quad        256 2650  S   Guard     ; x26 y41
+UNIT  26  Ordos      Troopers    256 2716  S   Guard     ; x28 y42
+UNIT  28  Ordos      Quad        256 2776  S   Guard     ; x24 y43
+UNIT  29  Ordos      Tank        256 2781  S   Guard     ; x29 y43
+UNIT  30  Ordos      Tank        256 2841  S   Guard     ; x25 y44
+UNIT  31  Ordos      Troopers    256 2910  S   Guard     ; x30 y45
+UNIT  32  Ordos      Quad        256 2968  S   Guard     ; x24 y46
+UNIT  33  Ordos      Tank        256 2972  S   Guard     ; x28 y46
+STRUCT 34  Atreides   Turret       256 177   ; x49 y2
+GEN   178   Atreides   Slab   ; x50 y2
+GEN   179   Atreides   Slab   ; x51 y2
+STRUCT 35  Atreides   Turret       256 180   ; x52 y2
+GEN   241   Atreides   Wall   ; x49 y3
+STRUCT 37  Atreides   HeavyFactory 256 242   ; x50 y3
+GEN   245   Atreides   Wall   ; x53 y3
+GEN   305   Atreides   Wall   ; x49 y4
+GEN   309   Atreides   Wall   ; x53 y4
+GEN   369   Atreides   Wall   ; x49 y5
+GEN   370   Atreides   Slab   ; x50 y5
+GEN   371   Atreides   Slab   ; x51 y5
+GEN   372   Atreides   Slab   ; x52 y5
+GEN   373   Atreides   Wall   ; x53 y5
+GEN   374   Atreides   Wall   ; x54 y5
+GEN   375   Atreides   Wall   ; x55 y5
+GEN   376   Atreides   Wall   ; x56 y5
+GEN   433   Atreides   Wall   ; x49 y6
+STRUCT 39  Atreides   Windtrap     256 434   ; x50 y6
+GEN   436   Atreides   Slab   ; x52 y6
+STRUCT 40  Atreides   ConstYard    256 437   ; x53 y6
+STRUCT 41  Atreides   Windtrap     256 439   ; x55 y6
+GEN   441   Atreides   Slab   ; x57 y6
+GEN   497   Atreides   Wall   ; x49 y7
+GEN   500   Atreides   Slab   ; x52 y7
+STRUCT 43  Atreides   RTurret      256 505   ; x57 y7
+GEN   561   Atreides   Wall   ; x49 y8
+STRUCT 44  Atreides   Outpost      256 562   ; x50 y8
+GEN   564   Atreides   Slab   ; x52 y8
+STRUCT 45  Atreides   Barracks     256 565   ; x53 y8
+GEN   567   Atreides   Wall   ; x55 y8
+GEN   568   Atreides   Wall   ; x56 y8
+GEN   625   Atreides   Wall   ; x49 y9
+GEN   628   Atreides   Slab   ; x52 y9
+GEN   631   Atreides   Wall   ; x55 y9
+STRUCT 46  Atreides   Turret       256 632   ; x56 y9
+GEN   689   Atreides   Wall   ; x49 y10
+GEN   690   Atreides   Wall   ; x50 y10
+GEN   691   Atreides   Wall   ; x51 y10
+GEN   692   Atreides   Slab   ; x52 y10
+GEN   693   Atreides   Wall   ; x53 y10
+GEN   694   Atreides   Wall   ; x54 y10
+GEN   695   Atreides   Wall   ; x55 y10
+STRUCT 48  Atreides   RTurret      256 754   ; x50 y11
+STRUCT 49  Atreides   RTurret      256 758   ; x54 y11
+GEN   1217  Atreides   Wall   ; x1 y19
+GEN   1218  Atreides   Wall   ; x2 y19
+GEN   1219  Atreides   Wall   ; x3 y19
+GEN   1227  Atreides   Slab   ; x11 y19
+GEN   1228  Atreides   Slab   ; x12 y19
+STRUCT 51  Atreides   Turret       256 1229  ; x13 y19
+GEN   1230  Atreides   Slab   ; x14 y19
+GEN   1231  Atreides   Wall   ; x15 y19
+GEN   1232  Atreides   Wall   ; x16 y19
+GEN   1233  Atreides   Wall   ; x17 y19
+GEN   1234  Atreides   Wall   ; x18 y19
+STRUCT 52  Atreides   RTurret      256 1235  ; x19 y19
+STRUCT 53  Atreides   Windtrap     256 1281  ; x1 y20
+GEN   1283  Atreides   Wall   ; x3 y20
+STRUCT 54  Atreides   Turret       256 1289  ; x9 y20
+GEN   1290  Atreides   Wall   ; x10 y20
+STRUCT 55  Atreides   HeavyFactory 256 1291  ; x11 y20
+GEN   1294  Atreides   Slab   ; x14 y20
+STRUCT 56  Atreides   Refinery     256 1295  ; x15 y20
+GEN   1298  Atreides   Slab   ; x18 y20
+GEN   1299  Atreides   Slab   ; x19 y20
+GEN   1347  Atreides   Wall   ; x3 y21
+GEN   1349  Atreides   Slab   ; x5 y21
+STRUCT 57  Atreides   RTurret      256 1350  ; x6 y21
+GEN   1351  Atreides   Wall   ; x7 y21
+GEN   1352  Atreides   Wall   ; x8 y21
+GEN   1353  Atreides   Wall   ; x9 y21
+GEN   1354  Atreides   Wall   ; x10 y21
+GEN   1358  Atreides   Slab   ; x14 y21
+GEN   1362  Atreides   Slab   ; x18 y21
+GEN   1409  Atreides   Wall   ; x1 y22
+GEN   1410  Atreides   Wall   ; x2 y22
+GEN   1411  Atreides   Wall   ; x3 y22
+GEN   1412  Atreides   Slab   ; x4 y22
+GEN   1413  Atreides   Slab   ; x5 y22
+STRUCT 58  Atreides   Refinery     256 1414  ; x6 y22
+STRUCT 59  Atreides   Silo         256 1417  ; x9 y22
+GEN   1419  Atreides   Wall   ; x11 y22
+GEN   1420  Atreides   Wall   ; x12 y22
+GEN   1421  Atreides   Slab   ; x13 y22
+GEN   1422  Atreides   Slab   ; x14 y22
+GEN   1423  Atreides   Wall   ; x15 y22
+GEN   1424  Atreides   Wall   ; x16 y22
+GEN   1425  Atreides   Wall   ; x17 y22
+STRUCT 60  Atreides   RTurret      256 1426  ; x18 y22
+STRUCT 61  Atreides   Windtrap     256 1473  ; x1 y23
+GEN   1475  Atreides   Wall   ; x3 y23
+STRUCT 62  Atreides   Barracks     256 1476  ; x4 y23
+GEN   1483  Atreides   Wall   ; x11 y23
+STRUCT 63  Atreides   Turret       256 1484  ; x12 y23
+GEN   1485  Atreides   Slab   ; x13 y23
+GEN   1539  Atreides   Wall   ; x3 y24
+GEN   1545  Atreides   Wall   ; x9 y24
+GEN   1546  Atreides   Wall   ; x10 y24
+GEN   1547  Atreides   Wall   ; x11 y24
+GEN   1601  Atreides   Wall   ; x1 y25
+GEN   1602  Atreides   Wall   ; x2 y25
+STRUCT 64  Atreides   RTurret      256 1603  ; x3 y25
+GEN   1604  Atreides   Slab   ; x4 y25
+GEN   1605  Atreides   Slab   ; x5 y25
+STRUCT 66  Ordos      ConstYard    256 2778  ; x26 y43
+END

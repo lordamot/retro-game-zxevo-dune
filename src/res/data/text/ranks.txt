@@ -1,0 +1,20 @@
+# ranks.txt - the score page's nine ranks (S9, $0A68DA): 17 characters each,
+# centred with spaces; earned at tbl_rank_scores.
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source (tools/dune_data.py -> text.inc).
+# @id "text" [attr=value] is one string; @id [attr=value] then
+# lines then @end is a long one.  Escapes: \n \" \\ \xNN {cN}.
+# The characters are ASCII; charset.txt says which the fonts have.
+
+.join space
+
+@rank0                  "   Sand Snake    "   ; $0A68DA
+@rank1                  " Desert Mongoose "   ; $0A68EB
+@rank2                  "  Sand Warrior   "   ; $0A68FC
+@rank3                  "  Dune Trooper   "   ; $0A690D
+@rank4                  "  Squad Leader   "   ; $0A691E
+@rank5                  "Outpost Commander"   ; $0A692F
+@rank6                  " Base Commander  "   ; $0A6940
+@rank7                  " Scourge of Dune "   ; $0A6951
+@rank8                  "Ruler of Arrakis "   ; $0A6962

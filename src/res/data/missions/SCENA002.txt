@@ -1,0 +1,76 @@
+# SCENA002.txt - mission 2 of the Atreides.
+#
+# From orig/dune2.gen $05713C, 564 bytes: SCENA002.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTVEHC.WSA" 14
+BASIC WinPicture   "WIN2.WSA" 10 hex:0057
+BASIC BriefPicture "HEADQRTS.WSA" 14
+BASIC Timeout      0
+BASIC MapScale     1
+BASIC CursorPos    1360   ; x16 y21
+BASIC TacticalPos  1360   ; x16 y21
+BASIC LoseFlags    5
+BASIC WinFlags     7
+MAP   Seed  2
+MAP   Bloom 578 975 1052   ; x2 y9, x15 y15, x28 y16
+HOUSE Atreides   Quota    2700
+HOUSE Atreides   Credits  1200
+HOUSE Atreides   Brain    H
+HOUSE Atreides   MaxUnit  12
+HOUSE Ordos      Quota    0
+HOUSE Ordos      Credits  200
+HOUSE Ordos      Brain    C
+HOUSE Ordos      MaxUnit  16
+TEAM  1   Ordos      Normal    Foot      2 4
+TEAM  2   Ordos      Normal    Foot      2 4
+TEAM  3   Ordos      Normal    Foot      3 4
+TEAM  4   Ordos      Normal    Foot      2 4
+UNIT  1   Ordos      Soldier     256 31    S   Hunt      ; x31 y0
+UNIT  2   Ordos      Trooper     256 65    S   AreaGuard ; x1 y1
+UNIT  4   Ordos      Trooper     256 201   S   AreaGuard ; x9 y3
+UNIT  5   Ordos      RaiderTrike 256 267   SE  AreaGuard ; x11 y4
+UNIT  6   Ordos      RaiderTrike 256 321   SW  AreaGuard ; x1 y5
+UNIT  7   Ordos      RaiderTrike 256 328   SE  AreaGuard ; x8 y5
+UNIT  8   Ordos      RaiderTrike 256 387   SW  AreaGuard ; x3 y6
+UNIT  11  Ordos      RaiderTrike 256 456   SE  Ambush    ; x8 y7
+UNIT  12  Ordos      Soldier     256 513   SE  Hunt      ; x1 y8
+UNIT  13  Ordos      Trooper     256 582   S   Ambush    ; x6 y9
+UNIT  14  Atreides   Soldier     256 1167  S   Guard     ; x15 y18
+UNIT  15  Atreides   Quad        256 1299  NE  Guard     ; x19 y20
+UNIT  16  Atreides   Trike       256 1357  NW  Guard     ; x13 y21
+UNIT  17  Atreides   Trike       256 1428  SE  Guard     ; x20 y22
+UNIT  18  Atreides   Soldier     256 1484  S   Guard     ; x12 y23
+UNIT  19  Atreides   Trike       256 1487  S   Guard     ; x15 y23
+UNIT  20  Atreides   Infantry    256 1553  S   Guard     ; x17 y24
+STRUCT 21  Ordos      Silo         256 66    ; x2 y1
+STRUCT 22  Ordos      Refinery     256 68    ; x4 y1
+GEN   71    Ordos      Slab   ; x7 y1
+GEN   72    Ordos      Slab   ; x8 y1
+GEN   129   Ordos      Slab   ; x1 y2
+GEN   135   Ordos      Slab   ; x7 y2
+GEN   193   Ordos      Slab   ; x1 y3
+STRUCT 23  Ordos      ConstYard    256 194   ; x2 y3
+STRUCT 24  Ordos      Windtrap     256 196   ; x4 y3
+STRUCT 25  Ordos      Outpost      256 198   ; x6 y3
+GEN   323   Ordos      Slab   ; x3 y5
+GEN   324   Ordos      Slab   ; x4 y5
+STRUCT 26  Ordos      Barracks     256 325   ; x5 y5
+GEN   327   Ordos      Slab   ; x7 y5
+GEN   391   Ordos      Slab   ; x7 y6
+STRUCT 27  Atreides   ConstYard    256 1360  ; x16 y21
+END

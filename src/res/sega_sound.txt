@@ -1,0 +1,86 @@
+# sega_sound.txt - the Mega Drive Dune II's sounds, as General Sound
+# modules.
+#
+# tools/sega/sega_mod.py reads this and writes every line's module into
+# src/res/prebuilt/music/ or src/res/prebuilt/sfx/, converted from what the
+# cartridge's sound driver tells its chips - the song data, the
+# instruments and the samples - never from a recording.
+#
+#   KIND   NAME              BANK   SONG
+#
+# KIND is music (instruments playing patterns: a tracker module that
+# loops where the song does) or sfx (rendered whole through the chip model
+# into one sample, played once).  BANK is game (installed at $02DCC8, 84
+# songs) or front (installed at $02DD14 for the title, 13 songs).  Names
+# are the options screen's own ($087F3C, $087FD4) where it has one.
+
+# ---------------------------------------------------------------- music
+music  title             front   0
+music  cyrils_council    game    0
+music  spice_trip        game    1
+music  trenching         game    2
+music  command_post      game    3
+music  the_lego_tune     game    4
+music  starport          game    5
+music  radnors_scheme    game    6
+music  evasive_action    game    7
+music  ammons_advice     game    8
+music  chosen_destiny    game    9
+music  turbulence        game   10
+music  conquest          game   11
+music  harkonnen_rules   game   12
+music  slitherin         game   13
+music  atreides_dirge    game   14
+music  harkonnen_dirge   game   15
+music  ordos_dirge       game   16
+music  finale            game   17
+music  song18            game   18
+
+# ------------------------------------------------- synthesised effects
+sfx    machinegun_fx     game   20
+sfx    credit_down       game   21
+sfx    rifle_fx          game   22
+sfx    target            game   23
+sfx    planet_shimmer    game   24
+sfx    menu_select       game   25
+sfx    invalid_select    game   26
+sfx    credit_up         game   27
+sfx    countdown         game   28
+sfx    noise29           game   29
+sfx    heavy_drop        game   30
+sfx    static_fx         game   31
+sfx    worm_eats_fx      game   32
+sfx    rocket_launch     game   33
+sfx    sonic_blast       game   34
+sfx    gas_hit           game   35
+sfx    dud_explosion     game   36
+sfx    cannon_fx         game   37
+sfx    explosion1        game   38
+sfx    explosion2        game   39
+sfx    positive_select   game   40
+sfx    fm44              game   44
+sfx    front_noise       front  10
+sfx    front_fm1         front  11
+sfx    front_fm2         front  12
+
+# ------------------------------------ sampled: speech and sampled effects
+sfx    unit_approach     game   64
+sfx    const_complete    game   65
+sfx    under_attack      game   66
+sfx    yes_sir           game   67
+sfx    acknowledged      game   68
+sfx    cannon            game   69
+sfx    placement         game   70
+sfx    explosion3        game   71
+sfx    rifle             game   72
+sfx    machinegun        game   73
+sfx    missile           game   74
+sfx    static            game   75
+sfx    scream            game   76
+sfx    worm_eats         game   77
+sfx    squish            game   78
+sfx    reporting         game   79
+sfx    moving_out        game   80
+sfx    multi_explosion   game   81
+sfx    building          game   82
+sfx    death_hand        game   83

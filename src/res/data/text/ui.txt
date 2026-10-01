@@ -1,0 +1,36 @@
+# ui.txt - every word the Mega Drive draws as text: the title menu, the
+# options screen, the confirm box, the build panel's and the
+# starport's info boxes, the password screen, the version and the
+# region-lock screen.  Everything else on those screens - the
+# buttons, the victory and defeat captions, the score headings - is
+# a picture, not text.  The tutorial's captions are in its picture
+# scripts (orig/sega/res/art/pictures.txt) and are not here.
+#
+# Written once by tools/sega/port_data.py from orig/dune2.gen;
+# this text is now the source (tools/dune_data.py -> text.inc).
+# @id "text" [attr=value] is one string; @id [attr=value] then
+# lines then @end is a long one.  Escapes: \n \" \\ \xNN {cN}.
+# The characters are ASCII; charset.txt says which the fonts have.
+
+.join space
+
+@title_present          "PRESENT"   ; $0173F0 menu_title $01755E
+@title_start_game       "START GAME"   ; $0173F8 menu_title $017812
+@title_options          "OPTIONS"   ; $017403 menu_title $01782A
+@title_tutorial         "TUTORIAL"   ; $01740B menu_title $017842
+@opt_on                 "On "   ; $020D4F the options screen's switches ($020D4F on)
+@opt_off                "Off"   ; $020D53
+@opt_restart            "Restart mission"   ; $020D67 opt_screen $020EBE
+@opt_pick_house         "Pick another house"   ; $020D77 opt_screen $020ED2
+@confirm_blank          "         "   ; $021A40 opt_confirm: nine spaces
+@confirm_yes_no         " YES      NO "   ; $021A4A opt_confirm $021AC8
+@build_upgrade          "* Upgrade * "   ; $0276BA ui_build_info_text
+@build_dmg              "Dmg:        "   ; $0276C8 ui_build_info_text $02771E
+@starport_out_of_stock  "Out Of Stock"   ; $027900 the starport's words
+@starport_send_order    " Send Order "   ; $02790E ui_starport_info_text $027972
+@starport_dmg           "Dmg:        "   ; $02791C ui_starport_info_text $02799A
+@password_cursor        "_"   ; $0215B6 $022190: the password cursor
+@password_blank         " "   ; $0215B8
+@password_keys          "ABCDEFGHIJKLMNOPQRSTUVWXYZ<>!!"   ; $021FC6 $021FB4: the password keyboard, 3 rows of 10
+@version                "1.2-011794"   ; $0218F2 VERSIONNUM ($0218FE)
+@region_lock            "\n\n\n\n\n\n\n\n\n\n\n\n       THIS CARTRIDGE IS FOR SALE\n\n         AND USE IN EUROPE ONLY!"   ; $0028D8 $0028D2: the region-lock screen

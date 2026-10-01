@@ -1,0 +1,227 @@
+# report.txt - what tools/sega/sega_mod.py made of each sound.
+
+music title: bank song 0, 913 notes, 3489 ticks played -> music/title.mod, 191236 bytes
+  97 notes attenuated past hearing, left out
+  row 1 tick(s), speed 2, BPM 90/99/102/107/115/118/198, loops at tick 1920 every 768; 37 patterns, 42 orders
+  track 0: 299 kept
+  track 1: 102 kept, 2 moved
+  track 5: 181 kept, 2 moved
+  track 3: 138 kept, 8 moved
+  track 2: 60 dropped, 38 kept, 7 moved
+  track 4: 68 dropped, 6 kept, 2 moved
+  19 samples, 152258 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 785 of 785 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music cyrils_council: bank song 0, 491 notes, 4621 ticks played -> music/cyrils_council.mod, 98990 bytes
+  4 notes attenuated past hearing, left out
+  row 1 tick(s), speed 2, BPM 198, loops at tick 0 every 2304; 26 patterns, 36 orders
+  track 1: 69 kept
+  track 4: 223 kept
+  track 2: 53 kept, 8 moved
+  track 0: 33 kept, 22 moved
+  track 3: 28 dropped, 33 kept, 22 moved
+  9 samples, 71275 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 463 of 463 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music spice_trip: bank song 1, 3877 notes, 7340 ticks played -> music/spice_trip.mod, 148684 bytes
+  11 notes attenuated past hearing, left out
+  row 2 tick(s), speed 4, BPM 182/198, plays once; 54 patterns, 58 orders
+  track 2: 581 kept, 22 moved
+  track 1: 679 kept, 37 moved
+  track 0: 637 kept, 56 moved
+  track 3: 477 kept, 150 moved, 12 stole
+  track 5: 153 dropped, 371 kept, 197 moved, 4 stole
+  track 4: 16 cut short, 278 dropped, 176 kept, 47 moved
+  14 samples, 92294 bytes; 42 notes placed between rows, 24 moved onto a row to set their volume, 0 lost to a busier row
+  check: 3422 of 3446 notes exactly where the driver put them, 24 in the right row, 0 missing, 0 not asked for
+music trenching: bank song 2, 1658 notes, 3584 ticks played -> music/trenching.mod, 132808 bytes
+  row 1 tick(s), speed 2, BPM 120/198, plays once; 55 patterns, 57 orders
+  track 0: 337 kept
+  track 2: 278 kept, 21 moved
+  track 3: 426 kept, 27 moved, 46 stole
+  track 4: 186 kept, 8 moved, 15 stole
+  track 1: 27 cut short, 74 dropped, 28 kept, 29 moved
+  track 5: 34 cut short, 121 dropped, 8 kept, 54 moved
+  14 samples, 75393 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 1463 of 1463 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music command_post: bank song 3, 2824 notes, 5514 ticks played -> music/command_post.mod, 139802 bytes
+  row 1 tick(s), speed 2, BPM 182/198, plays once; 30 patterns, 87 orders
+  track 2: 657 kept
+  track 1: 314 kept, 3 moved
+  track 0: 199 kept, 2 moved
+  track 4: 411 kept, 229 moved
+  track 5: 320 dropped, 80 kept, 238 moved
+  track 3: 334 dropped, 10 kept, 27 moved
+  14 samples, 107991 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 2170 of 2170 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music the_lego_tune: bank song 4, 2541 notes, 6414 ticks played -> music/the_lego_tune.mod, 147160 bytes
+  24 notes attenuated past hearing, left out
+  row 1 tick(s), speed 2, BPM 198, plays once; 49 patterns, 101 orders
+  track 1: 704 kept
+  track 0: 598 kept
+  track 2: 407 kept
+  track 3: 344 kept, 80 moved, 26 stole
+  track 5: 18 cut short, 86 dropped, 14 kept, 91 moved
+  track 4: 8 cut short, 157 dropped, 2 kept, 32 moved
+  14 samples, 95892 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 2298 of 2298 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music starport: bank song 5, 441 notes, 4621 ticks played -> music/starport.mod, 71130 bytes
+  row 1 tick(s), speed 2, BPM 198, loops at tick 0 every 2304; 36 patterns, 36 orders
+  track 0: 384 kept
+  track 3: 29 kept
+  track 1: 14 kept
+  track 2: 14 kept
+  3 samples, 33180 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 441 of 441 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music radnors_scheme: bank song 6, 313 notes, 2310 ticks played -> music/radnors_scheme.mod, 88744 bytes
+  row 1 tick(s), speed 2, BPM 79/198, loops at tick 0 every 1152; 17 patterns, 18 orders
+  track 1: 136 kept
+  track 3: 136 kept
+  track 0: 26 kept
+  track 2: 15 kept
+  6 samples, 70248 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 313 of 313 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music evasive_action: bank song 7, 713 notes, 1036 ticks played -> music/evasive_action.mod, 58298 bytes
+  row 1 tick(s), speed 2, BPM 99/198, plays once; 17 patterns, 17 orders
+  track 1: 336 kept
+  track 2: 155 kept
+  track 0: 156 kept
+  track 3: 66 kept
+  8 samples, 39803 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 713 of 713 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music ammons_advice: bank song 8, 144 notes, 2310 ticks played -> music/ammons_advice.mod, 36108 bytes
+  40 notes attenuated past hearing, left out
+  row 1 tick(s), speed 2, BPM 198, loops at tick 0 every 1152; 17 patterns, 18 orders
+  track 0: 96 kept
+  track 2: 8 kept
+  track 1: 40 kept
+  3 samples, 17615 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 144 of 144 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music chosen_destiny: bank song 9, 111 notes, 3798 ticks played -> music/chosen_destiny.mod, 158456 bytes
+  row 1 tick(s), speed 2, BPM 139/198, loops at tick 0 every 1896; 30 patterns, 30 orders
+  track 3: 53 kept, 1 moved
+  track 0: 15 kept
+  track 1: 18 kept, 1 moved
+  track 2: 1 dropped, 21 kept, 1 moved
+  11 samples, 126645 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 110 of 110 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music turbulence: bank song 10, 3046 notes, 7848 ticks played -> music/turbulence.mod, 145866 bytes
+  row 2 tick(s), speed 4, BPM 198, plays once; 60 patterns, 62 orders
+  track 1: 685 kept, 24 moved
+  track 3: 602 kept, 91 moved, 14 stole
+  track 2: 413 kept, 40 moved, 32 stole
+  track 5: 328 kept, 25 moved, 2 stole
+  track 4: 36 cut short, 113 dropped, 160 kept, 128 moved
+  track 0: 12 cut short, 255 dropped, 42 kept, 92 moved
+  14 samples, 83335 bytes; 92 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 2678 of 2678 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music conquest: bank song 11, 580 notes, 1358 ticks played -> music/conquest.mod, 48492 bytes
+  row 1 tick(s), speed 2, BPM 118/198, loops at tick 0 every 671; 9 patterns, 11 orders
+  track 3: 224 kept
+  track 0: 130 kept
+  track 1: 112 kept
+  track 2: 114 kept
+  6 samples, 38190 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 580 of 580 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music harkonnen_rules: bank song 12, 985 notes, 2505 ticks played -> music/harkonnen_rules.mod, 94286 bytes
+  row 1 tick(s), speed 2, BPM 123/198, loops at tick 0 every 1247; 18 patterns, 20 orders
+  track 3: 416 kept
+  track 0: 416 kept
+  track 1: 77 kept
+  track 2: 76 kept
+  8 samples, 74767 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 985 of 985 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music slitherin: bank song 13, 962 notes, 2324 ticks played -> music/slitherin.mod, 43536 bytes
+  row 1 tick(s), speed 2, BPM 115/198, loops at tick 0 every 1152; 18 patterns, 18 orders
+  track 4: 319 kept, 1 moved
+  track 3: 166 kept, 2 moved
+  track 0: 147 kept, 7 moved
+  track 2: 4 dropped, 173 kept, 23 moved
+  track 1: 44 dropped, 50 kept, 26 moved
+  9 samples, 24016 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 914 of 914 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music atreides_dirge: bank song 14, 37 notes, 976 ticks played -> music/atreides_dirge.mod, 40212 bytes
+  row 1 tick(s), speed 2, BPM 115/198, loops at tick 0 every 480; 8 patterns, 8 orders
+  track 1: 15 kept
+  track 2: 12 kept
+  track 0: 5 kept
+  track 3: 5 kept
+  2 samples, 30935 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 37 of 37 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music harkonnen_dirge: bank song 15, 44 notes, 976 ticks played -> music/harkonnen_dirge.mod, 43838 bytes
+  row 1 tick(s), speed 2, BPM 115/198, loops at tick 0 every 480; 8 patterns, 8 orders
+  track 1: 15 kept
+  track 2: 12 kept
+  track 0: 5 kept
+  track 3: 12 kept
+  3 samples, 34561 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 44 of 44 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music ordos_dirge: bank song 16, 42 notes, 976 ticks played -> music/ordos_dirge.mod, 29144 bytes
+  row 1 tick(s), speed 2, BPM 115/198, loops at tick 0 every 480; 8 patterns, 8 orders
+  track 1: 15 kept
+  track 2: 12 kept
+  track 0: 5 kept
+  track 3: 10 kept
+  3 samples, 19867 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 42 of 42 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music finale: bank song 17, 1648 notes, 3844 ticks played -> music/finale.mod, 47214 bytes
+  row 1 tick(s), speed 2, BPM 123/198, loops at tick 0 every 1920; 28 patterns, 30 orders
+  track 3: 440 kept
+  track 2: 440 kept
+  track 0: 383 kept
+  track 1: 385 kept
+  5 samples, 17456 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 1648 of 1648 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+music song18: bank song 18, 1063 notes, 4614 ticks played -> music/song18.mod, 140460 bytes
+  10 notes attenuated past hearing, left out
+  row 1 tick(s), speed 2, BPM 102/198, loops at tick 0 every 2304; 31 patterns, 36 orders
+  track 0: 376 kept
+  track 3: 210 kept
+  track 1: 233 kept, 9 moved, 4 stole
+  track 2: 92 kept, 5 moved
+  track 4: 4 cut short, 70 dropped, 46 kept, 18 moved
+  18 samples, 107624 bytes; 0 notes placed between rows, 0 moved onto a row to set their volume, 0 lost to a busier row
+  check: 993 of 993 notes exactly where the driver put them, 0 in the right row, 0 missing, 0 not asked for
+sfx machinegun_fx: bank song 20, 0.34s at C-3 (16574 Hz), 5708 bytes, from noise0 -> sfx/machinegun_fx.mod, 7816 bytes
+sfx credit_down: bank song 21, 0.02s at C-3 (16574 Hz), 402 bytes, from noise0 -> sfx/credit_down.mod, 2510 bytes
+sfx rifle_fx: bank song 22, 0.75s at C-3 (16574 Hz), 12380 bytes, from noise0 -> sfx/rifle_fx.mod, 14488 bytes
+sfx target: bank song 23, 0.23s at C-3 (16574 Hz), 3860 bytes, from fm2 -> sfx/target.mod, 5968 bytes
+sfx planet_shimmer: bank song 24, 4.99s at C-3 (16574 Hz), 82640 bytes, from fm2 -> sfx/planet_shimmer.mod, 84748 bytes
+sfx menu_select: bank song 25, 0.26s at C-3 (16574 Hz), 4262 bytes, from fm2 -> sfx/menu_select.mod, 6370 bytes
+sfx invalid_select: bank song 26, 0.27s at C-3 (16574 Hz), 4422 bytes, from fm0 -> sfx/invalid_select.mod, 6530 bytes
+sfx credit_up: bank song 27, 0.02s at C-3 (16574 Hz), 402 bytes, from noise0 -> sfx/credit_up.mod, 2510 bytes
+sfx countdown: bank song 28, 0.25s at C-3 (16574 Hz), 4100 bytes, from fm0 -> sfx/countdown.mod, 6208 bytes
+sfx noise29: bank song 29, 0.73s at C-3 (16574 Hz), 12058 bytes, from noise0 -> sfx/noise29.mod, 14166 bytes
+sfx heavy_drop: bank song 30, 0.36s at C-3 (16574 Hz), 5950 bytes, from fm2 -> sfx/heavy_drop.mod, 8058 bytes
+sfx static_fx: bank song 31, 3.58s at C-3 (16574 Hz), 59408 bytes, from noise0 -> sfx/static_fx.mod, 61516 bytes
+sfx worm_eats_fx: bank song 32, 0.81s at C-3 (16574 Hz), 13346 bytes, from fm2 -> sfx/worm_eats_fx.mod, 15454 bytes
+sfx rocket_launch: bank song 33, 0.36s at C-3 (16574 Hz), 5950 bytes, from fm2 -> sfx/rocket_launch.mod, 8058 bytes
+sfx sonic_blast: bank song 34, 2.47s at C-3 (16574 Hz), 40918 bytes, from fm2 -> sfx/sonic_blast.mod, 43026 bytes
+sfx gas_hit: bank song 35, 0.78s at C-3 (16574 Hz), 12944 bytes, from fm2 -> sfx/gas_hit.mod, 15052 bytes
+sfx dud_explosion: bank song 36, 0.65s at C-3 (16574 Hz), 10772 bytes, from noise0 -> sfx/dud_explosion.mod, 12880 bytes
+sfx cannon_fx: bank song 37, 1.45s at C-3 (16574 Hz), 24036 bytes, from fm0 -> sfx/cannon_fx.mod, 26144 bytes
+sfx explosion1: bank song 38, 1.52s at C-3 (16574 Hz), 25162 bytes, from fm0 -> sfx/explosion1.mod, 27270 bytes
+sfx explosion2: bank song 39, 1.29s at C-3 (16574 Hz), 21384 bytes, from noise0 -> sfx/explosion2.mod, 23492 bytes
+sfx positive_select: bank song 40, 0.17s at C-3 (16574 Hz), 2894 bytes, from fm0 fm1 -> sfx/positive_select.mod, 5002 bytes
+sfx fm44: bank song 44, 0.24s at C-3 (16574 Hz), 4020 bytes, from fm2 -> sfx/fm44.mod, 6128 bytes
+sfx front_noise: bank song 10, 2.14s at C-3 (16574 Hz), 35452 bytes, from noise0 -> sfx/front_noise.mod, 37560 bytes
+sfx front_fm1: bank song 11, 0.30s at C-3 (16574 Hz), 4904 bytes, from fm2 -> sfx/front_fm1.mod, 7012 bytes
+sfx front_fm2: bank song 12, 0.17s at C-3 (16574 Hz), 2894 bytes, from fm0 fm1 -> sfx/front_fm2.mod, 5002 bytes
+sfx unit_approach: bank song 64, 1.63s at E-2 (10463 Hz), 17052 bytes, from dac0 -> sfx/unit_approach.mod, 19160 bytes
+sfx const_complete: bank song 65, 1.48s at E-2 (10463 Hz), 15478 bytes, from dac0 -> sfx/const_complete.mod, 17586 bytes
+sfx under_attack: bank song 66, 1.12s at E-2 (10463 Hz), 11672 bytes, from dac0 -> sfx/under_attack.mod, 13780 bytes
+sfx yes_sir: bank song 67, 0.74s at E-2 (10463 Hz), 7764 bytes, from dac0 -> sfx/yes_sir.mod, 9872 bytes
+sfx acknowledged: bank song 68, 1.01s at E-2 (10463 Hz), 10556 bytes, from dac0 -> sfx/acknowledged.mod, 12664 bytes
+sfx cannon: bank song 69, 0.73s at E-1 (5231 Hz), 3806 bytes, from dac0 -> sfx/cannon.mod, 5914 bytes
+sfx placement: bank song 70, 0.60s at E-1 (5231 Hz), 3146 bytes, from dac0 -> sfx/placement.mod, 5254 bytes
+sfx explosion3: bank song 71, 1.85s at E-1 (5231 Hz), 9694 bytes, from dac0 -> sfx/explosion3.mod, 11802 bytes
+sfx rifle: bank song 72, 0.35s at A#1 (7389 Hz), 2580 bytes, from dac0 -> sfx/rifle.mod, 4688 bytes
+sfx machinegun: bank song 73, 0.77s at A#1 (7389 Hz), 5700 bytes, from dac0 -> sfx/machinegun.mod, 7808 bytes
+sfx missile: bank song 74, 0.79s at E-1 (5231 Hz), 4110 bytes, from dac0 -> sfx/missile.mod, 6218 bytes
+sfx static: bank song 75, 1.18s at G#1 (6593 Hz), 7770 bytes, from dac0 -> sfx/static.mod, 9878 bytes
+sfx scream: bank song 76, 0.54s at A#1 (7389 Hz), 3978 bytes, from dac0 -> sfx/scream.mod, 6086 bytes
+sfx worm_eats: bank song 77, 1.16s at G#1 (6593 Hz), 7642 bytes, from dac0 -> sfx/worm_eats.mod, 9750 bytes
+sfx squish: bank song 78, 0.62s at E-2 (10463 Hz), 6446 bytes, from dac0 -> sfx/squish.mod, 8554 bytes
+sfx reporting: bank song 79, 0.84s at E-2 (10463 Hz), 8780 bytes, from dac0 -> sfx/reporting.mod, 10888 bytes
+sfx moving_out: bank song 80, 0.86s at E-2 (10463 Hz), 8982 bytes, from dac0 -> sfx/moving_out.mod, 11090 bytes
+sfx multi_explosion: bank song 81, 3.22s at C-3 (16574 Hz), 53298 bytes, from dac0 fm0 -> sfx/multi_explosion.mod, 55406 bytes
+sfx building: bank song 82, 0.37s at E-2 (10463 Hz), 3858 bytes, from dac0 -> sfx/building.mod, 5966 bytes
+sfx death_hand: bank song 83, 1.55s at E-2 (10463 Hz), 16188 bytes, from dac0 -> sfx/death_hand.mod, 18296 bytes

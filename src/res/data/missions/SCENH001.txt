@@ -1,0 +1,57 @@
+# SCENH001.txt - mission 1 of the Harkonnen.
+#
+# From orig/dune2.gen $05A370, 374 bytes: SCENH001.INI in the
+# directory at $052C2C (S9).  One line a record, in the cartridge's
+# order; tools/dune_data.py encodes them back to the tagged stream
+# (tag = section << 8 | key, then words), which port_data.py check
+# proves equal to the cartridge's.
+#
+#   BASIC  key value          [BASIC]; a picture is "NAME" and its length word
+#   MAP    Seed n | Bloom sq..  [MAP]; squares are y*64+x
+#   HOUSE  house key value     Quota Credits Brain(H human, C computer) MaxUnit
+#   CHOAM  unit count          the starport's stock
+#   TEAM   key house behaviour movement min max
+#   UNIT   key house type health square facing order
+#   GEN    square house type   a wall or slab
+#   STRUCT index house type health square
+#   REINF  key house type where delay['+' repeats]
+#   END                        the $FFFF
+
+BASIC LosePicture  "LOSTBILD.WSA" 14
+BASIC WinPicture   "WIN1.WSA" 10 hex:0057
+BASIC BriefPicture "HARVEST.WSA" 12
+BASIC Timeout      0
+BASIC MapScale     1
+BASIC CursorPos    592   ; x16 y9
+BASIC TacticalPos  592   ; x16 y9
+BASIC LoseFlags    4
+BASIC WinFlags     6
+MAP   Seed  19
+HOUSE Harkonnen  Quota    1000
+HOUSE Harkonnen  Credits  990
+HOUSE Harkonnen  Brain    H
+HOUSE Harkonnen  MaxUnit  25
+HOUSE Atreides   Quota    0
+HOUSE Atreides   Credits  0
+HOUSE Atreides   Brain    C
+HOUSE Atreides   MaxUnit  25
+UNIT  1   Atreides   Infantry    256 0     S   Hunt      ; x0 y0
+UNIT  2   Atreides   Infantry    256 20    S   Ambush    ; x20 y0
+UNIT  3   Atreides   Trooper     256 80    S   Guard     ; x16 y1
+UNIT  4   Atreides   Infantry    256 156   S   Ambush    ; x28 y2
+UNIT  5   Atreides   Infantry    256 198   S   Ambush    ; x6 y3
+UNIT  6   Harkonnen  Quad        256 466   NE  Guard     ; x18 y7
+UNIT  7   Harkonnen  Trooper     256 525   S   Guard     ; x13 y8
+UNIT  8   Atreides   Infantry    256 579   S   Ambush    ; x3 y9
+UNIT  9   Harkonnen  Trooper     256 596   S   Guard     ; x20 y9
+UNIT  10  Atreides   Infantry    256 606   S   Ambush    ; x30 y9
+UNIT  11  Harkonnen  Trooper     256 722   S   Guard     ; x18 y11
+UNIT  12  Harkonnen  Quad        256 781   SW  Guard     ; x13 y12
+UNIT  13  Atreides   Infantry    256 922   S   Ambush    ; x26 y14
+UNIT  14  Atreides   Infantry    256 1159  S   Ambush    ; x7 y18
+UNIT  15  Atreides   Infantry    256 1168  S   Ambush    ; x16 y18
+UNIT  16  Atreides   Infantry    256 1176  S   Ambush    ; x24 y18
+UNIT  17  Atreides   Infantry    256 1794  S   Hunt      ; x2 y28
+UNIT  18  Atreides   Trooper     256 1950  S   Hunt      ; x30 y30
+STRUCT 19  Harkonnen  ConstYard    256 592   ; x16 y9
+END
