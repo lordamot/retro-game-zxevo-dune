@@ -1,0 +1,80 @@
+check currnt project. we now have problem that SoundCard named NeoGS does not pass game GS check - can you check why so?
+
+****
+
+The cause is gs_probe (src/gs.asm:199), the "GS detect" line, and it fails on the very first read.
+
+What the probe assumes. It reads the status port $BB 16384 times and calls it "no card" the moment any reading has one of bits 1-6 clear. That assumption came from the emulators. libxpeccy starts pstate at $7E, ZEsarUX uses $7E, and MAME's own NeoGS returns m_status | $7E. An original GS also passes, because it drives only D0 and D7 and the bus pull-ups give the rest. The ZX-MultiSound is the same.
+
+What a NeoGS does. Its FPGA drives all eight data lines on a $BB read. From its zxbus.v (the NeoGS SVN, mirrored at github.com/alfishe/neogs):
+
+  3'b01: dbout <= { data_bit, 6'bXXXXXX, command_bit };
+
+Bits 1-6 are "don't care", so Quartus fills them with whatever logic is cheapest. Most likely that is the same lines as the data-register path, which would make them the bits of the last byte the card sent. The GS port description (GS_PORTS.TXT) only defines D0 and D7 as well. So on a NeoGS, bits 1-6 are not $7E, gs_probe returns carry, and the log says error and no sound. Nothing after it ever runs.
+
+Not confirmed on the machine: exactly what those bits read as. One check settles it. With the NeoGS in, run PRINT IN 187 in BASIC. Anything other than 126, 127, 254 or 255 confirms it.
+
+A second, smaller trap waits behind it. The NeoGS is not reset when the Spectrum is reset (its promo text says so). If an earlier program, or a run of the game reset mid-way, left a byte in the card's latch, status bit 7 stays set. gs_init waits for 65536 readings in a row with status & $81 = 0, and it never gets them: error after about 40 s. gs_init should read $B3 while it waits.
+
+Proposed fix (not made yet):
+- gs_probe tests the data flag, which is plain hardware on every GS and needs no ROM. Read $B3, and bit 7 must be 0. Write a byte to $B3, and bit 7 must be 1. Read $B3 again, and it is 0 again. Do that a number of times. With no card it fails every way: a real Evo reads $FF (bit 7 never 0), bin/evo's floating bus reads 0 on the black screen (never 1), and evo-run's gsdead reads $01 (never 1). So make verify's no-card run still tests something.
+- gs_init reads $B3 inside its idle wait.
+- evo-run gets a NeoGS-like status mode (bits 1-6 not forced to 1), so make verify covers this card.
+
+Say if you want it done.
+
+Sources: MAME's neogs.cpp (github.com/mamedev/mame, src/devices/bus/spectrum/zxbus/neogs.cpp), the NeoGS SVN mirror (github.com/alfishe/neogs: fpga/current/zxbus/zxbus.v, docs/ngs_promo.txt, docs/_old_gs/GS_PORTS.TXT).
+
+lets do proposed fix, game should get version 2026-10-01, add CHANGELOG.md covering this change in ru and en langs
+
+****
+
+The NeoGS fix is in, the version is 2026-10-01, and CHANGELOG.md has the change in Russian and English. Nothing is committed.
+
+Results:
+- With the NeoGS-like status port in the emulator, the old build stopped at "GS DETECT ERROR". The new build gets through the whole start-up log, loads the card, plays the intro's tune, and shows v.2026-10-01.
+- make test passes.
+- make verify: 25 checks pass, including the new NeoGS one and the no-card one. The two disk-boot checks (FAT16 and FAT32) fail, but not because of this change.
+
+Why disk boot fails. First, bin/evo/evo-nvram.bin was missing: bin/ was rebuilt this morning and that file wasn't recreated. Without it the firmware stays in its menu. I recreated it with make nvram. After that the boot works in full: the loader reads DUNE.DAT and the game reaches its title screen. The check still fails only on timing. It takes its first look at frame 614 and expects the loader to be mid-load there, but here the load has just finished (bar full, the loader's stack gone). Nothing my change touches runs that early: the screen is still in ZX mode and DUNE.DAT is the same size. A fix would be to take that first look a little earlier. I haven't changed the test; say if you want that.
+
+What changed:
+- src/gs.asm, gs_probe: it no longer reads bits 1-6 of the status port. Eight times over, it reads $B3 (bit 7 must be clear), then writes $B3 (bit 7 must be set), with a short pause before each status read. At the end it reads $B3 again, so the latch is empty. With no card this fails every way: $FF on a real Evo, 0 from bin/evo's floating bus, $01 from gsdead.
+- src/gs.asm, gs_init: while it waits for the card's memory test, it reads away any byte left in the latch. This is for a NeoGS that was not reset with the computer.
+- The emulator (tools/evo-emu, rebuilt into bin/evo) has a new script command, gsneo. It makes status bits 1-6 read as the card's last answer and leaves a stale byte in the latch. tools/verify_build.py has a new NeoGS check that uses it.
+- PORT_VERSION in tools/dune_data.py is now 2026-10-01.
+- New CHANGELOG.md, Russian and English.
+- README.md: "NeoGS detection does not work" (and its Russian line) are replaced by a pointer to the changelog.
+- Docs: sound.md (start-up steps 2 and 3), emulator.md (gsneo), build.md (the verify list), and a new trap in CLAUDE.md.
+
+Still not proven on real hardware. The fix rests on the NeoGS FPGA source and the emulator model, not on a run on the card itself. A test on a real NeoGS (and on your ZX-MultiSound, to make sure the new probe still finds it) is the real check.
+
+Should I commit? Suggested message: "fix NeoGS detection, version 2026-10-01".
+
+fix disk boot check timing
+
+****
+
+Fixed: make verify now passes all 27 checks, both disk-boot checks included.
+
+I measured the loader with the emulator's state every 10 frames. On both cards (FAT16 and FAT32), DUNE.DAT is read from about 10 to 290 frames after the second Enter. The check took its first look at +300, just after the end of that window, so it missed the loader. That's why it failed in this environment.
+
+The change is in tools/verify_build.py. The first look is now at +150, in the middle of the loading window, with about 140 frames of slack either side. The final look ("the game is in its screen") is still at the same moment, 1500 frames after the second Enter, so that part of the check hasn't changed.
+
+Nothing is committed. The commit can go together with the NeoGS fix; should I make it?
+
+version not changed in intro text
+
+****
+
+I read this as the dated line under the credits, "ПЕНЗА, 27 сентября 2026 года", which is typed by hand in port.txt. I started making it from PORT_VERSION, as a new {date} placeholder that spells the day out in Russian. The emulator showed "ПЕНЗА, 1 ОКТЯБРЯ 2026 ГОДА".
+
+nope, date text after Пенза should be constant
+
+****
+
+Reverted. port.txt has "ПЕНЗА, 27 сентября 2026 года" again, and the {date} code is gone from tools/dune_data.py. The only change left in that file is PORT_VERSION = "2026-10-01". build/ has been rebuilt from that.
+
+About the version itself: the build contains v.2026-10-01 and not 2026-09-30 (checked in build/DUNE.DAT). The build regenerates the game's text every time, so a PORT_VERSION change always reaches the game. Asked, you chose to keep v.2026-10-01. So the old version you saw came from an older DUNE.DAT/dune.trd, on the SD card or in another folder. Copy build/DUNE.DAT and build/dune.trd onto the card again.
+
+I left CHANGELOG.md as you rewrote it (with 1.1.0). My attempt to add a line to it failed on purpose: the text it expected wasn't there any more, so it changed nothing.

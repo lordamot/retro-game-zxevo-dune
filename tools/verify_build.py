@@ -43,6 +43,10 @@ What it asserts, and why each one is here:
                                       start-up tune is on it, and the
                                       battle's first pass
                                       started a tune from it, heard
+  a NeoGS is found                    its status port's bits 1-6 are not
+                                      1s and its latch may hold an old
+                                      answer (evo-run gsneo); the start-up
+                                      once took it for no card at all
 """
 
 import argparse
@@ -307,8 +311,10 @@ def disk(tmp):
         if r.returncode:
             sys.exit(f"verify: sd_image.py failed\n{r.stdout}{r.stderr}")
         script = tmp / f"disk_{kind}.script"
+        # the loader reads DUNE.DAT from about 10 to 290 frames after the
+        # second Enter: look in the middle of that, not at its end
         script.write_text("run 250\npress enter 4\nrun 60\npress enter 4\n"
-                          "run 300\nstate\nrun 1200\nstate\n")
+                          "run 150\nstate\nrun 1350\nstate\n")
         r = subprocess.run([str(EVO), "--rom", str(ROM), "--gsrom", str(GSROM),
                             "--nvram", str(NVRAM), "--trd", str(d / "dune.trd"),
                             "--sd", str(img), "--script", str(script), "--quiet"],
@@ -367,6 +373,22 @@ def sound(tmp):
     check(rms > 300, f"the battle music plays (level {rms:.0f})")
 
 
+def neogs(tmp):
+    """A NeoGS: its status port drives all eight lines, bits 1-6 being no
+    pull-up's 1s, and it is not reset with the machine, so an earlier
+    program's answer may sit in its latch (evo-run's gsneo).  The card is
+    found anyway and the start-up set goes on it, as with any other."""
+    print("NeoGS (Atreides 1, the status port as a NeoGS drives it):")
+    d = ROOT / "build-verify-snd"
+    sym = build(d, 0)
+    evo(["gsneo", f"spg {d / 'DUNE.DAT'}", f"run {SOUND_FRAMES}",
+         f"page {PG_MAIN} {tmp}/neo.bin"], tmp)
+    i = (tmp / "neo.bin").read_bytes()
+    check(i[sym["gs_ok"]] == 1 and i[sym["snd_shown"]] == 1
+          and i[sym["gs_cur"]] == sym["MUS_INTRO"] and not i[sym["gs_wait"]],
+          "the card is found, loaded, and the intro's tune plays")
+
+
 def nocard(tmp):
     """No sound card: the start-up log says "error" and "no sound", waits
     for a key, the intro shows silent, and the battle runs with the card
@@ -414,6 +436,7 @@ def main():
     disk(tmp)
     if not args.no_sound:
         sound(tmp)
+        neogs(tmp)
         nocard(tmp)
     if failures:
         print(f"verify: {len(failures)} check(s) failed")

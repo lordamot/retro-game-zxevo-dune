@@ -1,5 +1,3 @@
-[Русский](#dune-ii-для-zx-evolution) | [English](#dune-ii-for-the-zx-evolution)
-
 # Dune II для ZX Evolution
 
 Порт игры **Dune II - The Battle for Arrakis** с Mega Drive на **ZX
@@ -16,6 +14,7 @@ Evolution BaseConf**.
 - `make toolchain`, `make build`, `make run`
 
 Как запустить:
+- включить 2x Turbo 14 MHz
 - положите ./build/dune.trd и ./build/DUNE.DAT в корень SD-карты
 - включите Evo
 - "file browser" - "mount A:"
@@ -25,7 +24,7 @@ Evolution BaseConf**.
 
 ## Известные проблемы и планы
 
-- не определяется NeoGS
+Изменения - в `CHANGELOG.md`.
 
 Буду благодарен за любые отзывы об игровых проблемах.
 
@@ -125,6 +124,7 @@ How to build yourself:
 - `make toolchain`, `make build`, `make run`
 
 How to run yourself:
+- enable 2x Turbo 14 MHz
 - put ./build/dune.trd and ./build/DUNE.DAT in SD card root
 - start Evo
 - "file browser" - "mount A:"
@@ -134,7 +134,7 @@ Check `./prompts` directory for full build history and sufferings.
 
 ## Known problems and plans
 
-- NeoGS detection does not work
+Changes are in `CHANGELOG.md`.
 
 Any feedback on playability issues appreciated.
 

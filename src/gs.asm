@@ -66,8 +66,8 @@
 ; API (all preserve IX and IY unless said; "no card" = gs_init failed, and
 ; then every other entry point does nothing and returns at once):
 ;
-;   gs_probe         is there a card?  About 0.06 s.  Out: carry set =
-;                    none.  Clobbers AF BC DE.
+;   gs_probe         is there a card?  About 0.1 ms.  Out: carry set =
+;                    none.  Clobbers AF B.
 ;   gs_init          wait for the card to finish its power-on memory test,
 ;                    then warm-reset it (gs_tick all the while).  Out:
 ;                    carry set = no card (or it never settled).  Clobbers
@@ -187,33 +187,45 @@ GSV_CHANNELS    EQU $4600       ; the module's four channels, 64 bytes each
 
 ; ============================================================ start-up
 
-; Is there a card?  Its status register drives bits 7 and 0 and reads the
-; rest as 1 ($7E and the flags); its ROM clears the command flag first
-; thing ($0148: OUT (5)) and nothing has sent it a command yet, so bit 0
-; reads clear, during the memory test as after it.  With no card the port
-; is not decoded: the bus reads $FF (never bit 0 clear), or on a machine
-; that returns the floating bus for it - bin/evo does, as the Evo's port
-; $FF - the byte the video is fetching, which on the black screen of
-; start-up is 0 (bits 1-6 clear).  So: 16384 readings (0.06 s), every one
-; with bits 1-6 set and one at least with bit 0 clear.
+; Is there a card?  Only two bits of the status port mean anything, and
+; only the data flag (bit 7) is the card's hardware rather than its ROM: a
+; byte written to $B3 sets it, the host reading $B3 clears it, whatever the
+; card's Z80 is doing - its power-on memory test included.  Bits 1-6 are not
+; part of the port: an original GS leaves them to the bus's pull-ups (1s),
+; a NeoGS drives them with whatever its FPGA's synthesis made of "don't
+; care" (zxbus.v: { data_bit, 6'bXXXXXX, command_bit }) - a probe that
+; wanted them set found no NeoGS.  With no card the port is not decoded:
+; it reads $FF (bit 7 never clear), or on a machine that returns the
+; floating bus for it - bin/evo does, as the Evo's port $FF - the byte the
+; video is fetching, 0 on the black screen of start-up (never set).  So:
+; GS_PROBES rounds of "read $B3: the flag clear; write $B3: the flag set",
+; each after a pause for the card's synchroniser (a NeoGS takes a write or
+; a read 2-3 of its clocks after the host's strobe ends), every one right.
+; The rounds end with $B3 read, so the latch is left empty - which also
+; drops a byte an earlier program left there: a NeoGS is not reset with
+; the machine.  The card's input latch keeps the probe's 0 until the next
+; command's first argument replaces it.
+GS_PROBES       EQU 8
 gs_probe:
-        ld  bc, 16384
-        ld  e, 1                ; bit 0: no reading with bit 0 clear yet
-.lp:    in  a, (GS_CMD)
-        ld  d, a
-        or  $81
-        inc a
-        scf
-        ret nz                  ; bits 1-6 not all set: no card's
-        ld  a, d
-        and e
-        ld  e, a
-        dec bc
-        ld  a, b
-        or  c
-        jr  nz, .lp
-        ld  a, e
-        rrca                    ; carry: bit 0 never clear, no card
+        ld  b, GS_PROBES
+.lp:    in  a, (GS_DATA)        ; the flag cleared ...
+        call .pause
+        in  a, (GS_CMD)
+        rlca
+        ret c                   ; ... and it is not: no card
+        xor a
+        out (GS_DATA), a        ; the flag set ...
+        call .pause
+        in  a, (GS_CMD)
+        rlca
+        ccf
+        ret c                   ; ... and it is not: no card
+        djnz .lp
+        in  a, (GS_DATA)        ; the latch left empty
+        or  a
+        ret
+.pause: ex  (sp), hl            ; about 65 T-states with the call: 4.6 us
+        ex  (sp), hl
         ret
 
 gs_init:
@@ -227,7 +239,10 @@ gs_init:
         ld  (gs_cur), a
         ld  (gs_ld), a
         ; the card tests its memory after power-on and its status flickers
-        ; while it does: wait for 65536 readings in a row of "idle"
+        ; while it does: wait for 65536 readings in a row of "idle".  A
+        ; byte in the latch is read away: nothing else will read it, and a
+        ; card that was not reset with the machine (a NeoGS) may still hold
+        ; an earlier program's answer there
         ld  c, GS_TIMEOUT
         ld  de, 0
         ld  hl, 0
@@ -235,6 +250,8 @@ gs_init:
         and $81
         jr  z, .idle
         ld  hl, 0
+        jp  p, .tick            ; only a command pending
+        in  a, (GS_DATA)
         jr  .tick
 .idle:  dec hl
         ld  a, h

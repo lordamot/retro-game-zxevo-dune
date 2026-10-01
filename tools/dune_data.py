@@ -61,7 +61,7 @@ PAGE = 16384
 
 # The port's version, shown top right on the intro screen: `{version}` in
 # a text/*.txt string is replaced by it (port.txt's @intro_version).
-PORT_VERSION = "2026-09-30"
+PORT_VERSION = "2026-10-01"
 
 # ------------------------------------------------------------------ types
 

@@ -184,6 +184,15 @@ became the specs the port is written from), `.claude/docs/nes-tools.md`
   A game build now has no marks (`PROF` assembles only with `--profile`),
   and `build_toolchain.py` patches libxpeccy to decode as the FPGA does.
   The crash catcher below found it: a jump to 0 with SP inside the code.
+- **Bits 1-6 of the sound card's status port mean nothing.**  Every
+  emulator reads them as 1s (libxpeccy, ZEsarUX and MAME all OR in `$7E`)
+  and so does an original GS, through the bus's pull-ups; `gs_probe`
+  wanted them so, and a NeoGS - whose FPGA drives all eight lines, bits
+  1-6 "don't care" (`zxbus.v`) - was "GS detect error".  The probe now
+  toggles the data flag (write `$B3`: bit 7 set; read `$B3`: clear),
+  which is the card's hardware on every GS.  A NeoGS is also not reset
+  with the machine, so `gs_init` reads away a byte left in the latch.
+  `gsneo` in an evo-run script is that card; `make verify` runs it.
 - **The sound card's own page count is not to be trusted.**  The
   ZX-MultiSound rev.A1 has 1 MB and its ROM reports 62 pages - the ROM's
   test catches a plain alias and not what that card does - so the tunes

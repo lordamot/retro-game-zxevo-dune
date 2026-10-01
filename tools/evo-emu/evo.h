@@ -100,6 +100,7 @@ void evo_trace_gs(long n);
 void evo_gs_clock(evo *M, int mhz); /* the card's Z80 clock in MHz */
 void evo_gs_ram(evo *M, int kb);  /* the card's RAM, in KB, before spg */
 void evo_gs_dead(void);        /* the card stops answering from now on */
+void evo_gs_neo(evo *M);       /* the status port as a NeoGS's, a byte left in the latch */
 void evo_write_trap(int lo, int hi, int page, int page3); /* report the first write into lo..hi */
 void evo_pc_trap(int lo, int hi, int page); /* print the last fetches when PC reaches lo..hi (page < 0: any in window 0) */
 void evo_gs_watch(int adr);     /* count the card's fetches at adr ... */

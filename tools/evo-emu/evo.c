@@ -123,12 +123,22 @@ static evo   *traced;           /* set at start-up, unlike prof_owner */
  * host (its mixer plays on).  Tests the host's bounded waits. */
 static int    gsdead;
 
+/* gsneo: the status port as a NeoGS drives it - all eight lines, bits 1-6
+ * being whatever its FPGA's synthesis made of "don't care" (zxbus.v:
+ * { data_bit, 6'bXXXXXX, command_bit }); modelled as the data register's,
+ * the card's last answer - not libxpeccy's 1s of an original GS's pull-ups.
+ * And a NeoGS is not reset with the machine, so an earlier program's
+ * answer may still be in the latch: gsneo leaves one there. */
+static int    gsneo;
+
 static int trace_ird(int port, void *ptr)
 {
     int v;
     if (gsdead && (port & 0xF7) == 0xB3)
         return (port & 0xff) == 0xBB ? 0x01 : 0xFF;
     v = orig_ird(port, ptr);
+    if (gsneo && (port & 0xff) == 0xBB)
+        v = (v & 0x81) | (traced->comp->gs->pb3_gs & 0x7e);
     if (gstrace > 0 && (port & 0xF7) == 0xB3) {
         printf("gs  IN  %04X -> %02X   card pc=%04X\n", port, v & 0xff,
                cpu_get_pc(traced->comp->gs->cpu));
@@ -167,6 +177,13 @@ void evo_trace_gs(long n)
 void evo_gs_dead(void)
 {
     gsdead = 1;
+}
+
+void evo_gs_neo(evo *M)
+{
+    gsneo = 1;
+    M->comp->gs->pb3_gs = 0x40;
+    M->comp->gs->pstate |= 0x80;
 }
 
 /* gsram KB: the card's RAM this big (a power of two; pages above it are

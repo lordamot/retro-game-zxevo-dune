@@ -163,6 +163,8 @@ the machine's own memory rather than trusting a screenshot:
   a lost mission goes through the defeat and score screens and starts
   again;
 - the card is found and loaded, and the battle music plays;
+- a NeoGS (`gsneo`: status bits 1-6 not 1s, a stale byte in the latch)
+  is found and loaded too;
 - with the card answering nothing (`gsdead`), the log stops at "no
   sound", a key takes it on, the intro passes silent and the battle runs
   with the card given up.

@@ -215,6 +215,7 @@ static void run_script(const char *path)
         else if (!strcmp(cmd, "profile"))    evo_profile_enable(&M);
         else if (!strcmp(cmd, "gstrace"))    evo_trace_gs(a1 ? atol(a1) : 200);
         else if (!strcmp(cmd, "gsdead"))     evo_gs_dead();
+        else if (!strcmp(cmd, "gsneo"))      evo_gs_neo(&M);
         else if (!strcmp(cmd, "gsram") && a1) evo_gs_ram(&M, atoi(a1));
         else if (!strcmp(cmd, "gsclock") && a1) evo_gs_clock(&M, atoi(a1));
         else if (!strcmp(cmd, "wtrap") && a1 && a2) {

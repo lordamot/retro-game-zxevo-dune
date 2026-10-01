@@ -326,18 +326,28 @@ card with nothing playing.
 1. `evo_check`, "ZX Evo BaseConf detect": the memory manager puts RAM
    pages `$40`, `$80`, `$C0` and `$FF` into window 3 and each keeps a byte
    of its own - four megabytes, where a smaller machine's pages alias.
-2. `gs_probe`, "GS detect": is there a card at all?  Its status register
-   reads bits 1-6 as 1 and its ROM clears the command flag (bit 0) first
-   thing (`$0148`: `OUT (5)`), and nothing has sent it a command, so 16384
-   readings (0.06 s) must all have bits 1-6 set and one at least bit 0
-   clear.  With no card the port is not decoded: the bus reads `$FF` (bit
-   0 never clear), or - in `bin/evo`, which returns the Evo's port `$FF`
-   for it - the floating bus, 0 on the black start-up screen.
+2. `gs_probe`, "GS detect": is there a card at all?  It asks the data
+   flag (status bit 7), which is the card's hardware and not its ROM: a
+   byte written to `$B3` sets it, the host reading `$B3` clears it, memory
+   test or not.  Eight rounds of "read `$B3`: clear; write `$B3`: set",
+   each read a few microseconds after the strobe, every one right, and
+   the latch left empty (about 0.1 ms).  With no card the port is not
+   decoded: the bus reads `$FF` (bit 7 never clear), or - in `bin/evo`,
+   which returns the Evo's port `$FF` for it - the floating bus, 0 on the
+   black start-up screen (never set).  **Bits 1-6 of the status port mean
+   nothing.**  The probe once wanted them all 1, which every emulator
+   gives (libxpeccy, ZEsarUX and MAME all OR in `$7E`) and an original GS
+   gives through the bus's pull-ups - but a **NeoGS** drives all eight
+   lines, bits 1-6 as its FPGA's synthesis made of "don't care"
+   (`zxbus.v`: `{ data_bit, 6'bXXXXXX, command_bit }`), and the game said
+   "GS detect error" on one.  `evo-run`'s `gsneo` is that card.
    `dbg_flags` bit 3: none of this, no screen, and the opening at 0.12 s.
    Test mode (bit 7): nothing, as ever.
 3. "GS memory": `gs_init` waits for the card's memory test (10.9 s from
-   power-on in `bin/evo`, nothing on a card long powered), then warm-resets
-   it; `gs_pages` asks `$23` for its pages, and the line says the card's
+   power-on in `bin/evo`, nothing on a card long powered), reading away
+   any byte in the latch while it waits (a NeoGS is not reset with the
+   machine, so an earlier program's answer may still be there, and the
+   wait is for bits 0 and 7 both clear), then warm-resets it; `gs_pages` asks `$23` for its pages, and the line says the card's
    size - `$23` counts the 32 KB pages the ROM leaves for modules, all but
    its own first (`bin/evo`'s card one fewer still: 62 for 2 MB), so the
    size is that and one more, rounded up to a power of two.  Fewer than
