@@ -305,8 +305,18 @@ gs_pages:
         call gs_ans
         cp  65
         jr  c, .n
-        ld  a, 64
+        ld  a, 126            ; NeoGS 4 MB: 126 pages, 64 was for 2 MB
 .n:     ld  (gs_npages), a
+        ; For large cards (>112 pages, NeoGS), cap to 112 to avoid
+        ; checking ghost pages 112-127 (they read FFh, wastes time)
+        ld  a, (gs_npages)
+        cp  113
+        jr  nc, .cap112
+        jp  .do_check
+.cap112:
+        ld  a, 112
+        ld  (gs_npages), a
+.do_check:
         call gs_pages_check     ; ... and the pages that are really there
         ld  a, (dbg_flags2)     ; the 1 MB test: 30 pages at most
         and DBGF2_TEST1MB

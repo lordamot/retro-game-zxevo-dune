@@ -2,6 +2,10 @@
 
 Версия показана в правом верхнем углу заставки (`v.ГГГГ-ММ-ДД`).
 
+## 2026-10-04 / 1.1.1
+
+- Исправлено определение NeoGS: 4 МБ карт (126 страниц вместо 64), вся музыка загружается при старте без фоновой потоковой передачи
+
 ## 2026-10-01 / 1.1.0
 
 - Исправлено определение NeoGS
@@ -15,6 +19,10 @@
 # Changelog
 
 The version is shown top right on the intro screen (`v.YYYY-MM-DD`).
+
+## 2026-10-04 / 1.1.1
+
+- NeoGS 4 MB detection fixed: 126 pages instead of 64, all music loads at startup with no background streaming
 
 ## 2026-10-01 / 1.1.0
 
