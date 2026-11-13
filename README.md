@@ -130,6 +130,20 @@ How to run yourself:
 - "file browser" - "mount A:"
 - "Run TRDOS"
 
+Web Unreal Speccy:
+
+- `make web` builds `build/DUNE-web.zip`, including the required SD card.
+- In [Web Unreal](https://www.zxby.org/unreal/), set General Sound to **On**
+  and enable **True clock**, then load that ZIP with Autostart enabled.
+  The archive selects ZX Evo BaseConf and supplies both the SD card and drive A.
+- Loading only `dune.trd` gives **ERROR 01**: the loader needs `DUNE.DAT`
+  in the root of a mounted SD card. Loading the DAT as a TS-Conf SPG is not
+  a BaseConf boot.
+- The firmware's virtual-drive path also works: **F**, Enter on `DUNE.TRD`,
+  **5** (Mount A), **Z** (TR-DOS boot), Enter.
+- Diagnosis, downloaded sources, and repeatable checks:
+  [.claude/docs/web-unreal.md](.claude/docs/web-unreal.md).
+
 Check `./prompts` directory for full build history and sufferings.
 
 ## Known problems and plans

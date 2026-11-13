@@ -67,6 +67,7 @@ Half of what this port says is in the address, not the value:
 | A8 = 1 | the memory manager is on.  A8 = 0 and all four windows are ROM |
 | value bits 0-2 | the video mode |
 | value bit 3 | 1 = 14 MHz, 0 = 7 MHz |
+| value bit 5 | ignored by BaseConf; the game sets it for Web Unreal's inherited ATM Turbo interrupt gate (`web-unreal.md`) |
 
 The modes, with bits 0 and 5 of port `$EFF7` both clear (which is how the
 firmware leaves them):
@@ -79,9 +80,10 @@ firmware leaves them):
 | 6 | ATM text, 80x25 |
 | 7 | the firmware's own text mode |
 
-`boot.asm` first writes `$8177` with the plain ZX screen at 14 MHz (the
+`boot.asm` first writes `$8377` with the plain ZX screen at 14 MHz (the
 manager on, the palette port open), and `vid_ega` in `src/stub/video.asm`
-switches to EGA, `%00001000`, once there is something to show.
+switches to EGA, `%00101000`, once there is something to show. Bit 5 is a
+compatibility setting; the FPGA consumes only data bits 0-3 here.
 
 ## The screen
 

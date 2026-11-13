@@ -12,7 +12,7 @@ boot:
         ld  a, 1
         out (PORT_BF), a        ; the shadow ports answer from here on
         ld  bc, PORT_77
-        ld  a, V_ZX | TURBO14
+        ld  a, V_ZX | TURBO14 | ATM_INT_ENABLE
         out (c), a              ; manager on, 14 MHz, the plain screen for now
         ld  a, P7FFD_BASE
         ld  bc, PORT_7FFD

@@ -8,7 +8,7 @@
 ; EGA mode at 14 MHz.
 vid_ega:
         ld  bc, PORT_77
-        ld  a, V_EGA | TURBO14
+        ld  a, V_EGA | TURBO14 | ATM_INT_ENABLE
         out (c), a
         ret
 

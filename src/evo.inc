@@ -25,6 +25,11 @@ PORT_77         EQU $8377
 V_ZX            EQU %011
 V_EGA           EQU %000
 TURBO14         EQU %1000
+; BaseConf ignores data bit 5 of xx77 (FPGA base/z80/zports.v); ATM Turbo
+; uses it to enable frame interrupts. Web Unreal 1.73.2 incorrectly keeps
+; that gate on its ATM3/BaseConf model too. Set it for compatibility: it
+; has no effect on real BaseConf, and lets that emulator deliver INT.
+ATM_INT_ENABLE  EQU %00100000
 
 ; The memory manager, one port per window, the window in A15-A14.
 ;

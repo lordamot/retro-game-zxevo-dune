@@ -48,7 +48,7 @@ entry:
         ld  a, 1
         out (PORT_BF), a        ; the shadow ports answer from here on
         ld  bc, PORT_77
-        ld  a, V_ZX | TURBO14
+        ld  a, V_ZX | TURBO14 | ATM_INT_ENABLE
         out (c), a              ; manager on, 14 MHz, the plain screen
         ld  a, (0 ^ $3F) | $40
         ld  bc, MMUF_W3
@@ -96,8 +96,19 @@ fail:
         ld  de, $5060
         call print
         pop af
+        push af
         ld  de, $5060 + 7
         call print_hex
+        pop af
+        cp  E_NOCARD
+        jr  nz, .stop
+        ld  hl, s_nocard
+        ld  de, $50A0
+        call print
+        ld  hl, s_card_help
+        ld  de, $50E0
+        call print
+.stop:
         call cs_off
         di
         halt
@@ -949,6 +960,8 @@ print_hex:
 s_title:    db "DUNE II - THE BATTLE FOR ARRAKIS", 0
 s_reading:  db "READING DUNE.DAT", 0
 s_error:    db "ERROR", 0
+s_nocard:   db "NO SD CARD RESPONSE", 0
+s_card_help: db "MOUNT SD IMAGE WITH DUNE.DAT", 0
 s_digit:    db 0, 0
 s_name:     db "DUNE    DAT"
 s_sign:     db "SpectrumProg"

@@ -10,7 +10,7 @@ CREDITS   ?= 0
 BUILD_ARGS := $(if $(HOUSE),--house $(HOUSE) --mission $(MISSION)) \
               --flags $(DBGFLAGS) --credits $(CREDITS)
 
-.PHONY: build run shot demo verify test md sega toolchain nvram clean
+.PHONY: build run shot demo verify test md sega toolchain nvram clean web verify-web
 .PHONY: orig-nes orig-sega orig run-nes run-sega sega-trace
 
 # `make run nes` and `make run sega` build one of the two originals out of
@@ -71,6 +71,15 @@ demo:
 # click gives an order, the loop fits its frames, and the sound card plays
 verify: build
 	python3 tools/verify_build.py
+
+# Browser distribution: the SD card is required as well as the boot floppy.
+web: build
+	python3 tools/web_unreal.py package
+
+# Optional second-emulator check; fetch its published runtime first:
+# python3 tools/web_unreal.py fetch
+verify-web: web
+	python3 tools/web_unreal.py verify
 
 # every subsystem's suite (tools/tests/test_*.py) on the fresh build, against
 # the specs' models; fails if any suite does
